@@ -52,6 +52,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
    * @return If Tile-object contains targetSum, then Some(Int), else None.
    */
 
-  def getTileTargetSum(tileIndex: Int): Option[Int] = ???
+  def getTileTargetSum(tileIndex: Int): Option[Int] =
+    allTiles(tileIndex).targetSum
 
 end Puzzleboard
