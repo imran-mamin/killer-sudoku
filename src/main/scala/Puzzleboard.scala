@@ -1,4 +1,4 @@
-package sudoku
+package scala
 
 import java.awt.Color
 
