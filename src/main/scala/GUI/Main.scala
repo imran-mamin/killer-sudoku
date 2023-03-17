@@ -7,7 +7,7 @@ import scalafx.scene.layout.{Pane, Border}
 import scalafx.scene.control.{Label, Menu, MenuBar, MenuItem, SeparatorMenuItem, Button}
 import scalafx.Includes.*
 import scalafx.geometry.Pos
-
+import scalafx.scene.canvas.*
 
 object Main extends JFXApp3:
 
@@ -43,6 +43,9 @@ object Main extends JFXApp3:
       // startAgainButton.setMinSize(10, 10)
       startAgainButton.border = Border.stroke(2)
 
+      // Canvas (Sudoku-board)
+      val canvas = Canvas(400, 400)
+      val gc = canvas.graphicsContext2D
 
       // val toolBar = ToolBar
       // val combinationsLabel = Label
