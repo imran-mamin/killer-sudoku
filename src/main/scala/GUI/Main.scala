@@ -25,9 +25,7 @@ object Main extends JFXApp3:
     stage.scene = scene
 
 
-
-    // root.children += rectangle
-
+    // Adding tiles to the Sudoku board
     for i <- 0 until 9 do // is equal to y-coordinate
       for j <- 0 until 9 do // is equal to x-coordinate
         val rectangle = new Rectangle:
@@ -63,59 +61,12 @@ object Main extends JFXApp3:
     // Start Again -button
     val startAgainButton = Button("Start Again")
      startAgainButton.onAction = (event) => println("Clicked Start again -button")
-     startAgainButton.layoutX = 500
+     startAgainButton.layoutX = 450
      startAgainButton.layoutY = 0
+     startAgainButton.setMinSize(80, 35)
      startAgainButton.border = Border.stroke(2)
 
      root.children += startAgainButton
-  /*
-
-    val scene = new Scene(parent = root) {
-     // Menu
-     val menuBar = new MenuBar
-     val fileMenu = new Menu("File")
-     val newFileItem = new MenuItem("New file")
-     newFileItem.onAction = (event) => println("New file -button in the menubar is clicked")
-     val openPreviousItem = new MenuItem("Open previous")
-     openPreviousItem.onAction = (event) => println("Open previous -button in the menubar is clicked")
-     val saveItem = new MenuItem("Save")
-     saveItem.onAction = (event) => println("Save-button in the menubar is clicked")
-     val saveAsItem = new MenuItem("Save as")
-     saveAsItem.onAction = (event) => println("Save as -button in the menubar is clicked")
-
-     fileMenu.items = List(newFileItem, SeparatorMenuItem(), openPreviousItem, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
-     menuBar.menus = List(fileMenu)
-
-     // Start Again -button
-     val startAgainButton = Button("Start Again")
-     startAgainButton.onAction = (event) => println("Clicked Start again -button")
-     startAgainButton.layoutX = 500
-     startAgainButton.layoutY = 0
-     // startAgainButton.alignment = Pos.TopCenter
-     // startAgainButton.setMinSize(10, 10)
-     startAgainButton.border = Border.stroke(2)
-
-     // Tile
-     val tile = new SingleTile
-     for i <- 0 until 3 do
-       for j <- 0 until 3 do
-         tile.setTranslateX(j * 200)
-         tile.setTranslateY(i * 200)
-         this.getRoot.getCh
-       end for
-     end for
-
-
-     val rectangle = new Rectangle()
-     rectangle.minWidth(1000)
-     rectangle.minHeight(1000)
-     rectangle.fill = Color.Black
-     rectangle.layoutX = 200
-     rectangle.layoutY = 200
-     rectangle.setFill(null)
-     rectangle.setStroke(Color.Black)
-
-*/
 
 /*
 
