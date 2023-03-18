@@ -1,9 +1,10 @@
 package GUI
 
 import javafx.scene.control.ToolBar
+import javafx.scene.layout.StackPane
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
-import scalafx.scene.layout.{Border, Pane, Background, TilePane}
+import scalafx.scene.layout.{Background, Border, Pane, TilePane}
 import scalafx.scene.control.{Button, Label, Menu, MenuBar, MenuItem, SeparatorMenuItem}
 import scalafx.Includes.*
 import scalafx.geometry.Pos
@@ -22,11 +23,14 @@ object Main extends JFXApp3:
       height = 600
 
     val root = Pane()
+/*
+    val newFileView      = StackPane()
+    val openPreviousView = StackPane()
+    val saveAsView       = StackPane()
+*/
+    val mainScene = Scene(parent = root)
+    stage.scene = mainScene
 
-    val scene = Scene(parent = root)
-    stage.scene = scene
-
-    val numbersAsChar: List[Char] = List('1', '2', '3', '4', '5', '6', '7', '8', '9')
     val characters: List[Char] = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
 
     // Adding tiles to the Sudoku board
@@ -34,7 +38,7 @@ object Main extends JFXApp3:
 
       // Displaying the y-coordinates in the GUI window
       val column = new Text:
-        text = numbersAsChar(i).toString
+        text = (i + 1).toString
         x = 65
         y = 100
       column.setTranslateY(i * 40)
@@ -69,7 +73,9 @@ object Main extends JFXApp3:
     val menuBar = new MenuBar
     val fileMenu = new Menu("File")
     val newFileItem = new MenuItem("New file")
-    newFileItem.onAction = (event) => println("New file -button in the menubar is clicked")
+    newFileItem.onAction = (event) =>
+      println("New file -button in the menubar is clicked")
+      // mainScene.root = newFileView
     val openPreviousItem = new MenuItem("Open previous")
     openPreviousItem.onAction = (event) => println("Open previous -button in the menubar is clicked")
     val saveItem = new MenuItem("Save")
