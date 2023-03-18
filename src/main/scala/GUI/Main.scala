@@ -10,8 +10,10 @@ import scalafx.geometry.Pos
 import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
+import scalafx.scene.text.Text
 
 object Main extends JFXApp3:
+
 
   def start(): Unit =
     stage = new JFXApp3.PrimaryStage:
@@ -24,10 +26,31 @@ object Main extends JFXApp3:
     val scene = Scene(parent = root)
     stage.scene = scene
 
+    val numbersAsChar: List[Char] = List('1', '2', '3', '4', '5', '6', '7', '8', '9')
+    val characters: List[Char] = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
 
     // Adding tiles to the Sudoku board
     for i <- 0 until 9 do // is equal to y-coordinate
+
+      // Displaying the y-coordinates in the GUI window
+      val column = new Text:
+        text = numbersAsChar(i).toString
+        x = 65
+        y = 100
+      column.setTranslateY(i * 40)
+      root.children += column
+
       for j <- 0 until 9 do // is equal to x-coordinate
+
+        // Displaying the x-coordinates in the GUI window
+        if i == 0 then
+          val row = new Text:
+            text = characters(j).toString
+            x = 100
+            y = 65
+          row.setTranslateX(j * 40)
+          root.children += row
+        end if
         val rectangle = new Rectangle:
           x = 80
           y = 80
