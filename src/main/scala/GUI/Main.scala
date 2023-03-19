@@ -1,10 +1,9 @@
 package GUI
 
-import javafx.scene.control.ToolBar
-import javafx.scene.layout.StackPane
+import javafx.scene.control.{TextInputDialog, ToolBar}
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
-import scalafx.scene.layout.{Background, Border, Pane, TilePane}
+import scalafx.scene.layout.{Background, Border, Pane, TilePane, StackPane}
 import scalafx.scene.control.{Button, Label, Menu, MenuBar, MenuItem, SeparatorMenuItem}
 import scalafx.Includes.*
 import scalafx.geometry.Pos
@@ -12,6 +11,8 @@ import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
+import scala.collection.mutable.Buffer
+
 
 object Main extends JFXApp3:
 
@@ -30,6 +31,8 @@ object Main extends JFXApp3:
 */
     val mainScene = Scene(parent = root)
     stage.scene = mainScene
+
+    val tiles: Buffer[Rectangle] = Buffer()
 
     val characters: List[Char] = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
 
@@ -62,20 +65,35 @@ object Main extends JFXApp3:
           height = 40
           fill = Color.LightGrey
         rectangle.setStroke(Color.Black)
-
         rectangle.setTranslateX(j * 40)
         rectangle.setTranslateY(i * 40)
+
+        tiles += rectangle
         root.children += rectangle
       end for
     end for
 
+    tiles(0).onMouseDragOver = tiles(0).fill(Color.Blue)
     // Menu
     val menuBar = new MenuBar
     val fileMenu = new Menu("File")
     val newFileItem = new MenuItem("New file")
     newFileItem.onAction = (event) =>
       println("New file -button in the menubar is clicked")
-      // mainScene.root = newFileView
+      val downloadFile = new TextInputDialog("path")
+        downloadFile.initOwner(stage)
+        downloadFile.title = "New file"
+        downloadFile.headerText = ""
+        downloadFile.contentText = "Please, provide filepath here: "
+        downloadFile.getDialogPane.setMinSize(400, 350)
+      val result = downloadFile.showAndWait()
+      result match
+        case filepath      => println("None")
+        // case Optional(filepath) => println("" + filepath)
+        // case None           => println("None")
+        // case None           => println("Filepath was not provided")
+
+
     val openPreviousItem = new MenuItem("Open previous")
     openPreviousItem.onAction = (event) => println("Open previous -button in the menubar is clicked")
     val saveItem = new MenuItem("Save")
