@@ -12,7 +12,7 @@ import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
 import scala.collection.mutable.Buffer
-
+import javafx.beans.binding.Bindings
 
 object Main extends JFXApp3:
 
@@ -67,13 +67,14 @@ object Main extends JFXApp3:
         rectangle.setStroke(Color.Black)
         rectangle.setTranslateX(j * 40)
         rectangle.setTranslateY(i * 40)
-
+        rectangle.setOnMouseEntered( e => rectangle.setFill(Color.LightSlateGray))
+        rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
         tiles += rectangle
         root.children += rectangle
       end for
     end for
 
-    tiles(0).onMouseDragOver = tiles(0).fill(Color.Blue)
+
     // Menu
     val menuBar = new MenuBar
     val fileMenu = new Menu("File")
