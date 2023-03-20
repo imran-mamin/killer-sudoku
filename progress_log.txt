@@ -1,5 +1,12 @@
+06.03.
 I have created three classes "Tile", "Subarea" and "Puzzleboard" according to the initial plan. Unfortunately,
 I haven't spent enough time to implement all the methods in Puzzleboard-class. Right now, I don't have any
 unit tests, but I want to add them as soon as possible. I also created a Main-object in GUI, but it shows only a black
 screen right now. I spent about 2 hours on this project. Now, I'm a bit late from my initial time plan,
 because of the other courses.
+
+20.03.
+I have almost done the basic version of the GUI window, but it still needs some improvements. I have
+to add the feature, which will show the user possible candidates, once she/he will click on the tile. I also
+made small changes in the backend of my program and I'm planning to continue implementing it as soon as the
+GUI looks better. I think I have spent about 8 hours in the past two weeks.
