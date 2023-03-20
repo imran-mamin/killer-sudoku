@@ -1,6 +1,6 @@
 package GUI
 
-import javafx.scene.control.{TextInputDialog, ToolBar}
+
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.layout.{Background, Border, Pane, StackPane, TilePane}
@@ -11,11 +11,12 @@ import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
-
 import scala.collection.mutable.Buffer
+import scalafx.scene.image.{Image, ImageView}
+
 import javafx.beans.binding.Bindings
 import javafx.scene.shape.Circle
-import scalafx.scene.image.{Image, ImageView}
+import javafx.scene.control.{TextInputDialog, ToolBar}
 
 import java.io.FileInputStream
 
@@ -102,15 +103,17 @@ object Main extends JFXApp3:
 
 
     val openPreviousItem = new MenuItem("Open previous")
-    openPreviousItem.onAction = (event) => println("Open previous -button in the menubar is clicked")
+      openPreviousItem.onAction = (event) => println("Open previous -button in the menubar is clicked")
     val saveItem = new MenuItem("Save")
-    saveItem.onAction = (event) => println("Save-button in the menubar is clicked")
+      saveItem.onAction = (event) => println("Save-button in the menubar is clicked")
     val saveAsItem = new MenuItem("Save as")
-    saveAsItem.onAction = (event) => println("Save as -button in the menubar is clicked")
+      saveAsItem.onAction = (event) => println("Save as -button in the menubar is clicked")
 
     fileMenu.items = List(newFileItem, SeparatorMenuItem(), openPreviousItem, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
     menuBar.menus = List(fileMenu)
     root.children += menuBar
+
+
 
     // Start Again -button
     val startAgainButton = Button("Start Again")
@@ -122,33 +125,34 @@ object Main extends JFXApp3:
 
      root.children += startAgainButton
 
-    // Previous step -button
 
+
+    // Undo step -button
     val input = new FileInputStream("src/images/left_arrow.PNG")
     val image = new Image(input)
-    val imageView = new ImageView(image)
+    val imageViewUndo = new ImageView(image)
 
-    val previousButton = Button(null, imageView)
-    previousButton.scaleX = 0.5
-    previousButton.scaleY = 0.5
-    previousButton.layoutY = 450
-    previousButton.layoutX = 40
-    previousButton.setShape(new Circle(70))
-    root.children += previousButton
+    val undoButton = Button(null, imageViewUndo)
+      undoButton.scaleX = 0.5
+      undoButton.scaleY = 0.5
+      undoButton.layoutX = 40
+      undoButton.layoutY = 450
+      undoButton.setShape(new Circle(70))
+    root.children += undoButton
 
-  /*
+    // Redo step -button
+    val imageViewRedo = new ImageView(image)
+      imageViewRedo.scaleX = -imageViewRedo.getScaleX
 
-      // Canvas (Sudoku-board)
-      val canvas = Canvas(400, 400)
-      val gc = canvas.graphicsContext2D
+    val redoButton = Button(null, imageViewRedo)
+      redoButton.scaleX = 0.5
+      redoButton.scaleY = 0.5
+      redoButton.layoutX = 320
+      redoButton.layoutY = 450
+      redoButton.setShape(new Circle(70))
+    root.children += redoButton
 
-      // val toolBar = ToolBar
-      // val combinationsLabel = Label
 
-      // Adding menu and Start Again -button to the content
-      content = List(menuBar, startAgainButton)
-
-      } */
 
 
 end Main
