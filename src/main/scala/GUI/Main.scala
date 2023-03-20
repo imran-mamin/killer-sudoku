@@ -67,7 +67,7 @@ object Main extends JFXApp3:
         rectangle.setStroke(Color.Black)
         rectangle.setTranslateX(j * 40)
         rectangle.setTranslateY(i * 40)
-        rectangle.setOnMouseEntered( e => rectangle.setFill(Color.LightSlateGray))
+        rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
         rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
         tiles += rectangle
         root.children += rectangle
