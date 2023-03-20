@@ -3,7 +3,7 @@ package GUI
 import javafx.scene.control.{TextInputDialog, ToolBar}
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
-import scalafx.scene.layout.{Background, Border, Pane, TilePane, StackPane}
+import scalafx.scene.layout.{Background, Border, Pane, StackPane, TilePane}
 import scalafx.scene.control.{Button, Label, Menu, MenuBar, MenuItem, SeparatorMenuItem}
 import scalafx.Includes.*
 import scalafx.geometry.Pos
@@ -11,8 +11,14 @@ import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
+
 import scala.collection.mutable.Buffer
 import javafx.beans.binding.Bindings
+import javafx.scene.shape.Circle
+import scalafx.scene.image.{Image, ImageView}
+
+import java.io.FileInputStream
+
 
 object Main extends JFXApp3:
 
@@ -116,7 +122,21 @@ object Main extends JFXApp3:
 
      root.children += startAgainButton
 
-/*
+    // Previous step -button
+
+    val input = new FileInputStream("src/images/left_arrow.PNG")
+    val image = new Image(input)
+    val imageView = new ImageView(image)
+
+    val previousButton = Button(null, imageView)
+    previousButton.scaleX = 0.5
+    previousButton.scaleY = 0.5
+    previousButton.layoutY = 450
+    previousButton.layoutX = 40
+    previousButton.setShape(new Circle(70))
+    root.children += previousButton
+
+  /*
 
       // Canvas (Sudoku-board)
       val canvas = Canvas(400, 400)
