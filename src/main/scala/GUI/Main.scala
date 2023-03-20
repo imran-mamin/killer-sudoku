@@ -13,10 +13,10 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
 import scala.collection.mutable.Buffer
 import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.control.{ToolBar, TextInputDialog}
 
-import javafx.beans.binding.Bindings
 import javafx.scene.shape.Circle
-import javafx.scene.control.{TextInputDialog, ToolBar}
+
 
 import java.io.FileInputStream
 
@@ -31,11 +31,8 @@ object Main extends JFXApp3:
       height = 600
 
     val root = Pane()
-/*
-    val newFileView      = StackPane()
-    val openPreviousView = StackPane()
-    val saveAsView       = StackPane()
-*/
+
+
     val mainScene = Scene(parent = root)
     stage.scene = mainScene
 
@@ -74,7 +71,9 @@ object Main extends JFXApp3:
         rectangle.setStroke(Color.Black)
         rectangle.setTranslateX(j * 40)
         rectangle.setTranslateY(i * 40)
+        // When hovering the color changes to white
         rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
+        // When the cursor leaves the tile, the color of the tile will be the same as before
         rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
         tiles += rectangle
         root.children += rectangle
@@ -94,9 +93,10 @@ object Main extends JFXApp3:
         downloadFile.headerText = ""
         downloadFile.contentText = "Please, provide filepath here: "
         downloadFile.getDialogPane.setMinSize(400, 350)
-      val result = downloadFile.showAndWait()
+
+      val result = downloadFile.showAndWait() // Result from the user input
       result match
-        case filepath      => println("None")
+        case filepath      => println("" + filepath)
         // case Optional(filepath) => println("" + filepath)
         // case None           => println("None")
         // case None           => println("Filepath was not provided")
@@ -153,6 +153,15 @@ object Main extends JFXApp3:
     root.children += redoButton
 
 
+    // Possible combinations of the tiles in subarea
+    val toolbar = new ToolBar {
+      layoutX = 540
+      layoutY = 60
+      content = List(
+        new Label("Possible combinations")
+      )
+    }
+    toolbar.border = Border.stroke(2)
 
-
+    root.children += toolbar
 end Main
