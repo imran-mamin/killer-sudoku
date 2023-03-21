@@ -5,7 +5,7 @@ import sudoku.Subarea
 import sudoku.Puzzleboard
 import sudoku.Tile
 
-object TestGame extends AnyFlatSpec with Matchers:
+class TestGame extends AnyFlatSpec with Matchers:
   "Puzzleboard addNumber-method" should "add a number to the Tile-object" in {
     val tile1 = Tile(0, 0, 1)
     val tile2 = Tile(1, 0, 1)

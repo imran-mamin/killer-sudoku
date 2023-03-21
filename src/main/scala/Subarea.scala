@@ -1,4 +1,4 @@
-package scala
+package sudoku
 
 import java.awt.Color
 import scala.collection.mutable.Buffer
