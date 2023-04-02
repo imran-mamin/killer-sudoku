@@ -8,6 +8,9 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
   def makeGraph(): Unit = ???
   def paintGraph(): Unit = ???
 
+  def showTiles() = allTiles
+  def showSubareas() = subareas
+  
   /**
    * This method sets a number to the Tile-object, which index in "allTiles"-Vector is given as a
    * parameter of the function.

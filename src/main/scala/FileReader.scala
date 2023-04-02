@@ -70,18 +70,17 @@ object FileReader:
     for i <- data.indices do
       var currentLine = data(i).trim.toLowerCase.replaceAll(" ", "")
 
-      currentLine match
-        case "sum:" =>
+      if currentLine.startsWith("sum:") then
           sum = currentLine.drop(4).toIntOption
-        case "amountoftiles:" =>
+      else if currentLine.contains("amountoftiles:") then
           amountOfTiles = currentLine.drop(14).toIntOption
-        case "tilesum:" =>
-          var sumTile = currentLine.drop(8) // Single tile, which contains information about the sum of subarea
-        case "tiles:" =>
+      else if currentLine.contains("tilesum:") then
+          tileSum = Some(currentLine.drop(8)) // Single tile, which contains information about the sum of subarea
+      else if currentLine.contains("tiles:") then
           tilesInStr = tilesInStr ++= currentLine.drop(6).split(",").toBuffer
-        case "squares:" =>
+      else if currentLine.contains("squares:") then
           squares = squares ++= currentLine.drop(8).split(",").map( str => str.toInt ).toBuffer
-        case _ =>
+      else
           println("Not found error")
     end for
 
@@ -100,6 +99,7 @@ object FileReader:
 
 
 
+  // TODO: Add more descriptive error messages
   /** This method takes all the lines of the text file as an input and
    * creates a Puzzleboard-object according to the information given in
    * the text file. */
@@ -108,16 +108,18 @@ object FileReader:
     val tiles: Buffer[Tile] = Buffer()
 
     // Will contain the remaining data after handling some of it.
-    var remaining: Buffer[String] = cfg.toBuffer.filter( element => element != "" ).map( element => element.toLowerCase)
-    val start = remaining.headOption
-    if !start.contains("start") then println("File doesn't start in a proper way.")
-    remaining.remove(0) // Will remove the first element "#Start"
+    var remaining: Buffer[String] = cfg.toBuffer.filter( element => element != "" ).map( element => element.trim.toLowerCase)
 
-    val title = remaining.headOption
-    remaining.remove(0) // Removing the title from the list of data.
+    val start: Option[String] = remaining.dropWhile( str => str != "#start" ).headOption
+    if start.isEmpty then println("File doesn't start in a proper way.")
+
+
+    val title: Option[String] = remaining.dropWhile( str => !str.contains("#title") ).headOption
+    if title.isEmpty then println("File does not have a title.")
+
 
     var indexOfDate: Int = 0
-    var currentLine: String = remaining(indexOfDate).replaceAll(" ", "")
+    var currentLine: String = remaining(indexOfDate).replaceAll(" ", "").toLowerCase
 
     // Finding the date, when file was written
 
@@ -133,7 +135,7 @@ object FileReader:
       var current: String = remaining(i).trim.replaceAll(" ", "").toLowerCase
 
       current match
-        case "#subarea" =>
+        case "#subarea:" =>
           // Takes all information in subarea block
           var subAreaInfo: Buffer[String] = remaining.drop(i + 1).takeWhile( str => !str.contains("#") )
           var subareaWithTiles: (Subarea, Buffer[Tile]) = this.createSubareaAndTiles(subAreaInfo)
