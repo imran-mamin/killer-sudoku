@@ -2,6 +2,7 @@ import collection.mutable.Buffer
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sudoku.{FileReader, Puzzleboard, Subarea, Tile}
+import sudoku._
 
 class TestGame extends AnyFlatSpec with Matchers:
   "Puzzleboard addNumber-method" should "add a number to the Tile-object" in {
@@ -26,10 +27,18 @@ class TestGame extends AnyFlatSpec with Matchers:
     val file = "src/testingData/test2_readfilepuzzleboard"
     val lines = FileReader.readFile(file)
 
-    val board = FileReader.readFilePuzzleBoard(lines.toSeq)
+    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)
     assert(board.showTiles().length == 4)
     assert(board.showSubareas().length == 1)
   }
-
+  "FileReader initializeTiles-method" should "create the right amount of Tile-objects" in {
+    val tiles = initializeTiles(9, 9)
+    assert(tiles.length == 81)
+    assert(tiles.head.getSquare == 0)
+    assert(tiles.last.getSquare == 8)
+    assert(tiles.head.getRow == 0 && tiles.head.getColumn == 0)
+    assert(tiles.last.getRow == 8 && tiles.last.getColumn == 8)
+ }
+  
 end TestGame
 

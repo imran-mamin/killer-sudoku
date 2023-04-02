@@ -1,4 +1,3 @@
-#Start
 #Title Attempt 1
 #Date:
 dd/mm/yyyy
@@ -10,6 +9,6 @@ amountOfTiles: 4
 tileSum: a1
 tiles: a1, a2, b1, b2
 squares: 1, 1, 1, 1
-
-#end
+#colsize: 9
+#rowsize: 9
 

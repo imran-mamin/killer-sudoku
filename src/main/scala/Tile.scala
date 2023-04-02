@@ -12,4 +12,8 @@ class Tile(column: Int, row: Int, square: Int):
   var color: Option[Color] = None
   var targetSum: Option[Int] = None
 
+  def getSquare: Int = square
+  def getColumn: Int = column
+  def getRow: Int = row
+  
 end Tile
