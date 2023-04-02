@@ -35,22 +35,37 @@ object FileReader:
   // def readFilePuzzleBoardHistory(file: String, history: PuzzleBoardHistory): Seq[String] = ???
 
 
-  private def createTiles(tileInStr: Buffer[String]): Buffer[Tile] =
+  // This is a helper method, which creates tiles and returns Buffer[Tile].
+  private def createTiles(tileInStr: Buffer[String], squares: Buffer[Int]): Buffer[Tile] =
     val tiles: Buffer[Tile] = Buffer()
     for i <- tileInStr.indices do
       val tileCode: String = tileInStr(i)
-      new Tile()
-      
+      tiles += this.createTile(tileCode, squares(i))
+
+      // Tile(column: Int, row: Int, square: Int):
+
     end for
-    
-    ???
+    tiles
+
+
+
+
+  // Creates a single tile object
+  private def createTile(strTile: String, square: Int): Tile =
+    new Tile(strTile(0) - 'a', strTile(1).toInt - 1, square)
+
+
+
   /** Takes as a parameter Buffer[String], which contains information about subarea.
    * This method will return (Subarea, Buffer[Tile]). */
   private def createSubareaAndTiles(data: Buffer[String]): (Subarea, Buffer[Tile]) =
     var sum: Option[Int] = None
     var amountOfTiles: Option[Int] = None
     var tileSum: Option[String] = None
-    val tiles: Buffer[Tile] = Buffer()
+    var tilesInStr: Buffer[String] = Buffer()
+    var squares: Buffer[Int] = Buffer()
+    var tiles: Buffer[Tile] = Buffer()
+
 
     for i <- data.indices do
       var currentLine = data(i).trim.toLowerCase.replaceAll(" ", "")
@@ -61,14 +76,29 @@ object FileReader:
         case "amountoftiles:" =>
           amountOfTiles = currentLine.drop(14).toIntOption
         case "tilesum:" =>
-          var sumTile = currentLine.drop(8)
+          var sumTile = currentLine.drop(8) // Single tile, which contains information about the sum of subarea
         case "tiles:" =>
-          val tilesInStr: Buffer[String] = currentLine.drop(6).split(",").toBuffer
-          tiles ++= this.createTiles(tilesInStr)
-
+          tilesInStr = tilesInStr ++= currentLine.drop(6).split(",").toBuffer
+        case "squares:" =>
+          squares = squares ++= currentLine.drop(8).split(",").map( str => str.toInt ).toBuffer
+        case _ =>
+          println("Not found error")
     end for
 
-    ???
+    if sum.isEmpty || amountOfTiles.isEmpty || tileSum.isEmpty
+      || tilesInStr.isEmpty || squares.isEmpty || squares.length != tilesInStr.length then
+      println("Not all information is provided!")
+    end if
+
+    // Index of tile, which contains information about subarea sum
+    val indexOfSumTile = tilesInStr.indexOf(tileSum.get)
+    // Set up all tiles in the given subarea.
+    tiles = tiles ++= this.createTiles(tilesInStr, squares)
+    val subarea = new Subarea(sum.get, tiles.toVector, tiles(indexOfSumTile))
+    // Subarea(targetSum: Int, tiles: Vector[Tile], tileWithTargetSum: Tile):
+    (subarea, tiles)
+
+
 
   /** This method takes all the lines of the text file as an input and
    * creates a Puzzleboard-object according to the information given in
@@ -78,9 +108,9 @@ object FileReader:
     val tiles: Buffer[Tile] = Buffer()
 
     // Will contain the remaining data after handling some of it.
-    var remaining: Buffer[String] = cfg.toBuffer.filter( element => element != "" )
+    var remaining: Buffer[String] = cfg.toBuffer.filter( element => element != "" ).map( element => element.toLowerCase)
     val start = remaining.headOption
-    if !start.contains("Start") then println("File doesn't start in a proper way.")
+    if !start.contains("start") then println("File doesn't start in a proper way.")
     remaining.remove(0) // Will remove the first element "#Start"
 
     val title = remaining.headOption
@@ -90,7 +120,8 @@ object FileReader:
     var currentLine: String = remaining(indexOfDate).replaceAll(" ", "")
 
     // Finding the date, when file was written
-    while !currentLine.contains("#Date") do
+
+    while !currentLine.contains("#date") do
       indexOfDate += 1
       currentLine = remaining(indexOfDate).replaceAll(" ", "")
     end while
@@ -103,16 +134,16 @@ object FileReader:
 
       current match
         case "#subarea" =>
+          // Takes all information in subarea block
           var subAreaInfo: Buffer[String] = remaining.drop(i + 1).takeWhile( str => !str.contains("#") )
           var subareaWithTiles: (Subarea, Buffer[Tile]) = this.createSubareaAndTiles(subAreaInfo)
           subareas += subareaWithTiles._1
           tiles ++= subareaWithTiles._2
-
-        case "#end"     => None
         case _          => None
 
 
     end for
+    if !remaining.exists( end => end.contains("end") ) then println("No end block found")
     new Puzzleboard(tiles.toVector, subareas.toVector)
 
 end FileReader
