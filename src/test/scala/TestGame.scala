@@ -39,6 +39,16 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(tiles.head.getRow == 0 && tiles.head.getColumn == 0)
     assert(tiles.last.getRow == 8 && tiles.last.getColumn == 8)
  }
-  
+
+  "FileReader initializeTile-method" should "initialize tile's neighbors properly" in {
+    val tiles = initializeTiles(9, 9)
+    assert(tiles.head.neighbors == Buffer(tiles(1), tiles(9)))
+    assert(tiles(1).neighbors == Buffer(tiles(0), tiles(2), tiles(10)))
+    assert(tiles(9).neighbors == Buffer(tiles(0), tiles(10), tiles(18)))
+    assert(tiles(10).neighbors == Buffer(tiles(1), tiles(9), tiles(11), tiles(19)))
+    assert(tiles(80).neighbors == Buffer(tiles(71), tiles(79)))
+    assert(tiles(19).neighbors == Buffer(tiles(10), tiles(18), tiles(20), tiles(28)))
+  }
+
 end TestGame
 

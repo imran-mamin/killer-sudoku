@@ -12,6 +12,29 @@ def initializeTiles(col: Int, row: Int) =
       val square: Int = (i / 3) * 3 + (j / 3)
       tiles += new Tile(j, i, square)
 
+      for k <- tiles.indices do
+        val x: Int = tiles(k).getRow
+        val y: Int = tiles(k).getColumn
+        val north: (Int, Int) = (x - 1, y)
+        val south: (Int, Int) = (x + 1, y)
+        val east: (Int, Int) = (x, y + 1)
+        val west: (Int, Int) = (x, y - 1)
+
+        // Add neighbors to tiles
+        if north._1 >= 0 && !tiles(k).neighbors.contains(tiles((x - 1) * col + y)) then
+          tiles(k).neighbors += tiles((x - 1) * col + y)
+        if east._2 < col && (tiles.length - 1 >= (x * col + y + 1)) &&
+          !tiles(k).neighbors.contains(tiles(x * col + y + 1)) then
+          tiles(k).neighbors += tiles(x * col + y + 1)
+        if south._1 < row && (tiles.length - 1 >= ((x + 1) * col + y)) &&
+          !tiles(k).neighbors.contains(tiles((x + 1) * col + y)) then
+          tiles(k).neighbors += tiles((x + 1) * col + y)
+        if west._2 >= 0 && !tiles(k).neighbors.contains(tiles(x * col + y - 1)) then
+          tiles(k).neighbors += tiles(x * col + y - 1)
+
+
+      end for
+
     end for
   end for
   tiles
