@@ -11,12 +11,13 @@ import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
+
 import scala.collection.mutable.Buffer
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.control.{ToolBar, TextInputDialog}
-
+import scalafx.scene.control.{TextInputDialog, ToolBar}
 import javafx.scene.shape.Circle
-
+import javafx.stage.FileChooser
+import sudoku.FileReader
 
 import java.io.FileInputStream
 
@@ -40,46 +41,48 @@ object Main extends JFXApp3:
 
     val characters: List[Char] = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
 
-    // Adding tiles to the Sudoku board
-    for i <- 0 until 9 do // is equal to y-coordinate
+    def createGUIBoard(row: Int, col: Int) =
+      // Adding tiles to the Sudoku board
+      for i <- 0 until row do // is equal to y-coordinate
 
-      // Displaying the y-coordinates in the GUI window
-      val column = new Text:
-        text = (i + 1).toString
-        x = 65
-        y = 100
-      column.setTranslateY(i * 40)
-      root.children += column
+        // Displaying the y-coordinates in the GUI window
+        val colText = new Text:
+          text = (i + 1).toString
+          x = 65
+          y = 100
+        colText.setTranslateY(i * 40)
+        root.children += colText
 
-      for j <- 0 until 9 do // is equal to x-coordinate
+        for j <- 0 until col do // is equal to x-coordinate
 
-        // Displaying the x-coordinates in the GUI window
-        if i == 0 then
-          val row = new Text:
-            text = characters(j).toString
-            x = 100
-            y = 65
-          row.setTranslateX(j * 40)
-          root.children += row
-        end if
-        val rectangle = new Rectangle:
-          x = 80
-          y = 80
-          width = 40
-          height = 40
-          fill = Color.LightGrey
-        rectangle.setStroke(Color.Black)
-        rectangle.setTranslateX(j * 40)
-        rectangle.setTranslateY(i * 40)
-        // When hovering the color changes to white
-        rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
-        // When the cursor leaves the tile, the color of the tile will be the same as before
-        rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
-        tiles += rectangle
-        root.children += rectangle
+          // Displaying the x-coordinates in the GUI window
+          if i == 0 then
+            val row = new Text:
+              text = characters(j).toString
+              x = 100
+              y = 65
+            row.setTranslateX(j * 40)
+            root.children += row
+          end if
+          val rectangle = new Rectangle:
+            x = 80
+            y = 80
+            width = 40
+            height = 40
+            fill = Color.LightGrey
+          rectangle.setStroke(Color.Black)
+          rectangle.setTranslateX(j * 40)
+          rectangle.setTranslateY(i * 40)
+          // When hovering the color changes to white
+          rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
+          // When the cursor leaves the tile, the color of the tile will be the same as before
+          rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
+          tiles += rectangle
+          root.children += rectangle
+        end for
       end for
-    end for
 
+    // row and column of the board
 
     // Menu
     val menuBar = new MenuBar
@@ -95,7 +98,12 @@ object Main extends JFXApp3:
         val file = fileChooser.showOpenDialog(stage)
 
         if file != null then
-          ()
+          val lines = FileReader.readFile(file.toString) // returns all lines in the given file
+          val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
+          createGUIBoard(boardWithSize._2, boardWithSize._3)
+
+        else
+          assert(false)
         end if
 
       catch
