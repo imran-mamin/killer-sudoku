@@ -10,3 +10,10 @@ I have almost done the basic version of the GUI window, but it still needs some 
 to add the feature, which will show the user possible candidates, once she/he will click on the tile. I also
 made small changes in the backend of my program and I'm planning to continue implementing it as soon as the
 GUI looks better. I think I have spent about 8 hours in the past two weeks.
+
+03.04.
+I tried to implement "readFilePuzzleBoardCfg"-method in FileReader and it should work now. It still needs some improvements
+such as, better error messages and error handling. I also created a new method initializeTiles, which creates new tiles
+according to the size given in a file. If the provided size is not divisible by three, then the size will be set to standard
+9 x 9 and this method will create 81 tiles. This method also sets all the neighbors to every tile. Later, I want to create
+other file reading methods and try to display gui according to the provided file information.
