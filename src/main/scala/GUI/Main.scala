@@ -86,7 +86,19 @@ object Main extends JFXApp3:
     val fileMenu = new Menu("File")
     val newFileItem = new MenuItem("New file")
     newFileItem.onAction = (event) =>
-      println("New file -button in the menubar is clicked")
+
+      try
+        println("New file -button in the menubar is clicked")
+        val fileChooser = new FileChooser
+        fileChooser.setTitle("Open new file")
+        fileChooser.getExtensionFilters.addAll(new FileChooser.ExtensionFilter("TEXT", "*.txt"))
+        println(fileChooser.showOpenDialog(stage))
+
+      catch
+        case e => e
+
+
+
       val downloadFile = new TextInputDialog("path")
         downloadFile.initOwner(stage)
         downloadFile.title = "New file"
