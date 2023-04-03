@@ -92,7 +92,11 @@ object Main extends JFXApp3:
         val fileChooser = new FileChooser
         fileChooser.setTitle("Open new file")
         fileChooser.getExtensionFilters.addAll(new FileChooser.ExtensionFilter("TEXT", "*.txt"))
-        println(fileChooser.showOpenDialog(stage))
+        val file = fileChooser.showOpenDialog(stage)
+
+        if file != null then
+          ()
+        end if
 
       catch
         case e => e
