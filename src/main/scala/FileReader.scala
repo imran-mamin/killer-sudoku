@@ -185,9 +185,6 @@ object FileReader:
         case "#subarea:" =>
           // Takes all information in subarea block
           var subAreaInfo: Buffer[String] = stripped.drop(i + 1).takeWhile( str => !str.contains("#") )
-          /*var subareaWithTiles: (Subarea, Buffer[Tile]) = this.createSubareaAndTiles(subAreaInfo)
-          subareas += subareaWithTiles._1
-          tiles ++= subareaWithTiles._2*/
           subareas += this.createSubareaAndUpdateTiles(subAreaInfo, tiles)
         case _          => None
 

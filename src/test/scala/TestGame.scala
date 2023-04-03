@@ -22,17 +22,19 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(lines == Seq("#Start", "#Date", "#Subarea:", "sum: 6", "amountOfTiles: 4", "tileSum: a1",
       "tiles: a1, a2, b1, b2", "squares: 1, 1, 1, 1"))
   }
-/*
-  "FileReader readFilePuzzleBoard-method" should "create a new Puzzleboard object" in {
+
+  "FileReader readFilePuzzleBoard-method" should "create a new Puzzleboard object of correct length, when the given size is" +
+    "not divisible by three" in {
     val file = "src/testingData/test2_readfilepuzzleboard"
     val lines = FileReader.readFile(file)
 
     val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)
-    assert(board.showTiles().length == 4)
+    // When the given size is not divisible by three, then program should create a board 9 x 9
+    assert(board.showTiles().length == 81)
     assert(board.showSubareas().length == 1)
   }
 
-*/
+
 
   "FileReader initializeTiles-method" should "create the right amount of Tile-objects" in {
     val tiles = initializeTiles(9, 9)
@@ -53,5 +55,29 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(tiles(19).neighbors == Buffer(tiles(10), tiles(18), tiles(20), tiles(28)))
   }
 
+  "FileReader readFilePuzzleboard-method" should "create a correct Puzzleboard-object" in {
+    val file = "src/testingData/test3_readfilepuzzleboard"
+    val lines = FileReader.readFile(file)
+
+   // Create a sudoku board of size (3 x 3)
+    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)
+
+    // Amount of tiles should be as specified in the file
+    assert(board.showTiles().length == 9)
+
+    // All tiles should have correct row and column number.
+    assert(board.showTiles().head.getRow == 0 && board.showTiles().head.getColumn == 0)
+    assert(board.showTiles()(1).getRow == 0 && board.showTiles()(1).getColumn == 1)
+    assert(board.showTiles()(2).getRow == 0 && board.showTiles()(2).getColumn == 2)
+    assert(board.showTiles()(3).getRow == 1 && board.showTiles()(3).getColumn == 0)
+    assert(board.showTiles()(4).getRow == 1 && board.showTiles()(4).getColumn == 1)
+    assert(board.showTiles()(5).getRow == 1 && board.showTiles()(5).getColumn == 2)
+    assert(board.showTiles()(6).getRow == 2 && board.showTiles()(6).getColumn == 0)
+    assert(board.showTiles()(7).getRow == 2 && board.showTiles()(7).getColumn == 1)
+    assert(board.showTiles()(8).getRow == 2 && board.showTiles()(8).getColumn == 2)
+
+    // All tiles should be in the same square
+    assert(board.showTiles().forall( tile => tile.getSquare == 0 ))
+  }
 end TestGame
 

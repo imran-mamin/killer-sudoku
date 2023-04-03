@@ -1,0 +1,28 @@
+#Title Attempt 3
+#Date:
+dd/mm/yyyy
+#Time:
+22:18
+#Subarea:
+sum: 6
+amountOfTiles: 4
+tileSum: a1
+tiles: a1, a2, b1, b2
+squares: 1, 1, 1, 1
+#colsize: 3
+#rowsize: 3
+
+#Subarea:
+sum: 11
+amountOfTiles: 3
+tileSum: a3
+tiles: a3, b3, c3
+squares: 1, 1, 1
+
+#Subarea:
+sum: 4
+amountOfTiles: 2
+tileSum: c1
+tiles: c1, c2
+squares: 1, 1
+
