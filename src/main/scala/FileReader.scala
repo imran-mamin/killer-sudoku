@@ -31,10 +31,7 @@ def initializeTiles(col: Int, row: Int) =
           tiles(k).neighbors += tiles((x + 1) * col + y)
         if west._2 >= 0 && !tiles(k).neighbors.contains(tiles(x * col + y - 1)) then
           tiles(k).neighbors += tiles(x * col + y - 1)
-
-
       end for
-
     end for
   end for
   tiles
@@ -71,29 +68,29 @@ object FileReader:
   // def readFilePuzzleBoardHistory(file: String, history: PuzzleBoardHistory): Seq[String] = ???
 
 
-  // This is a helper method, which creates tiles and returns Buffer[Tile].
-  private def createTiles(tileInStr: Buffer[String], squares: Buffer[Int]): Buffer[Tile] =
+  // This is a helper method, which updates tiles and returns Buffer[Tile].
+  private def updateTiles(tileInStr: Buffer[String], allTiles: Buffer[Tile]): Buffer[Tile] =
     val tiles: Buffer[Tile] = Buffer()
+
     for i <- tileInStr.indices do
       val tileCode: String = tileInStr(i)
-      tiles += this.createTile(tileCode, squares(i))
-
-      // Tile(column: Int, row: Int, square: Int):
-
+      val (row, col) = this.findRowAndColumn(tileCode)
+      tiles += allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get
     end for
     tiles
 
 
 
-  // Creates a single tile object
-  private def createTile(strTile: String, square: Int): Tile =
-    new Tile(strTile(0) - 'a', strTile(1).toInt - 1, square)
+  // Finds a row and a column of the given tile string
+  private def findRowAndColumn(strTile: String): (Int, Int) =
+    val (column, row) = (strTile(0) - 'a', strTile(1).asDigit - 1)
+    (row, column)
 
 
 
   /** Takes as a parameter Buffer[String], which contains information about subarea.
    * This method will return (Subarea, Buffer[Tile]). */
-  private def createSubareaAndTiles(data: Buffer[String]): (Subarea, Buffer[Tile]) =
+  private def createSubareaAndUpdateTiles(data: Buffer[String], allTiles: Buffer[Tile]): Subarea =
     var sum: Option[Int] = None
     var amountOfTiles: Option[Int] = None
     var tileSum: Option[String] = None
@@ -123,15 +120,17 @@ object FileReader:
     if sum.isEmpty || amountOfTiles.isEmpty || tileSum.isEmpty
       || tilesInStr.isEmpty || squares.isEmpty || squares.length != tilesInStr.length then
       println("Not all information is provided!")
+      assert(false)
     end if
 
     // Index of tile, which contains information about subarea sum
     val indexOfSumTile = tilesInStr.indexOf(tileSum.get)
     // Set up all tiles in the given subarea.
-    tiles = tiles ++= this.createTiles(tilesInStr, squares)
+    tiles = this.updateTiles(tilesInStr, allTiles)
+
     val subarea = new Subarea(sum.get, tiles.toVector, tiles(indexOfSumTile))
     // Subarea(targetSum: Int, tiles: Vector[Tile], tileWithTargetSum: Tile):
-    (subarea, tiles)
+    subarea
 
 
 
@@ -186,11 +185,11 @@ object FileReader:
         case "#subarea:" =>
           // Takes all information in subarea block
           var subAreaInfo: Buffer[String] = stripped.drop(i + 1).takeWhile( str => !str.contains("#") )
-          var subareaWithTiles: (Subarea, Buffer[Tile]) = this.createSubareaAndTiles(subAreaInfo)
+          /*var subareaWithTiles: (Subarea, Buffer[Tile]) = this.createSubareaAndTiles(subAreaInfo)
           subareas += subareaWithTiles._1
-          tiles ++= subareaWithTiles._2
+          tiles ++= subareaWithTiles._2*/
+          subareas += this.createSubareaAndUpdateTiles(subAreaInfo, tiles)
         case _          => None
-
 
     end for
 

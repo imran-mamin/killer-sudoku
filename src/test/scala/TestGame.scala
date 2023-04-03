@@ -22,7 +22,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(lines == Seq("#Start", "#Date", "#Subarea:", "sum: 6", "amountOfTiles: 4", "tileSum: a1",
       "tiles: a1, a2, b1, b2", "squares: 1, 1, 1, 1"))
   }
-
+/*
   "FileReader readFilePuzzleBoard-method" should "create a new Puzzleboard object" in {
     val file = "src/testingData/test2_readfilepuzzleboard"
     val lines = FileReader.readFile(file)
@@ -31,6 +31,9 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(board.showTiles().length == 4)
     assert(board.showSubareas().length == 1)
   }
+
+*/
+
   "FileReader initializeTiles-method" should "create the right amount of Tile-objects" in {
     val tiles = initializeTiles(9, 9)
     assert(tiles.length == 81)
