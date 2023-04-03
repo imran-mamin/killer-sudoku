@@ -139,7 +139,7 @@ object FileReader:
   /** This method takes all the lines of the text file as an input and
    * creates a Puzzleboard-object according to the information given in
    * the text file. */
-  def readFilePuzzleBoardCfg(cfg: Seq[String]): Puzzleboard =
+  def readFilePuzzleBoardCfg(cfg: Seq[String]): (Puzzleboard, Int, Int) =
 
     // Will contain the stripped data after handling some of it.
     var stripped: Buffer[String] = cfg.toBuffer.filter( element => element != "" ).map( element => element.trim.toLowerCase)
@@ -190,7 +190,8 @@ object FileReader:
 
     end for
 
-    new Puzzleboard(tiles.toVector, subareas.toVector)
+    val puzzle = new Puzzleboard(tiles.toVector, subareas.toVector)
+    (puzzle, rowN.get, colN.get)
 
 end FileReader
 

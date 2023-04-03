@@ -23,12 +23,12 @@ class TestGame extends AnyFlatSpec with Matchers:
       "tiles: a1, a2, b1, b2", "squares: 1, 1, 1, 1"))
   }
 
-  "FileReader readFilePuzzleBoard-method" should "create a new Puzzleboard object of correct length, when the given size is" +
+  "FileReader readFilePuzzleBoardCfg-method" should "create a new Puzzleboard object of correct length, when the given size is" +
     "not divisible by three" in {
     val file = "src/testingData/test2_readfilepuzzleboard"
     val lines = FileReader.readFile(file)
 
-    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)
+    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
     // When the given size is not divisible by three, then program should create a board 9 x 9
     assert(board.showTiles().length == 81)
     assert(board.showSubareas().length == 1)
@@ -60,7 +60,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     val lines = FileReader.readFile(file)
 
    // Create a sudoku board of size (3 x 3)
-    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)
+    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
 
     // Amount of tiles should be as specified in the file
     assert(board.showTiles().length == 9)
@@ -79,5 +79,6 @@ class TestGame extends AnyFlatSpec with Matchers:
     // All tiles should be in the same square
     assert(board.showTiles().forall( tile => tile.getSquare == 0 ))
   }
+
 end TestGame
 
