@@ -35,10 +35,11 @@ object Main extends JFXApp3:
       height = 600
 
     val root = Pane()
-    val grid = GridPane()
-    grid.layoutY = 80
-    grid.layoutX = 80
-
+    // grid.layoutY = 80
+    // grid.layoutX = 80
+    val gridWith3x3Squares = GridPane()
+    gridWith3x3Squares.layoutY = 80
+    gridWith3x3Squares.layoutX = 80
 
 
     val mainScene = Scene(parent = root)
@@ -48,6 +49,41 @@ object Main extends JFXApp3:
 
     val characters: List[Char] = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
 
+    def create9Tiles(): GridPane =
+      val gridWith9Tiles = GridPane()
+
+      for i <- 0 until 3 do
+        for j <- 0 until 3 do
+          val rectangle = new Rectangle:
+            width = 40
+            height = 40
+            fill = Color.LightGrey
+          rectangle.setStroke(Color.Black)
+          rectangle.setStrokeWidth(0.5)
+          // When hovering the color changes to white
+          rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
+          // When the cursor leaves the tile, the color of the tile will be the same as before
+          rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
+          tiles += rectangle
+          gridWith9Tiles.add(rectangle, j + 1, i + 1)
+      gridWith9Tiles.border = Border.stroke(Color.Black)
+      gridWith9Tiles
+
+
+
+
+    def create3x3Squares(row: Int, col: Int) =
+      val amountOfSquaresHorizontal: Int = col / 3
+      val amountOfSquaresVertical: Int = row / 3
+
+      for i <- 0 until amountOfSquaresVertical do  // rows (y)
+        for j <- 0 until amountOfSquaresHorizontal do  // columns (x)
+          gridWith3x3Squares.add(create9Tiles(), j, i)
+          gridWith3x3Squares.border = Border.stroke(Color.Black)
+        end for
+      end for
+      root.children += gridWith3x3Squares
+    /*
     def createGUIBoard(row: Int, col: Int) =
       // Adding tiles to the Sudoku board
       for i <- 0 until row do // is equal to y-coordinate
@@ -112,6 +148,7 @@ object Main extends JFXApp3:
       end for
       root.children += grid
     // row and column of the board
+*/
 
     // Menu
     val menuBar = new MenuBar
@@ -129,8 +166,8 @@ object Main extends JFXApp3:
         if file != null then
           val lines = FileReader.readFile(file.toString) // returns all lines in the given file
           val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
-          createGUIBoard(boardWithSize._2, boardWithSize._3)
-
+          // createGUIBoard(boardWithSize._2, boardWithSize._3)
+          create3x3Squares(boardWithSize._2, boardWithSize._3)
         else
           assert(false)
         end if
