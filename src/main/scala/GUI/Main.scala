@@ -39,6 +39,8 @@ object Main extends JFXApp3:
     grid.layoutY = 80
     grid.layoutX = 80
 
+
+
     val mainScene = Scene(parent = root)
     stage.scene = mainScene
 
