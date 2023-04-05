@@ -47,8 +47,6 @@ object Main extends JFXApp3:
 
     val tiles: Buffer[Rectangle] = Buffer()
 
-    val characters: List[Char] = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
-
     def create9Tiles(): GridPane =
       val gridWith9Tiles = GridPane()
 
@@ -70,6 +68,31 @@ object Main extends JFXApp3:
       gridWith9Tiles
 
 
+    val characters: List[Char] = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
+
+    // Sets coordinates of each tile
+    def setNumAndCharAsPos(row: Int, col: Int) =
+      for i <- 0 until row do // equals y-coordinate
+
+         // Displaying the y-coordinates in the GUI window
+        val colText = new Label:
+          text = " " + (i + 1) + " "
+        colText.layoutX = 60
+        // Starting point plus amount of tiles multiplied by their width
+        colText.layoutY = 95 + i * 41.5
+        root.children += colText
+
+        for j <- 0 until col do // equals x-coordinate
+          if i == 0 then
+            val row = new Label:
+              text = characters(j).toString
+            row.layoutX = 100 + j * 41.5
+            row.layoutY = 60
+            root.children += row
+          end if
+        end for
+      end for
+
 
 
     def create3x3Squares(row: Int, col: Int) =
@@ -79,10 +102,13 @@ object Main extends JFXApp3:
       for i <- 0 until amountOfSquaresVertical do  // rows (y)
         for j <- 0 until amountOfSquaresHorizontal do  // columns (x)
           gridWith3x3Squares.add(create9Tiles(), j, i)
+
           gridWith3x3Squares.border = Border.stroke(Color.Black)
         end for
       end for
       root.children += gridWith3x3Squares
+      setNumAndCharAsPos(row, col)
+
     /*
     def createGUIBoard(row: Int, col: Int) =
       // Adding tiles to the Sudoku board
