@@ -1,6 +1,8 @@
 package GUI
 
 
+import javafx.geometry.{HPos, VPos}
+import javafx.scene.layout.GridPane
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.layout.{Background, Border, Pane, StackPane, TilePane}
@@ -16,6 +18,7 @@ import scala.collection.mutable.Buffer
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.control.{TextInputDialog, ToolBar}
 import javafx.scene.shape.{Circle, Line}
+import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
 import sudoku.FileReader
 
@@ -32,7 +35,9 @@ object Main extends JFXApp3:
       height = 600
 
     val root = Pane()
-
+    val grid = GridPane()
+    grid.layoutY = 80
+    grid.layoutX = 80
 
     val mainScene = Scene(parent = root)
     stage.scene = mainScene
@@ -46,23 +51,22 @@ object Main extends JFXApp3:
       for i <- 0 until row do // is equal to y-coordinate
 
         // Displaying the y-coordinates in the GUI window
-        val colText = new Text:
-          text = (i + 1).toString
-          x = 65
-          y = 100
-        colText.setTranslateY(i * 40)
-        root.children += colText
+        val colText = new Label:
+          text = " " + (i + 1) + " "
+        colText.layoutY = 100
+        grid.add(colText, 0, i + 1)
+        GridPane.setValignment(colText, VPos.CENTER) // Centers the text (y-coordinate)
+        // GridPane.setHalignment(colText, HPos.LEFT)
 
         for j <- 0 until col do // is equal to x-coordinate
 
           // Displaying the x-coordinates in the GUI window
           if i == 0 then
-            val row = new Text:
+            val row = new Label:
               text = characters(j).toString
-              x = 100
-              y = 65
-            row.setTranslateX(j * 40)
-            root.children += row
+            grid.add(row, j + 1, 0)
+
+            GridPane.setHalignment(row, HPos.CENTER) // Align tile row to center
           end if
           val rectangle = new Rectangle:
             x = 80
@@ -72,18 +76,18 @@ object Main extends JFXApp3:
             fill = Color.LightGrey
           rectangle.setStroke(Color.Black)
           rectangle.setStrokeWidth(0.5)
-          rectangle.setTranslateX(j * 40)
-          rectangle.setTranslateY(i * 40)
 
           // When hovering the color changes to white
           rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
           // When the cursor leaves the tile, the color of the tile will be the same as before
           rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
           tiles += rectangle
-          root.children += rectangle
 
+          grid.add(rectangle, j + 1, i + 1)
+          // grid.setHgap(4.0)
+          // grid.setVgap(4.0)
           // Drawing squares 3x3 to the board.
-            if ((i + 1) % 3 == 0) && ((j + 1) % 3 == 0) then
+          /*if ((i + 1) % 3 == 0) && ((j + 1) % 3 == 0) then
               //val line = Line(rectangle.getX, rectangle.getY, col * rectangle.getWidth + rectangle.getX, row * rectangle.getHeight + rectangle.getY)
               val lineOnTop = new Line(rectangle.getX + ((i + 1) - 3) * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight,
                 rectangle.getX + ((i + 1) - 3) * rectangle.getWidth  + 3 * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight)
@@ -101,11 +105,10 @@ object Main extends JFXApp3:
               root.children += lineOnBottom
               root.children += lineOnLeft
               root.children += lineOnRight
-          end if
+          end if*/
         end for
       end for
-      println(root.getWidth)
-      println(root.getHeight)
+      root.children += grid
     // row and column of the board
 
     // Menu
