@@ -15,7 +15,7 @@ import scalafx.scene.text.Text
 import scala.collection.mutable.Buffer
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.control.{TextInputDialog, ToolBar}
-import javafx.scene.shape.Circle
+import javafx.scene.shape.{Circle, Line}
 import javafx.stage.FileChooser
 import sudoku.FileReader
 
@@ -71,17 +71,41 @@ object Main extends JFXApp3:
             height = 40
             fill = Color.LightGrey
           rectangle.setStroke(Color.Black)
+          rectangle.setStrokeWidth(0.5)
           rectangle.setTranslateX(j * 40)
           rectangle.setTranslateY(i * 40)
+
           // When hovering the color changes to white
           rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
           // When the cursor leaves the tile, the color of the tile will be the same as before
           rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
           tiles += rectangle
           root.children += rectangle
+
+          // Drawing squares 3x3 to the board.
+            if ((i + 1) % 3 == 0) && ((j + 1) % 3 == 0) then
+              //val line = Line(rectangle.getX, rectangle.getY, col * rectangle.getWidth + rectangle.getX, row * rectangle.getHeight + rectangle.getY)
+              val lineOnTop = new Line(rectangle.getX + ((i + 1) - 3) * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight,
+                rectangle.getX + ((i + 1) - 3) * rectangle.getWidth  + 3 * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight)
+              lineOnTop.setStrokeWidth(4.0)
+              val lineOnBottom = new Line(rectangle.getX + ((i + 1) - 3) * rectangle.getWidth, rectangle.getY + (j + 1) * rectangle.getHeight,
+                rectangle.getX + ((i + 1) - 3) * rectangle.getWidth  + 3 * rectangle.getWidth, rectangle.getY + (j + 1) * rectangle.getHeight)
+              lineOnBottom.setStrokeWidth(4.0)
+              val lineOnLeft = new Line(rectangle.getX + ((i + 1) - 3) * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight,
+                rectangle.getX + ((i + 1) - 3) * rectangle.getWidth, rectangle.getY + (j + 1) * rectangle.getHeight)
+              lineOnLeft.setStrokeWidth(4.0)
+              val lineOnRight = new Line(rectangle.getX + ((i + 1) - 3) * rectangle.getWidth  + 3 * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight,
+                rectangle.getX + ((i + 1) - 3) * rectangle.getWidth  + 3 * rectangle.getWidth, rectangle.getY + (j + 1) * rectangle.getHeight)
+              lineOnRight.setStrokeWidth(4.0)
+              root.children += lineOnTop
+              root.children += lineOnBottom
+              root.children += lineOnLeft
+              root.children += lineOnRight
+          end if
         end for
       end for
-
+      println(root.getWidth)
+      println(root.getHeight)
     // row and column of the board
 
     // Menu
