@@ -7,6 +7,9 @@ class Subarea(targetSum: Int, tiles: Vector[Tile], tileWithTargetSum: Tile):
   var neighbors: Vector[Subarea] = Vector()
   var color: Option[Color] = None
 
+  
+  def showTiles(): Vector[Tile] = tiles
+
   def showPossibleCombinations(): List[String] =
     // var combinations: Buffer[String] = Buffer()
     ???

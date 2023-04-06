@@ -2,6 +2,7 @@ package GUI
 
 
 import javafx.geometry.{HPos, VPos}
+import javafx.scene.control.{ListView, TextField}
 import javafx.scene.layout.GridPane
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
@@ -14,7 +15,8 @@ import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
 import scalafx.geometry.Insets
-
+import scalafx.scene.Group
+import scalafx.scene.layout.Region
 
 import scala.collection.mutable.Buffer
 import scalafx.scene.image.{Image, ImageView}
@@ -22,8 +24,9 @@ import scalafx.scene.control.{TextInputDialog, ToolBar}
 import javafx.scene.shape.{Circle, Line}
 import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
-import sudoku.FileReader
+import sudoku.*
 
+import java.awt.TextArea
 import java.io.FileInputStream
 
 
@@ -65,12 +68,13 @@ object Main extends JFXApp3:
           // When the cursor leaves the tile, the color of the tile will be the same as before
           rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
           tiles += rectangle
+
           gridWith9Tiles.add(rectangle, j + 1, i + 1)
       gridWith9Tiles.border = Border.stroke(Color.Black)
       gridWith9Tiles
 
 
-    val characters: List[Char] = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
+    val characters: List[Char] = ('a' to 'z').toList
 
     // Sets coordinates of each tile
     def setNumAndCharAsPos(row: Int, col: Int) =
@@ -111,72 +115,30 @@ object Main extends JFXApp3:
       root.children += gridWith3x3Squares
       setNumAndCharAsPos(row, col)
 
-    /*
-    def createGUIBoard(row: Int, col: Int) =
-      // Adding tiles to the Sudoku board
-      for i <- 0 until row do // is equal to y-coordinate
+    def createSubAreas(board: Puzzleboard) =
+      val subareas: Vector[Subarea] = board.showSubareas()
+      val tilesInBoard: Vector[Tile] = board.showTiles()
 
-        // Displaying the y-coordinates in the GUI window
-        val colText = new Label:
-          text = " " + (i + 1) + " "
-        colText.layoutY = 100
-        grid.add(colText, 0, i + 1)
-        GridPane.setValignment(colText, VPos.CENTER) // Centers the text (y-coordinate)
-        // GridPane.setHalignment(colText, HPos.LEFT)
+      for i <- subareas.indices do
+        val indexesOfTilesInSubarea = Buffer[Int]()
+        val currentSubarea = subareas(i)
+        val tilesInSubarea: Vector[Tile] = currentSubarea.showTiles()
 
-        for j <- 0 until col do // is equal to x-coordinate
-
-          // Displaying the x-coordinates in the GUI window
-          if i == 0 then
-            val row = new Label:
-              text = characters(j).toString
-            grid.add(row, j + 1, 0)
-
-            GridPane.setHalignment(row, HPos.CENTER) // Align tile row to center
-          end if
-          val rectangle = new Rectangle:
-            x = 80
-            y = 80
-            width = 40
-            height = 40
-            fill = Color.LightGrey
-          rectangle.setStroke(Color.Black)
-          rectangle.setStrokeWidth(0.5)
-
-          // When hovering the color changes to white
-          rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
-          // When the cursor leaves the tile, the color of the tile will be the same as before
-          rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
-          tiles += rectangle
-
-          grid.add(rectangle, j + 1, i + 1)
-          // grid.setHgap(4.0)
-          // grid.setVgap(4.0)
-          // Drawing squares 3x3 to the board.
-          /*if ((i + 1) % 3 == 0) && ((j + 1) % 3 == 0) then
-              //val line = Line(rectangle.getX, rectangle.getY, col * rectangle.getWidth + rectangle.getX, row * rectangle.getHeight + rectangle.getY)
-              val lineOnTop = new Line(rectangle.getX + ((i + 1) - 3) * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight,
-                rectangle.getX + ((i + 1) - 3) * rectangle.getWidth  + 3 * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight)
-              lineOnTop.setStrokeWidth(4.0)
-              val lineOnBottom = new Line(rectangle.getX + ((i + 1) - 3) * rectangle.getWidth, rectangle.getY + (j + 1) * rectangle.getHeight,
-                rectangle.getX + ((i + 1) - 3) * rectangle.getWidth  + 3 * rectangle.getWidth, rectangle.getY + (j + 1) * rectangle.getHeight)
-              lineOnBottom.setStrokeWidth(4.0)
-              val lineOnLeft = new Line(rectangle.getX + ((i + 1) - 3) * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight,
-                rectangle.getX + ((i + 1) - 3) * rectangle.getWidth, rectangle.getY + (j + 1) * rectangle.getHeight)
-              lineOnLeft.setStrokeWidth(4.0)
-              val lineOnRight = new Line(rectangle.getX + ((i + 1) - 3) * rectangle.getWidth  + 3 * rectangle.getWidth, rectangle.getY + ((j + 1) - 3) * rectangle.getHeight,
-                rectangle.getX + ((i + 1) - 3) * rectangle.getWidth  + 3 * rectangle.getWidth, rectangle.getY + (j + 1) * rectangle.getHeight)
-              lineOnRight.setStrokeWidth(4.0)
-              root.children += lineOnTop
-              root.children += lineOnBottom
-              root.children += lineOnLeft
-              root.children += lineOnRight
-          end if*/
+        for j <- tilesInSubarea.indices do
+          indexesOfTilesInSubarea += tilesInBoard.indexOf(tilesInSubarea(j))
         end for
+
+        val pane = new Pane()
+/*
+        for j <- indexesOfTilesInSubarea.indices do
+          pane.children += tiles(indexesOfTilesInSubarea(j))
+        end for
+
+        println("" + tiles(indexesOfTilesInSubarea(0)).getX + ", " + tiles(indexesOfTilesInSubarea(0)).getY)
+        pane.children += tiles(indexesOfTilesInSubarea(0))
+        pane.border = Border.stroke(Color.Black)
+        root.children += pane*/
       end for
-      root.children += grid
-    // row and column of the board
-*/
 
     // Menu
     val menuBar = new MenuBar
@@ -194,8 +156,28 @@ object Main extends JFXApp3:
         if file != null then
           val lines = FileReader.readFile(file.toString) // returns all lines in the given file
           val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
-          // createGUIBoard(boardWithSize._2, boardWithSize._3)
           create3x3Squares(boardWithSize._2, boardWithSize._3)
+          val board = boardWithSize._1
+
+          tiles(80).setOnMouseClicked(
+            mouseEvent => {
+              val listView = new ListView[String]()
+              listView.getItems.add("1")
+              listView.getItems.add("2")
+              listView.layoutX = 100
+              listView.layoutY = 100
+              listView.setMaxSize(100, 100)
+              val text = new Text(listView.getSelectionModel.getSelectedItem)
+              // text.append(listView.getSelectionModel.getSelectedItem)
+              // tiles(80).accessibleText = listView.getSelectionModel.getSelectedItem
+              root.children += listView
+              // listView.selectionModel().selectedItemProperty().addListener((_, _, newValue) => {
+              // tiles(80).accessibleText = newValue
+              // })
+            })
+// C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
+
+        // createSubAreas(board)
         else
           assert(false)
         end if
