@@ -13,6 +13,8 @@ import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
+import scalafx.geometry.Insets
+
 
 import scala.collection.mutable.Buffer
 import scalafx.scene.image.{Image, ImageView}
@@ -244,7 +246,7 @@ object Main extends JFXApp3:
 
 
     // Undo step -button
-    val input = new FileInputStream("src/images/left_arrow.PNG")
+    val input = new FileInputStream("src/images/left_arrow_circle_shape.png")
     val image = new Image(input)
     val imageViewUndo = new ImageView(image)
 
@@ -254,6 +256,7 @@ object Main extends JFXApp3:
       undoButton.layoutX = 40
       undoButton.layoutY = 450
       undoButton.setShape(new Circle(70))
+      undoButton.setPadding(Insets.Empty)
     root.children += undoButton
 
     // Redo step -button
@@ -266,6 +269,7 @@ object Main extends JFXApp3:
       redoButton.layoutX = 320
       redoButton.layoutY = 450
       redoButton.setShape(new Circle(70))
+      redoButton.setPadding(Insets.Empty)
     root.children += redoButton
 
 
