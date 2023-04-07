@@ -2,7 +2,7 @@ package GUI
 
 
 import javafx.geometry.{HPos, VPos}
-import javafx.scene.control.{ListView, TextField}
+import javafx.scene.control.{ContextMenu, ListView, TextField}
 import javafx.scene.layout.GridPane
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
@@ -57,19 +57,26 @@ object Main extends JFXApp3:
 
       for i <- 0 until 3 do
         for j <- 0 until 3 do
+          val color = Color.rgb((16 * i + 128) % 255, (32 * i + 128) % 255, (60 * i + 128) % 255)
           val rectangle = new Rectangle:
             width = 40
             height = 40
-            fill = Color.LightGrey
+            fill = color // Color.LightGrey
+          val text = new Text("22")
+          // text.setFont(Font.font("Arial", FontWeight.BOLD, 14))
+          text.setFill(Color.Yellow)
+          text.setX(rectangle.getX() + 10)
+          text.setY(rectangle.getY() + 20)
           rectangle.setStroke(Color.Black)
           rectangle.setStrokeWidth(0.5)
           // When hovering the color changes to white
           rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
           // When the cursor leaves the tile, the color of the tile will be the same as before
-          rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey))
+          rectangle.setOnMouseExited( e => rectangle.setFill(color))
           tiles += rectangle
 
           gridWith9Tiles.add(rectangle, j + 1, i + 1)
+          gridWith9Tiles.add(text, j + 1, i + 1)
       gridWith9Tiles.border = Border.stroke(Color.Black)
       gridWith9Tiles
 
@@ -161,7 +168,7 @@ object Main extends JFXApp3:
 
           tiles(80).setOnMouseClicked(
             mouseEvent => {
-              val listView = new ListView[String]()
+              /*val listView = new ListView[String]()
               listView.getItems.add("1")
               listView.getItems.add("2")
               listView.layoutX = 100
@@ -173,7 +180,14 @@ object Main extends JFXApp3:
               root.children += listView
               // listView.selectionModel().selectedItemProperty().addListener((_, _, newValue) => {
               // tiles(80).accessibleText = newValue
-              // })
+              // })*/
+
+              val popupMenu = new ContextMenu()
+              val one = new MenuItem("1")
+              val two = new MenuItem("2")
+              popupMenu.getItems.add(one)
+              popupMenu.getItems.add(two)
+              // root.children += popupMenu
             })
 // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
