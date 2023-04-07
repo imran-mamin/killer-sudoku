@@ -128,11 +128,28 @@ object FileReader:
     // Set up all tiles in the given subarea.
     tiles = this.updateTiles(tilesInStr, allTiles)
 
+    // Set sum of the subarea to one of the tiles
+    tiles(indexOfSumTile).targetSum = Some(sum.get)
+
     val subarea = new Subarea(sum.get, tiles.toVector, tiles(indexOfSumTile))
     // Subarea(targetSum: Int, tiles: Vector[Tile], tileWithTargetSum: Tile):
     subarea
 
 
+/** This method will add an index of the subarea to every tile, which is
+ * in this subarea. */
+
+  def addSubareaIndexToTiles(puzzleboard: Puzzleboard): Unit =
+    val subareas = puzzleboard.showSubareas()
+
+    for i <- subareas.indices do
+      val tilesInSubarea = subareas(i).showTiles()
+
+      for j <- tilesInSubarea.indices do
+        // Add subarea index to the single tile
+        tilesInSubarea(j).subareaIndex = Some(i)
+      end for
+    end for
 
 
   // TODO: Add more descriptive error messages
@@ -191,6 +208,8 @@ object FileReader:
     end for
 
     val puzzle = new Puzzleboard(tiles.toVector, subareas.toVector)
+    addSubareaIndexToTiles(puzzle)
+
     (puzzle, rowN.get, colN.get)
 
 end FileReader

@@ -57,11 +57,11 @@ object Main extends JFXApp3:
 
       for i <- 0 until 3 do
         for j <- 0 until 3 do
-          val color = Color.rgb((16 * i + 128) % 255, (32 * i + 128) % 255, (60 * i + 128) % 255)
+          // val color = Color.rgb((16 * i + 128) % 255, (32 * i + 128) % 255, (60 * i + 128) % 255)
           val rectangle = new Rectangle:
             width = 40
             height = 40
-            fill = color // Color.LightGrey
+            // fill = color // Color.LightGrey
           val text = new Text("22")
           // text.setFont(Font.font("Arial", FontWeight.BOLD, 14))
           text.setFill(Color.Yellow)
@@ -69,10 +69,11 @@ object Main extends JFXApp3:
           text.setY(rectangle.getY() + 20)
           rectangle.setStroke(Color.Black)
           rectangle.setStrokeWidth(0.5)
+         /*
           // When hovering the color changes to white
           rectangle.setOnMouseEntered( e => rectangle.setFill(Color.White))
           // When the cursor leaves the tile, the color of the tile will be the same as before
-          rectangle.setOnMouseExited( e => rectangle.setFill(color))
+          rectangle.setOnMouseExited( e => rectangle.setFill(Color.LightGrey)) */
           tiles += rectangle
 
           gridWith9Tiles.add(rectangle, j + 1, i + 1)
@@ -122,11 +123,19 @@ object Main extends JFXApp3:
       root.children += gridWith3x3Squares
       setNumAndCharAsPos(row, col)
 
+
+
     def createSubAreas(board: Puzzleboard) =
       val subareas: Vector[Subarea] = board.showSubareas()
       val tilesInBoard: Vector[Tile] = board.showTiles()
+      val colors: Buffer[Color] = Buffer()
 
+      // Creating the same amount of colors as subareas
       for i <- subareas.indices do
+        colors += Color.rgb((16 * i + 128) % 255, (32 * i + 128) % 255, (60 * i + 128) % 255)
+
+
+        /*
         val indexesOfTilesInSubarea = Buffer[Int]()
         val currentSubarea = subareas(i)
         val tilesInSubarea: Vector[Tile] = currentSubarea.showTiles()
@@ -136,7 +145,7 @@ object Main extends JFXApp3:
         end for
 
         val pane = new Pane()
-/*
+
         for j <- indexesOfTilesInSubarea.indices do
           pane.children += tiles(indexesOfTilesInSubarea(j))
         end for
@@ -146,6 +155,23 @@ object Main extends JFXApp3:
         pane.border = Border.stroke(Color.Black)
         root.children += pane*/
       end for
+
+      println(colors)
+
+      assert(tiles.length == tilesInBoard.length)
+      // Add color to every tile
+      for j <- tiles.indices do
+        try
+          val subIndex: Int = tilesInBoard(j).subareaIndex.get
+          tiles(j).fill = colors(subIndex)
+          // When hovering the color changes to white
+          tiles(j).setOnMouseEntered( e => tiles(j).setFill(Color.White))
+          // When the cursor leaves the tile, the color of the tile will be the same as before
+          tiles(j).setOnMouseExited( e => tiles(j).setFill(colors(subIndex)))
+        catch
+          case e => throw e
+      end for
+
 
     // Menu
     val menuBar = new MenuBar
@@ -166,6 +192,9 @@ object Main extends JFXApp3:
           create3x3Squares(boardWithSize._2, boardWithSize._3)
           val board = boardWithSize._1
 
+
+
+        /*
           tiles(80).setOnMouseClicked(
             mouseEvent => {
               /*val listView = new ListView[String]()
@@ -188,16 +217,17 @@ object Main extends JFXApp3:
               popupMenu.getItems.add(one)
               popupMenu.getItems.add(two)
               // root.children += popupMenu
-            })
+            }) */
+
 // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
-        // createSubAreas(board)
+          createSubAreas(board)
         else
           assert(false)
         end if
 
       catch
-        case e => e
+        case e => throw e
 
 
 
