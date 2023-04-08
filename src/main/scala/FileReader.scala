@@ -166,7 +166,6 @@ object FileReader:
     var rowN: Option[Int] = Some(9)
     var colN: Option[Int] = Some(9)
 
-    println(s"row: ${rowNString} column: ${colNString}")
     if rowNString.isDefined then
       rowN = rowNString.get.replaceAll(" ", "").split(":").last.toIntOption
 
@@ -180,7 +179,6 @@ object FileReader:
     assert(colN.get % 3 == 0)
     assert(colN.get != 0)
 
-    println(s"column: ${colN} row: ${rowN}")
 
     val tiles: Buffer[Tile] = initializeTiles(colN.get, rowN.get)
 

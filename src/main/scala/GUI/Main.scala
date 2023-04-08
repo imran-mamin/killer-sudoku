@@ -179,7 +179,7 @@ object Main extends JFXApp3:
 
       // Creating the same amount of colors as subareas
       for i <- subareas.indices do
-        colors += Color.rgb((16 * i + 128) % 255, (32 * i + 128) % 255, (60 * i + 128) % 255)
+        colors += Color.rgb((16 * i + 128) % 255, (64 * i + 128) % 255, (128 * i + 128) % 255)
       end for
 
       assert(tiles.length == tilesInBoard.length)
@@ -202,13 +202,14 @@ object Main extends JFXApp3:
           tiles(j).setOnMouseExited( e => tiles(j).setFill(colors(subIndex)))
 
           // Checks if current tile has a target sum of the sub-area.
-          if tilesInBoard(j).targetSum.isDefined then
+          if tilesInBoard(convertIndex(j)).targetSum.isDefined then
 
-            val text = new Text(tilesInBoard(j).targetSum.get.toString)
+            val text = new Text(tilesInBoard(convertIndex(j)).targetSum.get.toString)
             // text.setFont(Font.font("Arial", FontWeight.BOLD, 14))
-            text.setFill(Color.Yellow)
-            text.setX(tiles(j).getX() + 10)
-            text.setY(tiles(j).getY() + 20)
+            text.setFill(Color.Black)
+            text.setX(tilesInBoard(convertIndex(j)).xCoord + 10)
+            text.setY(tilesInBoard(convertIndex(j)).yCoord + 20)
+            root.children += text
 
           end if
         catch
