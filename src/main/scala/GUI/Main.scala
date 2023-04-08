@@ -68,7 +68,6 @@ object Main extends JFXApp3:
           rectangle.setStroke(Color.Black)
           rectangle.setStrokeWidth(0.5)
           tiles += rectangle
-
           gridWith9Tiles.add(rectangle, j + 1, i + 1)
           // gridWith9Tiles.add(text, j + 1, i + 1)
       gridWith9Tiles.border = Border.stroke(Color.Black)
@@ -129,14 +128,24 @@ object Main extends JFXApp3:
         for j <- 0 until col do
           boardTiles((i * col) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles(0).getWidth
           boardTiles((i * col) + j).yCoord = gridWith3x3Squares.getLayoutY + i * tiles(0).getHeight
+          boardTiles((i * col) + j).edgeSize = tiles(0).getWidth
         end for
       end for
 
 
-    def rearrangeTilesAsInBackEnd() =
-      val amountOfSquares3x3 = tiles.length / 9
-      val orderedTiles = Array.fill(tiles.length)
+    def rearrangeTilesAsInBackEnd(row: Int, col: Int) =
+      var orderedTiles = Array.fill(tiles.length)
+      val amountOfSquaresHorizontal: Int = col / 3
+      val amountOfSquaresVertical: Int = row / 3
 
+      val squares: Buffer[Buffer[Rectangle]] = tiles.grouped(9).toBuffer
+
+      for i <- squares.indices do
+        for j <- squares(i).indices do
+          val currentSquare = squares(i)
+          currentSquare(j)
+        end for
+      end for
       ???
 
     def create3x3Squares(row: Int, col: Int, board: Puzzleboard) =
@@ -146,25 +155,27 @@ object Main extends JFXApp3:
       for i <- 0 until amountOfSquaresVertical do  // rows (y)
         for j <- 0 until amountOfSquaresHorizontal do  // columns (x)
           gridWith3x3Squares.add(create9Tiles(), j, i)
-          // initializeTilesCoordinates(i, j, board, amountOfSquaresHorizontal, amountOfSquaresVertical)
-
           gridWith3x3Squares.border = Border.stroke(Color.Black)
         end for
       end for
       setCoordinates(board, row, col)
 
       // This method will rearrange tiles, so that the order of them will be the same as in back-end
-      // rearrangeTilesAsInBackEnd()
-      board.showTiles().foreach( tile => println("xCoord: " + tile.xCoord + " yCoord: " + tile.yCoord) )
+      // rearrangeTilesAsInBackEnd(row: Int, col: Int)
+      // board.showTiles().foreach( tile => println("xCoord: " + tile.xCoord + " yCoord: " + tile.yCoord) )
       root.children += gridWith3x3Squares
       setNumAndCharAsPos(row, col)
 
+    def tileHandler(j: Int) =
+      tiles(j).setFill(Color.White)
 
-
-    def createSubAreas(board: Puzzleboard) =
+    def createSubAreas(board: Puzzleboard, row: Int, col: Int) =
       val subareas: Vector[Subarea] = board.showSubareas()
       val tilesInBoard: Vector[Tile] = board.showTiles()
       val colors: Buffer[Color] = Buffer()
+      val amountOfSquaresHorizontal: Int = col / 3
+      val amountOfSquaresVertical: Int = row / 3
+
 
       // Creating the same amount of colors as subareas
       for i <- subareas.indices do
@@ -173,13 +184,20 @@ object Main extends JFXApp3:
 
       assert(tiles.length == tilesInBoard.length)
 
+      def convertIndex(i: Int): Int =
+        val m = (i / 9) / amountOfSquaresHorizontal
+        val n = (i / 9) % amountOfSquaresHorizontal
+        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
+        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
+
       // Add color to every tile
       for j <- tiles.indices do
         try
-          val subIndex: Int = tilesInBoard(j).subareaIndex.get
+          val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
           tiles(j).fill = colors(subIndex)
           // When hovering the color changes to white
-          tiles(j).setOnMouseEntered( e => tiles(j).setFill(Color.White))
+          tiles(j).setOnMouseEntered( e =>
+            tileHandler(j))
           // When the cursor leaves the tile, the color of the tile will be the same as before
           tiles(j).setOnMouseExited( e => tiles(j).setFill(colors(subIndex)))
 
@@ -214,10 +232,11 @@ object Main extends JFXApp3:
         if file != null then
           val lines = FileReader.readFile(file.toString) // returns all lines in the given file
           val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
-          create3x3Squares(boardWithSize._2, boardWithSize._3, boardWithSize._1)
           val board = boardWithSize._1
+          create3x3Squares(boardWithSize._2, boardWithSize._3, board)
 
 
+          createSubAreas(board, boardWithSize._2, boardWithSize._3)
 
         /*
           tiles(80).setOnMouseClicked(
@@ -246,7 +265,6 @@ object Main extends JFXApp3:
 
 // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
-          createSubAreas(board)
         else
           assert(false)
         end if

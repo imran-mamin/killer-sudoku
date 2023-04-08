@@ -166,11 +166,12 @@ object FileReader:
     var rowN: Option[Int] = Some(9)
     var colN: Option[Int] = Some(9)
 
+    println(s"row: ${rowNString} column: ${colNString}")
     if rowNString.isDefined then
-      rowN = rowNString.get.replaceAll(" ", "").split(":")(1).toIntOption
+      rowN = rowNString.get.replaceAll(" ", "").split(":").last.toIntOption
 
     if colNString.isDefined then
-      colN = rowNString.get.replaceAll(" ", "").split(":")(1).toIntOption
+      colN = colNString.get.replaceAll(" ", "").split(":").last.toIntOption
 
     assert(rowN.nonEmpty)
     assert(colN.nonEmpty)
@@ -179,6 +180,7 @@ object FileReader:
     assert(colN.get % 3 == 0)
     assert(colN.get != 0)
 
+    println(s"column: ${colN} row: ${rowN}")
 
     val tiles: Buffer[Tile] = initializeTiles(colN.get, rowN.get)
 

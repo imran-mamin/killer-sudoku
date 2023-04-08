@@ -12,6 +12,7 @@ class Tile(column: Int, row: Int, square: Int):
   // Coordinates of the tile in the gui
   var xCoord: Double = 0
   var yCoord: Double = 0
+  var edgeSize: Double = 0
   // These could be redundant TODO: Check variables below.
   var color: Option[Color] = None
   var targetSum: Option[Int] = None
