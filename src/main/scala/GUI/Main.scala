@@ -2,7 +2,8 @@ package GUI
 
 
 import javafx.geometry.{HPos, VPos}
-import javafx.scene.control.{ContextMenu, ListView, TextField}
+import javafx.scene.control
+import javafx.scene.control.{ChoiceDialog, ContextMenu, ListView, MenuButton, TextField}
 import javafx.scene.layout.GridPane
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
@@ -52,6 +53,7 @@ object Main extends JFXApp3:
 
     val tiles: Buffer[Rectangle] = Buffer()
 
+    // TODO: Fix subarea sum placement to count border with.
     def create9Tiles(): GridPane =
       val gridWith9Tiles = GridPane()
 
@@ -99,27 +101,8 @@ object Main extends JFXApp3:
         end for
       end for
 
-/*
-    def initializeTilesCoordinates(i: Int, j: Int, board: Puzzleboard, squaresHorizontal: Int, squaresVertical: Int): Unit =
-      val startIndex = i * squaresHorizontal * 9 + j * 9
-      val boardTiles = board.showTiles()
-      var multiplier = 0
-      println(tiles.length)
-      for k <- startIndex until tiles.length do
-        // Set coordinate of top left corner of the tile
 
-        // Multiplied by three because one square 3x3 has three tiles in a row.
-        val squareX = gridWith3x3Squares.getLayoutX + j * 3 * tiles(0).getWidth
-        val squareY = gridWith3x3Squares.getLayoutY + i * 3 * tiles(0).getHeight
-        val tile = k % 3
-/*
-        boardTiles(k).xCoord = tile * tiles(0).getWidth + squareX
-        boardTiles(k).yCoord = multiplier * tiles(0).getHeight + squareY
-        if tile == 0 then
-          multiplier += 1*/
-        println(s"SquareX: ${squareX}, SquareY: ${squareY}")
-      end for
-*/
+
 
     def setCoordinates(board: Puzzleboard, row: Int, col: Int) =
       val boardTiles = board.showTiles()
@@ -129,24 +112,11 @@ object Main extends JFXApp3:
           boardTiles((i * col) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles(0).getWidth
           boardTiles((i * col) + j).yCoord = gridWith3x3Squares.getLayoutY + i * tiles(0).getHeight
           boardTiles((i * col) + j).edgeSize = tiles(0).getWidth
+
         end for
       end for
 
 
-    def rearrangeTilesAsInBackEnd(row: Int, col: Int) =
-      var orderedTiles = Array.fill(tiles.length)
-      val amountOfSquaresHorizontal: Int = col / 3
-      val amountOfSquaresVertical: Int = row / 3
-
-      val squares: Buffer[Buffer[Rectangle]] = tiles.grouped(9).toBuffer
-
-      for i <- squares.indices do
-        for j <- squares(i).indices do
-          val currentSquare = squares(i)
-          currentSquare(j)
-        end for
-      end for
-      ???
 
     def create3x3Squares(row: Int, col: Int, board: Puzzleboard) =
       val amountOfSquaresHorizontal: Int = col / 3
@@ -166,8 +136,56 @@ object Main extends JFXApp3:
       root.children += gridWith3x3Squares
       setNumAndCharAsPos(row, col)
 
+
+
+    val allListViews: Buffer[ListView[String]] = Buffer()
+
+
+    def initializeListViews(board: Puzzleboard, row: Int, col: Int): Unit =
+      val amountOfSquaresHorizontal: Int = col / 3
+      val amountOfSquaresVertical: Int = row / 3
+
+      // This method converts index of UI into the index in back-end.
+      def convertIndex(i: Int): Int =
+        val m = (i / 9) / amountOfSquaresHorizontal
+        val n = (i / 9) % amountOfSquaresHorizontal
+        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
+        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
+
+
+      for j <- tiles.indices do
+        val currentListView = new ListView[String]()
+        currentListView.setMaxSize(100, 100)
+        currentListView.visible = false
+        allListViews += currentListView
+        // val stack = new StackPane(currentListView, tiles(j))
+        root.children += currentListView
+        currentListView.getItems.add("1")
+        currentListView.getItems.add("2")
+
+        val boardTiles = board.showTiles()
+        val xCoord = boardTiles(convertIndex(j)).xCoord
+        val yCoord = boardTiles(convertIndex(j)).yCoord
+        println(s"xCoord: ${xCoord}, yCoord: ${yCoord}")
+        currentListView.layoutX = xCoord
+        currentListView.layoutY = yCoord + 100
+      end for
+
+
+
+    def openListView(j: Int) =
+      val listView = allListViews(j)
+
+      // val text = new Text(listView.getSelectionModel.getSelectedItem)
+      // text.append(listView.getSelectionModel.getSelectedItem)
+      // tiles(80).accessibleText = listView.getSelectionModel.getSelectedItem
+      listView.visible = true
+
+
     def tileHandler(j: Int) =
       tiles(j).setFill(Color.White)
+
+
 
     def createSubAreas(board: Puzzleboard, row: Int, col: Int) =
       val subareas: Vector[Subarea] = board.showSubareas()
@@ -190,16 +208,18 @@ object Main extends JFXApp3:
         val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
         ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
 
+
+      def cursorOut(j: Int) =
+        val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
+        tiles(j).setFill(colors(subIndex))
+
+        allListViews(j).visible = false
+
       // Add color to every tile
       for j <- tiles.indices do
         try
           val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
           tiles(j).fill = colors(subIndex)
-          // When hovering the color changes to white
-          tiles(j).setOnMouseEntered( e =>
-            tileHandler(j))
-          // When the cursor leaves the tile, the color of the tile will be the same as before
-          tiles(j).setOnMouseExited( e => tiles(j).setFill(colors(subIndex)))
 
           // Checks if current tile has a target sum of the sub-area.
           if tilesInBoard(convertIndex(j)).targetSum.isDefined then
@@ -212,6 +232,18 @@ object Main extends JFXApp3:
             root.children += text
 
           end if
+
+          // When hovering the color changes to white
+          tiles(j).setOnMouseEntered( e =>
+            tileHandler(j))
+          // When the cursor leaves the tile, the color of the tile will be the same as before
+          tiles(j).setOnMouseExited( e =>
+            cursorOut(j))
+
+          // When the user clicks on the tile, then the program should display a drop down menu of possible candidates
+          tiles(j).setOnMouseClicked( e =>
+            openListView(j) )
+
         catch
           case e => throw e
       end for
@@ -235,34 +267,10 @@ object Main extends JFXApp3:
           val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
           val board = boardWithSize._1
           create3x3Squares(boardWithSize._2, boardWithSize._3, board)
-
+          initializeListViews(board, boardWithSize._2, boardWithSize._3)
 
           createSubAreas(board, boardWithSize._2, boardWithSize._3)
 
-        /*
-          tiles(80).setOnMouseClicked(
-            mouseEvent => {
-              /*val listView = new ListView[String]()
-              listView.getItems.add("1")
-              listView.getItems.add("2")
-              listView.layoutX = 100
-              listView.layoutY = 100
-              listView.setMaxSize(100, 100)
-              val text = new Text(listView.getSelectionModel.getSelectedItem)
-              // text.append(listView.getSelectionModel.getSelectedItem)
-              // tiles(80).accessibleText = listView.getSelectionModel.getSelectedItem
-              root.children += listView
-              // listView.selectionModel().selectedItemProperty().addListener((_, _, newValue) => {
-              // tiles(80).accessibleText = newValue
-              // })*/
-
-              val popupMenu = new ContextMenu()
-              val one = new MenuItem("1")
-              val two = new MenuItem("2")
-              popupMenu.getItems.add(one)
-              popupMenu.getItems.add(two)
-              // root.children += popupMenu
-            }) */
 
 // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
@@ -314,7 +322,7 @@ object Main extends JFXApp3:
      root.children += startAgainButton
 
 
-
+/*
     // Undo step -button
     val input = new FileInputStream("src/images/left_arrow_circle_shape.png")
     val image = new Image(input)
@@ -342,6 +350,7 @@ object Main extends JFXApp3:
       redoButton.setPadding(Insets.Empty)
     root.children += redoButton
 
+*/
 
     // Possible combinations of the tiles in subarea
     val toolbar = new ToolBar {
