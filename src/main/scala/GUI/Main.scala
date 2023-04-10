@@ -194,6 +194,9 @@ object Main extends JFXApp3:
     def placeCandidate(j: Int, row: Int, col: Int, board: Puzzleboard, candidate: String) =
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
+      println(candidate)
+
+      texts(j).setText("")
       val candidateNum = candidate.toIntOption
 
       def convertIndex(i: Int): Int =
@@ -231,9 +234,10 @@ object Main extends JFXApp3:
       listView.toFront()
       // val text = new Text(listView.getSelectionModel.getSelectedItem)
       // text.append(listView.getSelectionModel.getSelectedItem)
-      listView.getItems.remove(0, listView.getItems.length - 1)
+      listView.getItems.remove(0, listView.getItems.length)
       val candidates = board.getCandidates(convertIndex(j))
 
+      listView.getItems.add("")
 
       for k <- candidates.indices do
           listView.getItems.add(candidates(k).toString)
@@ -244,8 +248,8 @@ object Main extends JFXApp3:
       // val choice: String = listView.getSelectionModel.getSelectedItem
       listView.getSelectionModel.selectedItemProperty().addListener( e =>
         val candidate: String = listView.getSelectionModel.selectedItemProperty().get()
-        texts(j).setText("")
-        placeCandidate(j, row, col, board, candidate) )
+        if candidate != null then
+          placeCandidate(j, row, col, board, candidate) )
 
 
 
