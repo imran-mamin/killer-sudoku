@@ -14,7 +14,8 @@ class Subarea(targetSum: Int, tiles: Vector[Tile], tileWithTargetSum: Tile):
     // var combinations: Buffer[String] = Buffer()
     ???
 
-
+  def getTargetSum(): Int = targetSum
+  
   // These may be redundant TODO: Check this out later, when implementing graph-coloring
   val preSubarea: Buffer[Subarea] = Buffer()
   val postSubarea: Buffer[Subarea] = Buffer()

@@ -98,15 +98,45 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     candidates
 
 
+  def subareaCandidates(index: Int): Buffer[Int] =
+    try
+      val subareaIndex: Int = allTiles(index).subareaIndex.get
+      var remaining = subareas(subareaIndex).getTargetSum()
+      val tilesInSubarea: Vector[Tile] = subareas(subareaIndex).showTiles()
+      var tilesWithoutNum: Int = 0
+      var candidates = Buffer[Int]()
+
+
+      for i <- tilesInSubarea.indices do
+        if tilesInSubarea(i).currentNumber.isDefined then
+          remaining -= tilesInSubarea(i).currentNumber.get
+        else
+          tilesWithoutNum += 1
+      end for
+
+      if tilesWithoutNum == 1 then
+        candidates += remaining
+      else
+        if (tilesInSubarea.length == 2) && (remaining % 2 == 0) then
+          val impossibleNum = remaining / 2 // For example 4 + 4 = 8, but it's not possible on sudoku board
+          candidates = (1 until remaining).toBuffer
+          candidates -= impossibleNum
+        else
+          candidates = (1 until remaining).toBuffer
+      candidates
+    catch
+      case e => throw e
 
 
   def getCandidates(index: Int): Buffer[Int] =
-    val candidatesAfterRowFilter    = this.rowCandidates(index)
-    val candidatesAfterColumnFilter = this.colCandidates(index)
-    val candidatesAfterSquareFilter = this.squareCandidates(index)
+    val candidatesRow   = this.rowCandidates(index)
+    val candidatesCol = this.colCandidates(index)
+    val candidatesSqr = this.squareCandidates(index)
+    val candidatesSba = this.subareaCandidates(index)
 
-    val intersectionOfRowAndColCandidates = candidatesAfterRowFilter.intersect(candidatesAfterColumnFilter)
-    val intersectionOfRowColAndSquareCandidates = intersectionOfRowAndColCandidates.intersect(candidatesAfterSquareFilter)
-    intersectionOfRowColAndSquareCandidates
-      
+    var intersection = candidatesRow.intersect(candidatesCol)
+    intersection = intersection.intersect(candidatesSqr)
+    intersection = intersection.intersect(candidatesSba)
+    intersection
+
 end Puzzleboard
