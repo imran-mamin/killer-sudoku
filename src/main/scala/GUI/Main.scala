@@ -4,7 +4,7 @@ package GUI
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.geometry.{HPos, VPos}
 import javafx.scene.control
-import javafx.scene.control.{ChoiceDialog, ContextMenu, ListView, MenuButton, TextField, Alert}
+import javafx.scene.control.{Alert, ButtonType, ChoiceDialog, ContextMenu, ListView, MenuButton, TextField}
 import javafx.scene.control.Alert.AlertType
 import javafx.scene.layout.GridPane
 import scalafx.application.JFXApp3
@@ -49,6 +49,8 @@ object Main extends JFXApp3:
     gridWith3x3Squares.layoutY = 80
     gridWith3x3Squares.layoutX = 80
 
+
+    var puzzleboard: Option[Puzzleboard] = None
 
     val mainScene = Scene(parent = root)
     stage.scene = mainScene
@@ -343,10 +345,9 @@ object Main extends JFXApp3:
           val lines = FileReader.readFile(file.toString) // returns all lines in the given file
           val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
           val board = boardWithSize._1
+          puzzleboard = Some(board)
           create3x3Squares(boardWithSize._2, boardWithSize._3, board)
           initializeListViews(board, boardWithSize._2, boardWithSize._3)
-          // TODO: Should also create update ListViews
-
           createSubAreas(board, boardWithSize._2, boardWithSize._3)
 
 
@@ -394,15 +395,39 @@ object Main extends JFXApp3:
 
 
 
+    def showAlertStartAgain() =
+      val alert = new Alert(AlertType.CONFIRMATION)
+      alert.setTitle("Confirmation")
+      alert.setHeaderText(null)
+      alert.setContentText("Are you sure you want to start over?")
+
+      val yesButtonType = ButtonType.YES
+      val noButtonType = ButtonType.NO
+      alert.getButtonTypes.setAll(yesButtonType, noButtonType)
+
+      val result = alert.showAndWait()
+
+      def deleteText() =
+        texts.foreach( text => text.setText("") )
+
+      result.ifPresent( e =>
+          if (e.getText == "Yes") && (puzzleboard.isDefined) then
+            puzzleboard.get.showTiles().foreach( tile => tile.currentNumber = None )
+            deleteText()
+            println("Yes button is clicked")
+          else
+            println("No button clicked or dialog closed") )
+
     // Start Again -button
     val startAgainButton = Button("Start Again")
-     startAgainButton.onAction = (event) => println("Clicked Start again -button")
+     startAgainButton.onAction = (event) => showAlertStartAgain()
      startAgainButton.layoutX = 450
      startAgainButton.layoutY = 0
      startAgainButton.setMinSize(80, 35)
      startAgainButton.border = Border.stroke(2)
 
      root.children += startAgainButton
+
 
 
 /*
