@@ -80,6 +80,29 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(board.showTiles().forall( tile => tile.getSquare == 0 ))
   }
 
+  "rowCandidates()-method" should "return all possible candidates so that" +
+    "there will be no two same digits in the same row" in {
+    val row0 = Vector(new Tile(0, 0, 1), new Tile(1, 0, 1), new Tile(2, 0, 1))
+    val row1 = Vector(new Tile(0, 1, 1), new Tile(1, 1, 1), new Tile(2, 1, 1))
+    val row2 = Vector(new Tile(0, 2, 1), new Tile(1, 2, 1), new Tile(2, 2, 1))
+    // Subarea(targetSum: Int, tiles: Vector[Tile], tileWithTargetSum: Tile)
+    val subarea0 = new Subarea(6, row0, row0(0))
+    val subarea1 = new Subarea(8, row1, row1(1))
+    val subarea2 = new Subarea(11, row2, row2(2))
 
+    val board = new Puzzleboard(row0 ++ row1 ++ row2, Vector(subarea0, subarea1, subarea2))
+
+    row0(0).currentNumber = Some(1)
+    assert(board.getCandidates(1) == (2 to 9).toBuffer)
+    row0(1).currentNumber = Some(2)
+    assert(board.getCandidates(2) == (3 to 9).toBuffer)
+ 
+  }
+/*
+  "colCandidates()-method" should "return all possible candidates so that" +
+    "there will be no two same digits in the same column." in {
+    
+  }
+  */
 end TestGame
 

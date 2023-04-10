@@ -164,7 +164,7 @@ object Main extends JFXApp3:
         root.children += currentListView
 
         currentListView.getItems.add("")
-        val candidates = boardTiles(convertIndex(j)).candidates
+        val candidates = board.getCandidates(convertIndex(j)) // boardTiles(convertIndex(j)).candidates
         for k <- candidates.indices do
           currentListView.getItems.add(candidates(k).toString)
         end for
@@ -218,10 +218,26 @@ object Main extends JFXApp3:
 
 
     def openListView(j: Int, row: Int, col: Int, board: Puzzleboard) =
+      val amountOfSquaresHorizontal: Int = col / 3
+      val amountOfSquaresVertical: Int = row / 3
+
+      def convertIndex(i: Int): Int =
+        val m = (i / 9) / amountOfSquaresHorizontal
+        val n = (i / 9) % amountOfSquaresHorizontal
+        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
+        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
+
       val listView = allListViews(j)
       listView.toFront()
       // val text = new Text(listView.getSelectionModel.getSelectedItem)
       // text.append(listView.getSelectionModel.getSelectedItem)
+      listView.getItems.remove(0, listView.getItems.length - 1)
+      val candidates = board.getCandidates(convertIndex(j))
+
+
+      for k <- candidates.indices do
+          listView.getItems.add(candidates(k).toString)
+      end for
 
       // tiles(80).accessibleText = listView.getSelectionModel.getSelectedItem
       listView.visible = true

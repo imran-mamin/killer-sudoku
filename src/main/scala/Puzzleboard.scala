@@ -1,5 +1,6 @@
 package sudoku
 
+import scala.collection.mutable.Buffer
 import java.awt.Color
 
 class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
@@ -59,6 +60,53 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     allTiles(tileIndex).targetSum
 
 
- 
+  def rowCandidates(index: Int): Buffer[Int] =
+    val candidates = (1 to 9).toBuffer
+    val row: Int = allTiles(index).getRow
+
+    for i <- allTiles.indices do
+      if (allTiles(i).getRow == row) && (allTiles(i).currentNumber.isDefined) then
+        candidates -= allTiles(i).currentNumber.get
+      end if
+    end for
+    candidates
+
+
+
+  private def colCandidates(index: Int) =
+    val candidates = (1 to 9).toBuffer
+    val column: Int = allTiles(index).getColumn
+
+    for i <- allTiles.indices do
+      if (allTiles(i).getColumn == column) && (allTiles(i).currentNumber.isDefined) then
+        candidates -= allTiles(i).currentNumber.get
+      end if
+    end for
+    candidates
+
+
+
+  private def squareCandidates(index: Int) =
+    val candidates = (1 to 9).toBuffer
+    val square: Int = allTiles(index).getSquare
+
+    for i <- allTiles.indices do
+      if (allTiles(i).getSquare == square) && (allTiles(i).currentNumber.isDefined) then
+        candidates -= allTiles(i).currentNumber.get
+      end if
+    end for
+    candidates
+
+
+
+
+  def getCandidates(index: Int): Buffer[Int] =
+    val candidatesAfterRowFilter    = this.rowCandidates(index)
+    val candidatesAfterColumnFilter = this.colCandidates(index)
+    val candidatesAfterSquareFilter = this.squareCandidates(index)
+
+    val intersectionOfRowAndColCandidates = candidatesAfterRowFilter.intersect(candidatesAfterColumnFilter)
+    val intersectionOfRowColAndSquareCandidates = intersectionOfRowAndColCandidates.intersect(candidatesAfterSquareFilter)
+    intersectionOfRowColAndSquareCandidates
       
 end Puzzleboard
