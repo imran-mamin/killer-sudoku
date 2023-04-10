@@ -58,4 +58,28 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
   def getTileTargetSum(tileIndex: Int): Option[Int] =
     allTiles(tileIndex).targetSum
 
+
+  /**
+   * This method will update all tiles' candidates that are in the same row with
+   * the tile, where the number is placed.
+   * @param: takes as a parameter an index of a tile, where the number is placed.
+   */
+
+  def updateCandidatesInRow(index: Int): Unit =
+    try
+      val row: Int = allTiles(index).getRow
+      val placedNum: Int = allTiles(index).currentNumber.get
+
+      for i <- allTiles.indices do
+        val currentTile = allTiles(i)
+
+        if currentTile.getRow == row then
+          currentTile.candidates -= placedNum
+        end if
+      end for
+
+    catch
+      case e => throw e
+      
+    
 end Puzzleboard
