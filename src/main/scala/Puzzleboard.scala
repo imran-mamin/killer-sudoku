@@ -129,7 +129,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
 
 
   def getCandidates(index: Int): Buffer[Int] =
-    val candidatesRow   = this.rowCandidates(index)
+    val candidatesRow = this.rowCandidates(index)
     val candidatesCol = this.colCandidates(index)
     val candidatesSqr = this.squareCandidates(index)
     val candidatesSba = this.subareaCandidates(index)
@@ -137,6 +137,8 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     var intersection = candidatesRow.intersect(candidatesCol)
     intersection = intersection.intersect(candidatesSqr)
     intersection = intersection.intersect(candidatesSba)
+
+    assert(intersection.nonEmpty)
     intersection
 
 end Puzzleboard
