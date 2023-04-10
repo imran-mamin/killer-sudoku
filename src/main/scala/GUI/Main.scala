@@ -1,6 +1,7 @@
 package GUI
 
 
+import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.geometry.{HPos, VPos}
 import javafx.scene.control
 import javafx.scene.control.{ChoiceDialog, ContextMenu, ListView, MenuButton, TextField}
@@ -27,7 +28,7 @@ import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
 import sudoku.*
 
-import java.awt.{Cursor, TextArea}
+import java.awt.{Cursor, Font, TextArea}
 import java.io.FileInputStream
 
 
@@ -144,6 +145,7 @@ object Main extends JFXApp3:
     def initializeListViews(board: Puzzleboard, row: Int, col: Int): Unit =
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
+      val boardTiles = board.showTiles()
 
       // This method converts index of UI into the index in back-end.
       def convertIndex(i: Int): Int =
@@ -160,10 +162,12 @@ object Main extends JFXApp3:
         allListViews += currentListView
         // val stack = new StackPane(currentListView, tiles(j))
         root.children += currentListView
-        currentListView.getItems.add("1")
-        currentListView.getItems.add("2")
 
-        val boardTiles = board.showTiles()
+        val candidates = boardTiles(convertIndex(j)).candidates
+        for k <- candidates.indices do
+          currentListView.getItems.add(candidates(k).toString)
+        end for
+
         val xCoord = boardTiles(convertIndex(j)).xCoord
         val yCoord = boardTiles(convertIndex(j)).yCoord
         println(s"xCoord: ${xCoord}, yCoord: ${yCoord}")
@@ -172,18 +176,66 @@ object Main extends JFXApp3:
       end for
 
 
+    val texts = Buffer[Text]()
 
-    def openListView(j: Int) =
+    def initializeTextInTiles(): Unit =
+      for j <- tiles.indices do
+        val text = new Text("")
+        text.visible = false
+        texts += text
+        root.children += text
+      end for
+
+
+
+
+    // This method will place a candidate number into a rectangle, which the user clicks
+    def placeCandidate(j: Int, row: Int, col: Int, board: Puzzleboard, candidate: String) =
+      val amountOfSquaresHorizontal: Int = col / 3
+      val amountOfSquaresVertical: Int = row / 3
+      val candidateNum = candidate.toIntOption
+
+      def convertIndex(i: Int): Int =
+        val m = (i / 9) / amountOfSquaresHorizontal
+        val n = (i / 9) % amountOfSquaresHorizontal
+        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
+        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
+
+      // Updating currentNumber of the tile in back-end
+      val boardTiles = board.showTiles()
+      val tileToPlaceCandidate = boardTiles(convertIndex(j))
+      tileToPlaceCandidate.currentNumber = candidateNum
+
+      // Placing the candidate to the rectangle
+      val text = texts(j)
+      text.setText(candidate)
+      text.layoutX = tileToPlaceCandidate.xCoord + 18
+      text.layoutY = tileToPlaceCandidate.yCoord + 26
+      text.visible = true
+      allListViews(j).visible = false
+      // text.setText("Hello")
+
+
+    def openListView(j: Int, row: Int, col: Int, board: Puzzleboard) =
       val listView = allListViews(j)
       listView.toFront()
       // val text = new Text(listView.getSelectionModel.getSelectedItem)
       // text.append(listView.getSelectionModel.getSelectedItem)
+
       // tiles(80).accessibleText = listView.getSelectionModel.getSelectedItem
       listView.visible = true
+      // val choice: String = listView.getSelectionModel.getSelectedItem
+      listView.getSelectionModel.selectedItemProperty().addListener( e =>
+        val candidate: String = listView.getSelectionModel.selectedItemProperty().get()
+        texts(j).setText("")
+        placeCandidate(j, row, col, board, candidate) )
+
+
 
 
     def tileHandler(j: Int) =
       tiles(j).setFill(Color.White)
+
 
 
 
@@ -232,8 +284,9 @@ object Main extends JFXApp3:
             text.setX(tilesInBoard(convertIndex(j)).xCoord + 10)
             text.setY(tilesInBoard(convertIndex(j)).yCoord + 20)
             root.children += text
-
           end if
+
+          initializeTextInTiles()
 
           // When hovering the color changes to white
           tiles(j).setOnMouseEntered( e =>
@@ -244,7 +297,7 @@ object Main extends JFXApp3:
 
           // When the user clicks on the tile, then the program should display a drop down menu of possible candidates
           tiles(j).setOnMouseClicked( e =>
-            openListView(j) )
+            openListView(j, row: Int, col: Int, board: Puzzleboard) )
 
         catch
           case e => throw e
@@ -270,6 +323,7 @@ object Main extends JFXApp3:
           val board = boardWithSize._1
           create3x3Squares(boardWithSize._2, boardWithSize._3, board)
           initializeListViews(board, boardWithSize._2, boardWithSize._3)
+          // TODO: Should also create update ListViews
 
           createSubAreas(board, boardWithSize._2, boardWithSize._3)
 
