@@ -163,6 +163,7 @@ object Main extends JFXApp3:
         // val stack = new StackPane(currentListView, tiles(j))
         root.children += currentListView
 
+        currentListView.getItems.add("")
         val candidates = boardTiles(convertIndex(j)).candidates
         for k <- candidates.indices do
           currentListView.getItems.add(candidates(k).toString)
