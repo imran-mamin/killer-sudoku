@@ -27,7 +27,7 @@ import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
 import sudoku.*
 
-import java.awt.TextArea
+import java.awt.{Cursor, TextArea}
 import java.io.FileInputStream
 
 
@@ -168,14 +168,14 @@ object Main extends JFXApp3:
         val yCoord = boardTiles(convertIndex(j)).yCoord
         println(s"xCoord: ${xCoord}, yCoord: ${yCoord}")
         currentListView.layoutX = xCoord
-        currentListView.layoutY = yCoord + 100
+        currentListView.layoutY = yCoord + 20
       end for
 
 
 
     def openListView(j: Int) =
       val listView = allListViews(j)
-
+      listView.toFront()
       // val text = new Text(listView.getSelectionModel.getSelectedItem)
       // text.append(listView.getSelectionModel.getSelectedItem)
       // tiles(80).accessibleText = listView.getSelectionModel.getSelectedItem
@@ -184,6 +184,7 @@ object Main extends JFXApp3:
 
     def tileHandler(j: Int) =
       tiles(j).setFill(Color.White)
+
 
 
 
@@ -212,8 +213,9 @@ object Main extends JFXApp3:
       def cursorOut(j: Int) =
         val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
         tiles(j).setFill(colors(subIndex))
+        allListViews(j).setOnMouseExited( e =>
+          allListViews(j).visible = false )
 
-        allListViews(j).visible = false
 
       // Add color to every tile
       for j <- tiles.indices do
