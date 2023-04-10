@@ -4,7 +4,8 @@ package GUI
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.geometry.{HPos, VPos}
 import javafx.scene.control
-import javafx.scene.control.{ChoiceDialog, ContextMenu, ListView, MenuButton, TextField}
+import javafx.scene.control.{ChoiceDialog, ContextMenu, ListView, MenuButton, TextField, Alert}
+import javafx.scene.control.Alert.AlertType
 import javafx.scene.layout.GridPane
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
@@ -352,7 +353,12 @@ object Main extends JFXApp3:
 // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
         else
-          assert(false)
+          // assert(false)
+          val alert = new Alert(AlertType.ERROR)
+          alert.setTitle("Error")
+          alert.setHeaderText(null)
+          alert.setContentText("File not found error! Please, make sure that you selected the correct file.")
+          alert.showAndWait()
         end if
 
       catch
