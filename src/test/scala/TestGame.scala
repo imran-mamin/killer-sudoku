@@ -119,6 +119,94 @@ class TestGame extends AnyFlatSpec with Matchers:
 
   }
 
+  "updateCandidatesInCol()-method" should "update the candidates of tiles that are in the" +
+    "same column with the tile, where the number is placed" in {
+    val tilesRow0 = Vector[Tile](new Tile(0, 0, 1), new Tile(1, 0, 1), new Tile(2, 0, 1))
+    val tilesRow1 = Vector[Tile](new Tile(0, 1, 1), new Tile(1, 1, 1), new Tile(2, 1, 1))
+    val tilesRow2 = Vector[Tile](new Tile(0, 2, 1), new Tile(1, 2, 1), new Tile(2, 2, 1))
+    val subarea0 = new Subarea(6, tilesRow0, tilesRow0(0))
+    val subarea1 = new Subarea(8, tilesRow1, tilesRow1(2))
+    val subarea2 = new Subarea(9, tilesRow2, tilesRow2(1))
+    val board = new Puzzleboard(tilesRow0 ++ tilesRow1 ++ tilesRow2, Vector(subarea0, subarea1, subarea2))
 
+    // First column
+    board.addNumber(6, 8)
+    board.updateCandidatesInCol(6)
+    val remainingCandidates2 = (1 to 9).toBuffer
+    remainingCandidates2 -= 8
+    assert(tilesRow0(0).candidates == remainingCandidates2)
+    assert(tilesRow1(0).candidates == remainingCandidates2)
+
+    // Second column
+    board.addNumber(4, 6)
+    board.updateCandidatesInCol(4)
+    val remainingCandidates1 = (1 to 9).toBuffer
+    remainingCandidates1 -= 6
+    assert(tilesRow0(1).candidates == remainingCandidates1)
+    assert(tilesRow2(1).candidates == remainingCandidates1)
+
+
+    // Third column
+    board.addNumber(2, 2)
+    board.updateCandidatesInCol(2)
+    val remainingCandidates0 = (1 to 9).toBuffer
+    remainingCandidates0 -= 2
+    assert(tilesRow1(2).candidates == remainingCandidates0)
+    assert(tilesRow2(2).candidates == remainingCandidates0)
+
+
+
+  }
+
+  "updateCandidatesInSquare()-method" should "update the candidates of tiles that are in the" +
+    "same square with the tile, where the number is placed" in {
+    val tilesRow0 = Vector[Tile](new Tile(0, 0, 1), new Tile(1, 0, 1), new Tile(2, 0, 1))
+    val tilesRow1 = Vector[Tile](new Tile(0, 1, 1), new Tile(1, 1, 1), new Tile(2, 1, 1))
+    val tilesRow2 = Vector[Tile](new Tile(0, 2, 1), new Tile(1, 2, 1), new Tile(2, 2, 1))
+    val subarea0 = new Subarea(6, tilesRow0, tilesRow0(0))
+    val subarea1 = new Subarea(8, tilesRow1, tilesRow1(2))
+    val subarea2 = new Subarea(9, tilesRow2, tilesRow2(1))
+    val board = new Puzzleboard(tilesRow0 ++ tilesRow1 ++ tilesRow2, Vector(subarea0, subarea1, subarea2))
+
+
+    // Removing 8 from the list of candidates
+    board.addNumber(6, 8)
+    board.updateCandidatesInSquare(6)
+    val remainingCandidates = (1 to 9).toBuffer
+    remainingCandidates -= 8
+
+    for i <- board.showTiles().indices do
+      if i != 6 then
+        val currentTile = board.showTiles()(i)
+        assert(currentTile.candidates == remainingCandidates)
+      end if
+    end for
+
+    // Removing also 6 from the list of candidates
+    board.addNumber(4, 6)
+    board.updateCandidatesInSquare(4)
+    remainingCandidates -= 6
+
+    for i <- board.showTiles().indices do
+      if i != 4 then
+        val currentTile = board.showTiles()(i)
+        assert(currentTile.candidates == remainingCandidates)
+      end if
+    end for
+
+
+    // And finally removing also two from the list of candidates
+    board.addNumber(2, 2)
+    board.updateCandidatesInSquare(2)
+    remainingCandidates -= 2
+
+    for i <- board.showTiles().indices do
+      if i != 2 then
+        val currentTile = board.showTiles()(i)
+        assert(currentTile.candidates == remainingCandidates)
+      end if
+    end for
+
+  }
 end TestGame
 
