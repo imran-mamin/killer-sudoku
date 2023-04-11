@@ -138,7 +138,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     intersection = intersection.intersect(candidatesSqr)
     intersection = intersection.intersect(candidatesSba)
 
-    assert(intersection.nonEmpty)
+    // assert(intersection.nonEmpty)
     intersection
 
 end Puzzleboard

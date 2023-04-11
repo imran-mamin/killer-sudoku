@@ -168,6 +168,7 @@ object Main extends JFXApp3:
 
         currentListView.getItems.add("")
         val candidates = board.getCandidates(convertIndex(j)) // boardTiles(convertIndex(j)).candidates
+
         for k <- candidates.indices do
           currentListView.getItems.add(candidates(k).toString)
         end for
@@ -220,7 +221,7 @@ object Main extends JFXApp3:
       text.layoutY = tileToPlaceCandidate.yCoord + 26
       text.visible = true
       allListViews(j).visible = false
-      // text.setText("Hello")
+
 
 
     def openListView(j: Int, row: Int, col: Int, board: Puzzleboard) =
@@ -240,19 +241,26 @@ object Main extends JFXApp3:
       listView.getItems.remove(0, listView.getItems.length)
       val candidates = board.getCandidates(convertIndex(j))
 
-      listView.getItems.add("")
+      // Displays alertbox if we run out of candidates.
+      if candidates.isEmpty then
+        val alert = new Alert(AlertType.ERROR)
+        alert.setTitle("Error")
+        alert.setHeaderText(null)
+        alert.setContentText("There are no candidates left! Please, consider removing some numbers from other squares or click 'Start again' button.")
+        alert.showAndWait()
+        println("Candidates is empty")
+      else
+        listView.getItems.add("")
+        for k <- candidates.indices do
+            listView.getItems.add(candidates(k).toString)
+        end for
 
-      for k <- candidates.indices do
-          listView.getItems.add(candidates(k).toString)
-      end for
-
-      // tiles(80).accessibleText = listView.getSelectionModel.getSelectedItem
-      listView.visible = true
-      // val choice: String = listView.getSelectionModel.getSelectedItem
-      listView.getSelectionModel.selectedItemProperty().addListener( e =>
-        val candidate: String = listView.getSelectionModel.selectedItemProperty().get()
-        if candidate != null then
-          placeCandidate(j, row, col, board, candidate) )
+        listView.visible = true
+        // val choice: String = listView.getSelectionModel.getSelectedItem
+        listView.getSelectionModel.selectedItemProperty().addListener( e =>
+          val candidate: String = listView.getSelectionModel.selectedItemProperty().get()
+          if candidate != null then
+            placeCandidate(j, row, col, board, candidate) )
 
 
 
