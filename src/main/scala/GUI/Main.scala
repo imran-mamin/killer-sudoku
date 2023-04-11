@@ -51,6 +51,7 @@ object Main extends JFXApp3:
 
 
     var puzzleboard: Option[Puzzleboard] = None
+    val previousFiles = Buffer[String]()
 
     val mainScene = Scene(parent = root)
     stage.scene = mainScene
@@ -339,6 +340,14 @@ object Main extends JFXApp3:
     // Menu
     val menuBar = new MenuBar
     val fileMenu = new Menu("File")
+
+    val openPrevious = new Menu("Open previous")
+    def updateOpenPrevious() =
+      for i <- 0 until previousFiles.length do
+        val currentMenuItem = new MenuItem(previousFiles(previousFiles.length - 1 - i))
+        openPrevious.getItems.add(currentMenuItem)
+      end for
+
     val newFileItem = new MenuItem("New file")
     newFileItem.onAction = (event) =>
 
@@ -357,12 +366,11 @@ object Main extends JFXApp3:
           create3x3Squares(boardWithSize._2, boardWithSize._3, board)
           initializeListViews(board, boardWithSize._2, boardWithSize._3)
           createSubAreas(board, boardWithSize._2, boardWithSize._3)
-
-
+          previousFiles += file.toString
+          updateOpenPrevious()
 // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
         else
-          // assert(false)
           val alert = new Alert(AlertType.ERROR)
           alert.setTitle("Error")
           alert.setHeaderText(null)
@@ -390,14 +398,25 @@ object Main extends JFXApp3:
         // case None           => println("Filepath was not provided")
 
 
-    val openPreviousItem = new MenuItem("Open previous")
-      openPreviousItem.onAction = (event) => println("Open previous -button in the menubar is clicked")
+
+    /*openPreviousItem.onAction = (event) =>
+        try
+          println("Open previous -button in the menubar is clicked")
+          val recentFilesMenu = new Menu("Open previous")
+          previousFiles.foreach( path =>
+            val menuItem = new MenuItem(path)
+            menuItem.onAction = (event) =>
+              println("Path clicked")
+            recentFilesMenu.getItems.add(menuItem)
+          )
+*/
+
     val saveItem = new MenuItem("Save")
       saveItem.onAction = (event) => println("Save-button in the menubar is clicked")
     val saveAsItem = new MenuItem("Save as")
       saveAsItem.onAction = (event) => println("Save as -button in the menubar is clicked")
 
-    fileMenu.items = List(newFileItem, SeparatorMenuItem(), openPreviousItem, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
+    fileMenu.items = List(newFileItem, SeparatorMenuItem(), openPrevious, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
     menuBar.menus = List(fileMenu)
     root.children += menuBar
 
