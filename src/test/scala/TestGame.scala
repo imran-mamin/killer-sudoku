@@ -104,5 +104,30 @@ class TestGame extends AnyFlatSpec with Matchers:
     
   }
   */
+
+  "twoTilesPossibleCombinations()-method" should "return possible combinations of tiles' candidates." in {
+    val tile1 = Tile(0, 0, 1)
+    val tile2 = Tile(1, 0, 1)
+    val subarea = Subarea(4, Vector(tile1, tile2), tile1)
+    val board = Puzzleboard(Vector(tile1, tile2), Vector(subarea))
+
+    val combinations: Buffer[String] = board.twoTilesPossibleCombinations(1, 0)
+    println(combinations)
+    assert(combinations.size == 1, "Method should return only one combination.")
+    assert(combinations.contains("1 + 3"), "The only combination should be '1 + 3'.")
+  }
+
+  "threeTilesPossibleCombinations()-method" should "return possible combinations of tiles' candidates" in {
+    val tile1 = Tile(0, 0, 1)
+    val tile2 = Tile(1, 0, 1)
+    val tile3 = Tile(0, 1, 1)
+    val subarea = Subarea(8, Vector(tile1, tile2, tile3), tile1)
+    val board = Puzzleboard(Vector(tile1, tile2, tile3), Vector(subarea))
+
+    val combinations: Buffer[String] = board.threeTilesPossibleCombinations(1, 0)
+    println(combinations)
+    assert(combinations.contains("1 + 2 + 5") && combinations.contains("1 + 3 + 4"), s"${combinations} did not equal Buffer('1 + 2 + 5', '1 + 3 + 4').")
+    assert(combinations.size == 2, "The amount of combinations is not the same.")
+  }
 end TestGame
 
