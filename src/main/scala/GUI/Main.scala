@@ -17,7 +17,7 @@ import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
-import scalafx.geometry.Insets
+import javafx.geometry.Insets
 import scalafx.scene.Group
 import scalafx.scene.layout.Region
 
@@ -208,12 +208,14 @@ object Main extends JFXApp3:
 
     root.children += toolbar
 */
+
     val vbox = new VBox()
     vbox.layoutX = 540
     vbox.layoutY = 60
     vbox.border = Border.stroke(2)
     vbox.setSpacing(4.0)
     vbox.children += possibleComLabel
+    vbox.setPadding(new Insets(10, 20, 10, 20)) // Padding top, right, bottom, left
     root.children += vbox
 
     // This method will place a candidate number into a rectangle, which the user clicks
@@ -257,7 +259,8 @@ object Main extends JFXApp3:
         ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
 
       // Displaying possible combinations in the gui.
-      // vbox.getChildren.removeAll()
+      val sizeOfVbox: Int = vbox.getChildren.length
+      vbox.getChildren.remove(1, sizeOfVbox)
       val combinations: Buffer[String] = board.showPossibleCombinationsInStr(convertIndex(j))
       val listOfLabels: List[Label] = combinations.toList.map( str => new Label(str) )
       // toolbar.getItems.removeAll()
@@ -474,10 +477,15 @@ object Main extends JFXApp3:
       def deleteText() =
         texts.foreach( text => text.setText("") )
 
+      def deletePossibleCombinations() =
+        val sizeOfBox: Int = vbox.getChildren.length
+        vbox.getChildren.remove(1, sizeOfBox)
+
       result.ifPresent( e =>
           if (e.getText == "Yes") && (puzzleboard.isDefined) then
             puzzleboard.get.showTiles().foreach( tile => tile.currentNumber = None )
             deleteText()
+            deletePossibleCombinations()
             println("Yes button is clicked")
           else
             println("No button clicked or dialog closed") )
