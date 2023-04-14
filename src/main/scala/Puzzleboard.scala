@@ -172,7 +172,27 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
 
     possibleNums
 
-
+  def showPossibleCombinationsInStr(index: Int): Buffer[String] =
+    val combinations: Buffer[Vector[Int]] = this.showPossibleCombinations(index)
+    if combinations.nonEmpty then
+      val amountOfElementsInVector: Int = combinations.head.length
+      val strBuff = Buffer[String]()
+      
+      for i <- combinations.indices do
+        var str = ""
+        for j <- 0 until amountOfElementsInVector do 
+          if j == 0 then
+            str += combinations(i)(j) + " "
+          else
+            str += s"+ ${combinations(i)(j)}"
+        end for
+        strBuff += str
+      end for
+      strBuff
+    else
+      Buffer()
+        
+        
   def showPossibleCombinations(index: Int): Buffer[Vector[Int]] =
       try
         val subareaIndex: Int = allTiles(index).subareaIndex.get

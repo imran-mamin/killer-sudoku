@@ -6,7 +6,7 @@ import javafx.geometry.{HPos, VPos}
 import javafx.scene.control
 import javafx.scene.control.{Alert, ButtonType, ChoiceDialog, ContextMenu, ListView, MenuButton, TextField}
 import javafx.scene.control.Alert.AlertType
-import javafx.scene.layout.GridPane
+import javafx.scene.layout.{GridPane, VBox}
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.layout.{Background, Border, Pane, StackPane, TilePane}
@@ -168,7 +168,8 @@ object Main extends JFXApp3:
         root.children += currentListView
 
         currentListView.getItems.add("")
-        val candidates = board.getCandidates(convertIndex(j)) // boardTiles(convertIndex(j)).candidates
+        // val candidates = board.getCandidates(convertIndex(j)) // boardTiles(convertIndex(j)).candidates
+        val candidates = board.getCandidatesAfterSbaFilter(convertIndex(j))
 
         for k <- candidates.indices do
           currentListView.getItems.add(candidates(k).toString)
@@ -194,6 +195,26 @@ object Main extends JFXApp3:
 
 
 
+     // Possible combinations of the tiles in subarea
+    val possibleComLabel = new Label("Possible combinations")
+    possibleComLabel.resize(20, 10)
+    possibleComLabel.setStyle("-fx-font-weight: bold")
+    /*val toolbar = new ToolBar {
+      layoutX = 540
+      layoutY = 60
+      content = List(possibleComLabel)
+    }
+    toolbar.border = Border.stroke(2)
+
+    root.children += toolbar
+*/
+    val vbox = new VBox()
+    vbox.layoutX = 540
+    vbox.layoutY = 60
+    vbox.border = Border.stroke(2)
+    vbox.setSpacing(4.0)
+    vbox.children += possibleComLabel
+    root.children += vbox
 
     // This method will place a candidate number into a rectangle, which the user clicks
     def placeCandidate(j: Int, row: Int, col: Int, board: Puzzleboard, candidate: String) =
@@ -235,15 +256,31 @@ object Main extends JFXApp3:
         val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
         ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
 
+      // Displaying possible combinations in the gui.
+      // vbox.getChildren.removeAll()
+      val combinations: Buffer[String] = board.showPossibleCombinationsInStr(convertIndex(j))
+      val listOfLabels: List[Label] = combinations.toList.map( str => new Label(str) )
+      // toolbar.getItems.removeAll()
+      // listOfLabels.foreach( label => label.visible = true)
+      // listOfLabels.foreach( label => label.layoutX = vbox.getLayoutX + 20 )
+      listOfLabels.foreach( label => label.setTextFill(Color.Red) )
+      listOfLabels.foreach( label => vbox.children += label )
+      // toolbar.getItems.addAll(listOfLabels.prepended(possibleComLabel): _*)
+
+
+
       val listView = allListViews(j)
       listView.toFront()
       // val text = new Text(listView.getSelectionModel.getSelectedItem)
       // text.append(listView.getSelectionModel.getSelectedItem)
       listView.getItems.remove(0, listView.getItems.length)
-      val candidates = board.getCandidates(convertIndex(j))
+      // val candidates = board.getCandidates(convertIndex(j))
+      val candidates = board.getCandidatesAfterSbaFilter(convertIndex(j))
+      val subareaIndex: Int = board.showTiles()((convertIndex(j))).subareaIndex.get // TODO: Make sure it is defined.
+      val amountOfFreeTiles: Int = board.showSubareas()(subareaIndex).showTiles().count( tile => tile.currentNumber.isEmpty )
 
       // Displays alertbox if we run out of candidates.
-      if candidates.isEmpty then
+      if candidates.isEmpty && (amountOfFreeTiles != 0) then
         val alert = new Alert(AlertType.ERROR)
         alert.setTitle("Error")
         alert.setHeaderText(null)
@@ -487,15 +524,5 @@ object Main extends JFXApp3:
 
 */
 
-    // Possible combinations of the tiles in subarea
-    val toolbar = new ToolBar {
-      layoutX = 540
-      layoutY = 60
-      content = List(
-        new Label("Possible combinations")
-      )
-    }
-    toolbar.border = Border.stroke(2)
 
-    root.children += toolbar
 end Main
