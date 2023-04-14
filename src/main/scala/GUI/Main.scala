@@ -216,6 +216,7 @@ object Main extends JFXApp3:
     vbox.setSpacing(4.0)
     vbox.children += possibleComLabel
     vbox.setPadding(new Insets(10, 20, 10, 20)) // Padding top, right, bottom, left
+    vbox.alignment = Pos.Center
     root.children += vbox
 
     // This method will place a candidate number into a rectangle, which the user clicks
