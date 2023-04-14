@@ -71,6 +71,8 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     end for
     possibleNums
 
+
+
   // When the subarea consists of two tiles
   def twoTilesPossibleCombinations(index: Int, subareaIndex: Int, targetSum: Int): Buffer[Vector[Int]] =
     val possibleNums: Buffer[Vector[Int]] = Buffer()
@@ -84,8 +86,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
         // Tells, whether the current pair is in possiblePairs or not.
         val pairIsInAlready: Boolean =
           possibleNums.exists( com => com.contains(tile1Candidates(i)) && com.contains(tile2Candidates(j)) )
-          // possiblePairs.exists( (m, n) => m == tile1Candidates(i) && n == tile2Candidates(j) ) ||
-          // possiblePairs.exists( (n, m) => n == tile2Candidates(j) && m == tile1Candidates(i) )
+
         if sum == targetSum && !pairIsInAlready && (tile1Candidates(i) != tile2Candidates(j)) then
           possibleNums += Vector[Int](tile1Candidates(i), tile2Candidates(j))
       end for
@@ -136,7 +137,40 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
 
 
   def fourTilesPossibleCombinations(index: Int, subareaIndex: Int, targetSum: Int) =
-    ???
+    val possibleNums: Buffer[Vector[Int]] = Buffer()
+    val tilesInSub: Vector[Tile] = subareas(subareaIndex).showTiles()
+    val tile1Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(0)))
+    val tile2Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(1)))
+    val tile3Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(2)))
+    val tile4Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(3)))
+
+    for i <- tile1Candidates.indices do
+      for j <- tile2Candidates.indices do
+        for k <- tile3Candidates.indices do
+          for l <- tile4Candidates.indices do
+            val sum: Int = tile1Candidates(i) + tile2Candidates(j) + tile3Candidates(k) + tile4Candidates(l)
+
+            val pairsIsInAlready: Boolean =
+            possibleNums.exists( v => v.contains(tile1Candidates(i)) && v.contains(tile2Candidates(j))
+              && v.contains(tile3Candidates(k)) && v.contains(tile4Candidates(l)))
+
+            val numsAreNotSame: Boolean =
+            tile1Candidates(i) != tile2Candidates(j) &&
+            tile2Candidates(j) != tile3Candidates(k) &&
+            tile3Candidates(k) != tile4Candidates(l) &&
+            tile4Candidates(l) != tile1Candidates(i) &&
+            tile4Candidates(l) != tile2Candidates(j) &&
+            tile3Candidates(k) != tile1Candidates(i)
+
+            if sum == targetSum && !pairsIsInAlready && numsAreNotSame then
+              possibleNums += Vector(tile1Candidates(i), tile2Candidates(j), tile3Candidates(k), tile4Candidates(l))
+            end if
+          end for
+        end for
+      end for
+    end for
+
+    possibleNums
 
 
   def showPossibleCombinations(index: Int): Buffer[Vector[Int]] =
@@ -175,17 +209,24 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
           oneTilePossibleCombinations(index, targetSum)
         else
           Buffer()
-        ???
+
       catch
         case e => throw e
 
 
   def getCandidatesAfterSbaFilter(index: Int): Buffer[Int] =
-    val possibleCombinations = this.showPossibleCombinations(index)
+    val possibleCombinations: Buffer[Int] = this.showPossibleCombinations(index).flatten.distinct
     val candidates = this.getCandidates(index)
+    val intersection: Buffer[Int] = Buffer()
 
     // Intersection of these variables should give candidates after sub-area filter.
-    ???
+    for i <- candidates.indices do
+      if possibleCombinations.contains(candidates(i)) then
+        intersection += candidates(i)
+    end for
+    intersection
+
+
 
   def rowCandidates(index: Int): Buffer[Int] =
     val candidates = (1 to 9).toBuffer
