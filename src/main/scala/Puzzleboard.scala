@@ -182,9 +182,9 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
         var str = ""
         for j <- 0 until amountOfElementsInVector do 
           if j == 0 then
-            str += combinations(i)(j) + " "
+            str += combinations(i)(j)
           else
-            str += s"+ ${combinations(i)(j)}"
+            str += s" + ${combinations(i)(j)}"
         end for
         strBuff += str
       end for
@@ -192,6 +192,8 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     else
       Buffer()
         
+      
+      
         
   def showPossibleCombinations(index: Int): Buffer[Vector[Int]] =
       try
