@@ -16,7 +16,7 @@ import scalafx.geometry.Pos
 import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
-import scalafx.scene.text.Text
+import scalafx.scene.text.{Text, Font}
 import javafx.geometry.Insets
 import scalafx.scene.Group
 import scalafx.scene.layout.Region
@@ -29,7 +29,7 @@ import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
 import sudoku.*
 
-import java.awt.{Cursor, Font, TextArea}
+import java.awt.{Cursor, TextArea}
 import java.io.FileInputStream
 
 
@@ -197,7 +197,8 @@ object Main extends JFXApp3:
 
      // Possible combinations of the tiles in subarea
     val possibleComLabel = new Label("Possible combinations")
-    possibleComLabel.resize(20, 10)
+    // possibleComLabel.resize(20, 10)
+    possibleComLabel.setFont(new Font(18))
     possibleComLabel.setStyle("-fx-font-weight: bold")
     /*val toolbar = new ToolBar {
       layoutX = 540
@@ -268,6 +269,7 @@ object Main extends JFXApp3:
       // listOfLabels.foreach( label => label.visible = true)
       // listOfLabels.foreach( label => label.layoutX = vbox.getLayoutX + 20 )
       listOfLabels.foreach( label => label.setTextFill(Color.Red) )
+      listOfLabels.foreach( label => label.setFont(new Font(16)) )
       listOfLabels.foreach( label => vbox.children += label )
       // toolbar.getItems.addAll(listOfLabels.prepended(possibleComLabel): _*)
 
