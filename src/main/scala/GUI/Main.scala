@@ -122,8 +122,7 @@ object Main extends JFXApp3:
           val tileBorder: Double = tiles.head.getStrokeWidth
 
           // X-coordinate is layoutX of 9x9 Square + tilesWidth * amountOfTiles before this one +
-          // the border of 9x9 square + borders of 3x3 squares + single tile border - two single tile borders,
-          // when borders of the 3x3 square occurs.
+          // the border of 9x9 square + borders of 3x3 squares + single tile border.
           boardTiles((i * col) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles.head.getWidth +
             borderLeftOf9x9Square + ((j / 3) * 2 + 1) * borderLeftOf3x3Square + (2 * j + 1) * tileBorder
 
