@@ -20,7 +20,7 @@ tiles: a3, b3, c3, d3
 squares: 1, 1, 1, 2
 
 #Subarea:
-sum: 4
+sum: 6
 amountOfTiles: 2
 tileSum: c1
 tiles: c1, c2

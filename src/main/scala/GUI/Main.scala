@@ -58,6 +58,8 @@ object Main extends JFXApp3:
 
     val tiles: Buffer[Rectangle] = Buffer()
 
+    var gridWith9TilesInsets: Insets = Insets.EMPTY
+
     // TODO: Fix subarea sum placement to count border with.
     def create9Tiles(): GridPane =
       val gridWith9Tiles = GridPane()
@@ -78,6 +80,8 @@ object Main extends JFXApp3:
           gridWith9Tiles.add(rectangle, j + 1, i + 1)
           // gridWith9Tiles.add(text, j + 1, i + 1)
       gridWith9Tiles.border = Border.stroke(Color.Black)
+      gridWith9TilesInsets = gridWith9Tiles.getBorder.getInsets
+      println("gridWith9Tiles Insets: " + gridWith9Tiles.getBorder.getInsets)
       gridWith9Tiles
 
 
@@ -108,15 +112,26 @@ object Main extends JFXApp3:
 
 
 
-
+    // Set coordinates in the back-end of the program.
     def setCoordinates(board: Puzzleboard, row: Int, col: Int) =
       val boardTiles = board.showTiles()
-
       for i <- 0 until row do
         for j <- 0 until col do
-          boardTiles((i * col) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles(0).getWidth
-          boardTiles((i * col) + j).yCoord = gridWith3x3Squares.getLayoutY + i * tiles(0).getHeight
-          boardTiles((i * col) + j).edgeSize = tiles(0).getWidth
+          val borderLeftOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getLeft
+          val borderLeftOf3x3Square: Double = gridWith9TilesInsets.getLeft
+          val tileBorder: Double = tiles.head.getStrokeWidth
+
+          // X-coordinate is layoutX of 9x9 Square + tilesWidth * amountOfTiles before this one +
+          // the border of 9x9 square + borders of 3x3 squares + single tile border - two single tile borders,
+          // when borders of the 3x3 square occurs.
+          boardTiles((i * col) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles.head.getWidth +
+            borderLeftOf9x9Square + ((j / 3) * 2 + 1) * borderLeftOf3x3Square + (2 * j + 1) * tileBorder
+
+          val borderTopOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getTop
+          val borderTopOf3x3Square: Double = 2
+          boardTiles((i * col) + j).yCoord = gridWith3x3Squares.getLayoutY + i * tiles.head.getHeight +
+            borderTopOf9x9Square
+          // boardTiles((i * col) + j).edgeSize = tiles(0).getWidth
 
         end for
       end for
@@ -357,8 +372,9 @@ object Main extends JFXApp3:
             val text = new Text(tilesInBoard(convertIndex(j)).targetSum.get.toString)
             // text.setFont(Font.font("Arial", FontWeight.BOLD, 14))
             text.setFill(Color.Black)
-            text.setX(tilesInBoard(convertIndex(j)).xCoord + 10)
+            text.setX(tilesInBoard(convertIndex(j)).xCoord)
             text.setY(tilesInBoard(convertIndex(j)).yCoord + 20)
+            text.setFont(new Font(9))
             root.children += text
           end if
 
