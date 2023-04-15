@@ -81,7 +81,7 @@ object Main extends JFXApp3:
           // gridWith9Tiles.add(text, j + 1, i + 1)
       gridWith9Tiles.border = Border.stroke(Color.Black)
       gridWith9TilesInsets = gridWith9Tiles.getBorder.getInsets
-      println("gridWith9Tiles Insets: " + gridWith9Tiles.getBorder.getInsets)
+      // println("gridWith9Tiles Insets: " + gridWith9Tiles.getBorder.getInsets)
       gridWith9Tiles
 
 
@@ -191,7 +191,7 @@ object Main extends JFXApp3:
 
         val xCoord = boardTiles(convertIndex(j)).xCoord
         val yCoord = boardTiles(convertIndex(j)).yCoord
-        println(s"xCoord: ${xCoord}, yCoord: ${yCoord}")
+       //  println(s"xCoord: ${xCoord}, yCoord: ${yCoord}")
         currentListView.layoutX = xCoord
         currentListView.layoutY = yCoord + 20
       end for
@@ -426,7 +426,10 @@ object Main extends JFXApp3:
           createSubAreas(board, boardWithSize._2, boardWithSize._3)
           previousFiles += file.toString
           updateOpenPrevious()
-// C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
+          for i <- board.showTiles().indices do
+            val tile = board.showTiles()(i)
+            println(s"column: ${tile.getColumn}, row: ${tile.getRow}, targetSum: ${tile.targetSum}, square: ${tile.getSquare}.")
+        // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
         else
           val alert = new Alert(AlertType.ERROR)
