@@ -167,10 +167,11 @@ object Main extends JFXApp3:
 
       // This method converts index of UI into the index in back-end.
       def convertIndex(i: Int): Int =
-        val m = (i / 9) / amountOfSquaresHorizontal
-        val n = (i / 9) % amountOfSquaresHorizontal
-        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
+        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
+        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
+        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
         ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
+
 
 
       for j <- tiles.indices do
@@ -244,9 +245,9 @@ object Main extends JFXApp3:
       val candidateNum = candidate.toIntOption
 
       def convertIndex(i: Int): Int =
-        val m = (i / 9) / amountOfSquaresHorizontal
-        val n = (i / 9) % amountOfSquaresHorizontal
-        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
+        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
+        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
+        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
         ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
 
       // Updating currentNumber of the tile in back-end
@@ -269,9 +270,9 @@ object Main extends JFXApp3:
       val amountOfSquaresVertical: Int = row / 3
 
       def convertIndex(i: Int): Int =
-        val m = (i / 9) / amountOfSquaresHorizontal
-        val n = (i / 9) % amountOfSquaresHorizontal
-        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
+        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
+        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
+        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
         ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
 
       // Displaying possible combinations in the gui.
@@ -343,12 +344,14 @@ object Main extends JFXApp3:
         colors += Color.rgb((16 * i + 128) % 255, (64 * i + 128) % 255, (128 * i + 128) % 255)
       end for
 
+      println("Amount of subareas in puzzleboard: " + subareas.length)
+      println("Amount of colors: " + colors.length)
       assert(tiles.length == tilesInBoard.length)
 
       def convertIndex(i: Int): Int =
-        val m = (i / 9) / amountOfSquaresHorizontal
-        val n = (i / 9) % amountOfSquaresHorizontal
-        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 + n * 3
+        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
+        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
+        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
         ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
 
 
@@ -358,13 +361,12 @@ object Main extends JFXApp3:
         allListViews(j).setOnMouseExited( e =>
           allListViews(j).visible = false )
 
-
       // Add color to every tile
       for j <- tiles.indices do
         try
           val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
           tiles(j).fill = colors(subIndex)
-
+          println(s"j: ${j}       i: ${convertIndex(j)}")
           // Checks if current tile has a target sum of the sub-area.
           if tilesInBoard(convertIndex(j)).targetSum.isDefined then
 
