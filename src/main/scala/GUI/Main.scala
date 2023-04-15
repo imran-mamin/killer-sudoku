@@ -339,15 +339,13 @@ object Main extends JFXApp3:
       val amountOfSquaresVertical: Int = row / 3
 
 
+      // TODO: Use Greedy algorithm.
       // Creating the same amount of colors as subareas
       for i <- subareas.indices do
-        colors += Color.rgb((16 * i + 128) % 255, (64 * i + 128) % 255, (128 * i + 128) % 255)
+        colors += Color.rgb((16 * i + 128) % 255, (64 * i + 128) % 255, (128 * i + 128) % 255) // Color.rgb((200 + i * 4) % 255, (150 + i * 16) % 255, (150 + i) % 255)
       end for
 
-      println("Amount of subareas in puzzleboard: " + subareas.length)
-      println("Amount of colors: " + colors.length)
       assert(tiles.length == tilesInBoard.length)
-
       def convertIndex(i: Int): Int =
         val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
         val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
@@ -366,7 +364,7 @@ object Main extends JFXApp3:
         try
           val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
           tiles(j).fill = colors(subIndex)
-          println(s"j: ${j}       i: ${convertIndex(j)}")
+
           // Checks if current tile has a target sum of the sub-area.
           if tilesInBoard(convertIndex(j)).targetSum.isDefined then
 

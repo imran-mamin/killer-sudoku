@@ -151,6 +151,25 @@ object FileReader:
       end for
     end for
 
+  // Will look something like this in the file: #placedNums:
+  // a1: 6, a8: 8, ...
+  def setCurrentNumsToTiles(placedNums: Buffer[String], allTiles: Buffer[Tile]): Unit =
+    try
+      val withoutTagAndSpaces: Buffer[String] = placedNums.map( str => str.replaceAll(" ", "") ).dropWhile( str => str != ":" ).drop(1) // Last is the sign ':' itself.
+      val str: String = withoutTagAndSpaces.reduceLeft( (first, second) => first + second )
+      val pairTileAndNumInStr: Array[Array[String]] = str.split(',').map( str => str.split(':') )
+      assert(pairTileAndNumInStr.forall( arr => arr.length == 2 ))
+
+      for i <- pairTileAndNumInStr.indices do
+        val tileIndexStr: String = pairTileAndNumInStr(i)(0)
+        val num: Int = pairTileAndNumInStr(i)(1).toInt
+        val (row, col): (Int, Int) = this.findRowAndColumn(tileIndexStr)
+
+        allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get.currentNumber = Some(num)
+      end for
+    catch
+      case e => throw e
+
 
   // TODO: Add more descriptive error messages
   /** This method takes all the lines of the text file as an input and
@@ -206,6 +225,12 @@ object FileReader:
         case _          => None
 
     end for
+
+    // Place numbers in the tiles that are specified in the provided file.
+    if stripped.contains("#placedNums") then
+      val placedNums: Buffer[String] = stripped.dropWhile( str => str.startsWith("#placedNums") ).takeWhile( str => !str.contains("#"))
+      setCurrentNumsToTiles(placedNums, tiles)
+    end if
 
     val puzzle = new Puzzleboard(tiles.toVector, subareas.toVector)
     addSubareaIndexToTiles(puzzle)
