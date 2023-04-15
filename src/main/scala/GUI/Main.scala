@@ -313,7 +313,6 @@ object Main extends JFXApp3:
         for k <- candidates.indices do
             listView.getItems.add(candidates(k).toString)
         end for
-
         listView.visible = true
         // val choice: String = listView.getSelectionModel.getSelectedItem
         listView.getSelectionModel.selectedItemProperty().addListener( e =>
@@ -330,6 +329,7 @@ object Main extends JFXApp3:
 
 
 
+    var cursorInRectOrListView: Boolean = false
 
     def createSubAreas(board: Puzzleboard, row: Int, col: Int) =
       val subareas: Vector[Subarea] = board.showSubareas()
@@ -388,6 +388,8 @@ object Main extends JFXApp3:
 
           // When the user clicks on the tile, then the program should display a drop down menu of possible candidates
           tiles(j).setOnMouseClicked( e =>
+            tileHandler(j)
+            allListViews.foreach( listview => listview.visible = false )
             openListView(j, row: Int, col: Int, board: Puzzleboard) )
 
         catch
@@ -426,9 +428,7 @@ object Main extends JFXApp3:
           createSubAreas(board, boardWithSize._2, boardWithSize._3)
           previousFiles += file.toString
           updateOpenPrevious()
-          for i <- board.showTiles().indices do
-            val tile = board.showTiles()(i)
-            println(s"column: ${tile.getColumn}, row: ${tile.getRow}, targetSum: ${tile.targetSum}, square: ${tile.getSquare}.")
+
         // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
         else
