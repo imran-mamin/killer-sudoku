@@ -414,11 +414,13 @@ object Main extends JFXApp3:
 
       for i <- tiles.indices do
         if tilesInBoard(convertIndex(i)).currentNumber.isDefined then
-          val currNum: Int = tilesInBoard(convertIndex(i)).currentNumber.get
-          println(currNum)
+          val tileWithNum = tilesInBoard(convertIndex(i))
+          val currNum: Int = tileWithNum.currentNumber.get
           texts(i).setText(currNum.toString)
+          texts(i).layoutX = tileWithNum.xCoord + 18
+          texts(i).layoutY = tileWithNum.yCoord + 26
           texts(i).visible = true
-          texts(i).toFront()
+          // texts(i).toFront()
         end if
       end for
 
