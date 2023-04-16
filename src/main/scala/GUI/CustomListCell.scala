@@ -4,7 +4,9 @@ package GUI
 import javafx.scene.control.{ListCell, ListView}
 import javafx.scene.input.MouseEvent
 
-// Create a custom ListCell that changes the background color when the mouse enters and exits the cell
+/** Create a custom ListCell that changes the background color to blue,
+ *  when the mouse enters and changes it back to normal, when exits the cell
+ */
 class CustomListCell extends ListCell[String]:
   override def updateItem(item: String, empty: Boolean): Unit = {
     super.updateItem(item, empty)
