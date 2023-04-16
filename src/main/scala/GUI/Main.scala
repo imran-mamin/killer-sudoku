@@ -4,7 +4,7 @@ package GUI
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.geometry.{HPos, VPos}
 import javafx.scene.control
-import javafx.scene.control.{Alert, ButtonType, ChoiceDialog, ContextMenu, ListView, MenuButton, TextField}
+import javafx.scene.control.{Alert, ButtonType, ChoiceDialog, ContextMenu, ListCell, ListView, MenuButton, TextField}
 import javafx.scene.control.Alert.AlertType
 import javafx.scene.layout.{GridPane, VBox}
 import scalafx.application.JFXApp3
@@ -16,7 +16,7 @@ import scalafx.geometry.Pos
 import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
-import scalafx.scene.text.{Text, Font}
+import scalafx.scene.text.{Font, Text}
 import javafx.geometry.Insets
 import scalafx.scene.Group
 import scalafx.scene.layout.Region
@@ -28,6 +28,7 @@ import javafx.scene.shape.{Circle, Line}
 import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
 import sudoku.*
+import sudoku.GUI.CustomListCell
 
 import java.awt.{Cursor, TextArea}
 import java.io.FileInputStream
@@ -178,6 +179,8 @@ object Main extends JFXApp3:
         val currentListView = new ListView[String]()
         currentListView.setMaxSize(100, 100)
         currentListView.visible = false
+
+        currentListView.setCellFactory(_ => new CustomListCell())
         allListViews += currentListView
         // val stack = new StackPane(currentListView, tiles(j))
         root.children += currentListView
