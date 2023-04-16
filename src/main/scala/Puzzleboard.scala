@@ -106,22 +106,9 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
         for k <- tile3Candidates.indices do
           val sum: Int = tile1Candidates(i) + tile2Candidates(j) + tile3Candidates(k)
 
-          /*
-          a, b, c    3! = 6
-          a, c, b
-          b, a, c
-          b, c, a
-          c, a, b
-          c, b, a */
 
           val pairsIsInAlready: Boolean =
             possibleNums.exists( v => v.contains(tile1Candidates(i)) && v.contains(tile2Candidates(j)) && v.contains(tile3Candidates(k)) )
-            // possibleNums.exists( v => v(0) == tile1Candidates(i) && v(1) == tile2Candidates(j) && v(2) == tile3Candidates(k) ) ||
-            // possibleNums.exists( v => v(0) == tile1Candidates(i) && v(1) == tile3Candidates(k) && v(2) == tile2Candidates(j) ) ||
-            // possibleNums.exists( v => v(0) == tile2Candidates(j) && v(1) == tile1Candidates(i) && v(2) == tile3Candidates(k) ) ||
-            // possibleNums.exists( v => v(0) == tile2Candidates(j) && v(1) == tile3Candidates(k) && v(2) == tile1Candidates(i) ) ||
-            // possibleNums.exists( v => v(0) == tile3Candidates(k) && v(1) == tile1Candidates(i) && v(2) == tile2Candidates(j) ) ||
-            // possibleNums.exists( v => v(0) == tile3Candidates(k) && v(1) == tile2Candidates(j) && v(2) == tile1Candidates(i) )
           val numsAreNotSame: Boolean =
             tile1Candidates(i) != tile2Candidates(j) &&
             tile2Candidates(j) != tile3Candidates(k) &&
@@ -191,9 +178,9 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
       strBuff
     else
       Buffer()
-        
-      
-      
+
+
+
         
   def showPossibleCombinations(index: Int): Buffer[Vector[Int]] =
       try
@@ -287,48 +274,15 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     end for
     candidates
 
-/*
-  def subareaCandidates(index: Int): Buffer[Int] =
-    try
-      val subareaIndex: Int = allTiles(index).subareaIndex.get
-      var remaining = subareas(subareaIndex).getTargetSum()
-      val tilesInSubarea: Vector[Tile] = subareas(subareaIndex).showTiles()
-      var tilesWithoutNum: Int = 0
-      var candidates = Buffer[Int]()
-
-
-      for i <- tilesInSubarea.indices do
-        if tilesInSubarea(i).currentNumber.isDefined then
-          remaining -= tilesInSubarea(i).currentNumber.get
-        else
-          tilesWithoutNum += 1
-      end for
-
-      if tilesWithoutNum == 1 then
-        candidates += remaining
-      else
-        if (tilesInSubarea.length == 2) && (remaining % 2 == 0) then
-          val impossibleNum = remaining / 2 // For example 4 + 4 = 8, but it's not possible on sudoku board
-          candidates = (1 until remaining).toBuffer
-          candidates -= impossibleNum
-        else
-          candidates = (1 until remaining).toBuffer
-      candidates
-    catch
-      case e => throw e
-*/
 
   def getCandidates(index: Int): Buffer[Int] =
     val candidatesRow = this.rowCandidates(index)
     val candidatesCol = this.colCandidates(index)
     val candidatesSqr = this.squareCandidates(index)
-    // val candidatesSba = this.subareaCandidates(index)
 
     var intersection = candidatesRow.intersect(candidatesCol)
     intersection = intersection.intersect(candidatesSqr)
-    // intersection = intersection.intersect(candidatesSba)
 
-    // assert(intersection.nonEmpty)
     intersection
 
 end Puzzleboard
