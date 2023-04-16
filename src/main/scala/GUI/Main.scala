@@ -30,9 +30,10 @@ import javafx.stage.FileChooser
 import sudoku.*
 import sudoku.GUI.CustomListCell
 
+import javafx.stage.FileChooser.ExtensionFilter
 import java.awt.{Cursor, TextArea}
 import java.io.FileInputStream
-
+import java.io.File
 
 object Main extends JFXApp3:
 
@@ -503,14 +504,15 @@ object Main extends JFXApp3:
         case e => throw e
 
 
-
+/*
       val downloadFile = new TextInputDialog("path")
         downloadFile.initOwner(stage)
         downloadFile.title = "New file"
         downloadFile.headerText = ""
         downloadFile.contentText = "Please, provide filepath here: "
         downloadFile.getDialogPane.setMinSize(400, 350)
-/*
+
+
       val result = downloadFile.showAndWait() // Result from the user input
       result match
         case filepath      => println("" + filepath)
@@ -535,7 +537,34 @@ object Main extends JFXApp3:
     val saveItem = new MenuItem("Save")
       saveItem.onAction = (event) => println("Save-button in the menubar is clicked")
     val saveAsItem = new MenuItem("Save as")
-      saveAsItem.onAction = (event) => println("Save as -button in the menubar is clicked")
+      saveAsItem.onAction = (event) =>
+        println("Save as -button in the menubar is clicked")
+        val fileChooser = new FileChooser()
+        fileChooser.setTitle("Save File")
+
+        // set the extension filter to .txt
+        fileChooser.getExtensionFilters.add(new ExtensionFilter("Text Files", "*.txt"))
+
+        // Set the initial directory
+        val initialDir = new File(System.getProperty("user.home"))
+        fileChooser.setInitialDirectory(initialDir)
+
+        // Setting the initial name of the file
+        val initialFileName = s"myfile_${openPrevious.getItems.length}.txt"
+        fileChooser.setInitialFileName(initialFileName)
+
+        // Show the save dialog and get the selected file
+        val selectedFile = fileChooser.showSaveDialog(null)
+        if (selectedFile != null) then
+          val fileName = selectedFile.getName
+          val parentDir: File = selectedFile.getParentFile
+          println(parentDir)
+          // TODO: Add correct handling, when puzzleboard == None (Alert should popup)
+          FWriter.writeFile(fileName, parentDir, puzzleboard.get)
+        end if
+
+
+
 
     fileMenu.items = List(newFileItem, SeparatorMenuItem(), openPrevious, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
     menuBar.menus = List(fileMenu)
