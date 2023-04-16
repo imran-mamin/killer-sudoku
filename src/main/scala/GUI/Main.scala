@@ -20,7 +20,7 @@ import scalafx.scene.text.{Font, Text}
 import javafx.geometry.Insets
 import scalafx.scene.Group
 import scalafx.scene.layout.Region
-
+import javafx.scene.{Node, control}
 import scala.collection.mutable.Buffer
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.control.{TextInputDialog, ToolBar}
@@ -113,7 +113,7 @@ object Main extends JFXApp3:
 
 
 
-    // Set coordinates in the back-end of the program.
+    // Set coordinates of the tile's top left corner and store it in the back-end of the program.
     def setCoordinates(board: Puzzleboard, row: Int, col: Int) =
       val boardTiles = board.showTiles()
       for i <- 0 until row do
@@ -125,7 +125,7 @@ object Main extends JFXApp3:
           // X-coordinate is layoutX of 9x9 Square + tilesWidth * amountOfTiles before this one +
           // the border of 9x9 square + borders of 3x3 squares + single tile border.
           boardTiles((i * col) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles.head.getWidth +
-            borderLeftOf9x9Square + ((j / 3) * 2 + 1) * borderLeftOf3x3Square + (2 * j + 1) * tileBorder
+            borderLeftOf9x9Square + ((j / 3) * 2 + 1) * borderLeftOf3x3Square + (j + 1 + j / 3) * tileBorder
 
           val borderTopOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getTop
           val borderTopOf3x3Square: Double = 2
@@ -405,6 +405,10 @@ object Main extends JFXApp3:
       gridWith9TilesInsets = Insets.EMPTY
       allListViews.remove(0, allListViews.length)
       tiles.remove(0, tiles.length)
+      root.getChildren.removeIf((node: Node) => {
+        node.isInstanceOf[scalafx.scene.text.Text] || node.isInstanceOf[control.Label] || node.isInstanceOf[javafx.scene.text.Text]
+      })
+
 
 
     def removeTextObjects(): Unit =
