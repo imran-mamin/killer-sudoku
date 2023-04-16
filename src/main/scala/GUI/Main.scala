@@ -152,9 +152,9 @@ object Main extends JFXApp3:
       // This method will rearrange tiles, so that the order of them will be the same as in back-end
       // rearrangeTilesAsInBackEnd(row: Int, col: Int)
       // board.showTiles().foreach( tile => println("xCoord: " + tile.xCoord + " yCoord: " + tile.yCoord) )
-      root.children += gridWith3x3Squares
       setNumAndCharAsPos(row, col)
 
+    root.children += gridWith3x3Squares
 
 
     val allListViews: Buffer[ListView[String]] = Buffer()
@@ -397,6 +397,20 @@ object Main extends JFXApp3:
       end for
 
 
+    def initializeVariablesAfterNewFileIsClicked(): Unit =
+      gridWith3x3Squares.getChildren.remove(0, gridWith3x3Squares.getChildren.length)
+      gridWith9TilesInsets = Insets.EMPTY
+      allListViews.remove(0, allListViews.length)
+      tiles.remove(0, tiles.length)
+
+
+    def removeTextObjects(): Unit =
+      texts.remove(0, texts.length)
+
+    def deletePossibleCombinations() =
+      val sizeOfBox: Int = vbox.getChildren.length
+      vbox.getChildren.remove(1, sizeOfBox)
+
     // Menu
     val menuBar = new MenuBar
     val fileMenu = new Menu("File")
@@ -419,6 +433,12 @@ object Main extends JFXApp3:
         val file = fileChooser.showOpenDialog(stage)
 
         if file != null then
+          // println(root.getChildrenUnmodifiable)
+          removeTextObjects()
+          deletePossibleCombinations()
+          initializeVariablesAfterNewFileIsClicked()
+
+          println(gridWith3x3Squares.getChildren.length)
           val lines = FileReader.readFile(file.toString) // returns all lines in the given file
           val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
           val board = boardWithSize._1
@@ -483,6 +503,7 @@ object Main extends JFXApp3:
 
 
 
+
     def showAlertStartAgain() =
       val alert = new Alert(AlertType.CONFIRMATION)
       alert.setTitle("Confirmation")
@@ -498,9 +519,6 @@ object Main extends JFXApp3:
       def deleteText() =
         texts.foreach( text => text.setText("") )
 
-      def deletePossibleCombinations() =
-        val sizeOfBox: Int = vbox.getChildren.length
-        vbox.getChildren.remove(1, sizeOfBox)
 
       result.ifPresent( e =>
           if (e.getText == "Yes") && (puzzleboard.isDefined) then
