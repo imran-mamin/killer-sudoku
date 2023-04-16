@@ -209,6 +209,7 @@ tileSum: h9
 tiles: h9, i9
 squares: 9, 9
 
-
+#placedNums:
+a1: 1, b1: 2
 
 

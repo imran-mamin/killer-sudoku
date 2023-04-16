@@ -171,5 +171,16 @@ class TestGame extends AnyFlatSpec with Matchers:
   }
 
 
+  "FileReader readFilePuzzleBoardCfg-method" should "create a new Puzzleboard object with correctly placed" +
+  "nums in some tiles" in {
+  val file = "src/testingData/9x9_example_board.txt"
+  val lines = FileReader.readFile(file)
+
+  val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
+  // When the given size is not divisible by three, then program should create a board 9 x 9
+  assert(board.showTiles()(0).currentNumber.isDefined)
+  assert(board.showTiles()(1).currentNumber.isDefined)
+  }
+
 end TestGame
 

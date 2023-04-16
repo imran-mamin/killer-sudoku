@@ -400,6 +400,29 @@ object Main extends JFXApp3:
       end for
 
 
+    def placeNumsAccordingToFile(board: Puzzleboard, row: Int, col: Int): Unit =
+      val tilesInBoard: Vector[Tile] = board.showTiles()
+      val amountOfSquaresHorizontal: Int = col / 3
+      val amountOfSquaresVertical: Int = row / 3
+
+      def convertIndex(i: Int): Int =
+        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
+        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
+        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
+        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
+
+
+      for i <- tiles.indices do
+        if tilesInBoard(convertIndex(i)).currentNumber.isDefined then
+          val currNum: Int = tilesInBoard(convertIndex(i)).currentNumber.get
+          println(currNum)
+          texts(i).setText(currNum.toString)
+          texts(i).visible = true
+          texts(i).toFront()
+        end if
+      end for
+
+
     def initializeVariablesAfterNewFileIsClicked(): Unit =
       gridWith3x3Squares.getChildren.remove(0, gridWith3x3Squares.getChildren.length)
       gridWith9TilesInsets = Insets.EMPTY
@@ -425,6 +448,7 @@ object Main extends JFXApp3:
     val fileMenu = new Menu("File")
 
     val openPrevious = new Menu("Open previous")
+
     def updateOpenPrevious() =
       for i <- 0 until previousFiles.length do
         val currentMenuItem = new MenuItem(previousFiles(previousFiles.length - 1 - i))
@@ -452,9 +476,14 @@ object Main extends JFXApp3:
           val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
           val board = boardWithSize._1
           puzzleboard = Some(board)
+          // This method creates sudoku board
           create3x3Squares(boardWithSize._2, boardWithSize._3, board)
+          // This method creates a listView object for every tile.
           initializeListViews(board, boardWithSize._2, boardWithSize._3)
+          // This method colour sub-areas with different colors.
           createSubAreas(board, boardWithSize._2, boardWithSize._3)
+          placeNumsAccordingToFile(board, boardWithSize._2, boardWithSize._3)
+
           previousFiles += file.toString
           updateOpenPrevious()
 
