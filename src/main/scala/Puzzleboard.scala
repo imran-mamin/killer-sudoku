@@ -187,6 +187,14 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
         val subareaIndex: Int = allTiles(index).subareaIndex.get
         val amountOfTilesInSub: Int = subareas(subareaIndex).showTiles().size
         val tiles: Vector[Tile] = subareas(subareaIndex).showTiles()
+        var removedCurrentNum: Option[Int] = None
+
+        // Removes current number for calculations and then returns it back.
+        if allTiles(index).currentNumber.isDefined then
+          removedCurrentNum = allTiles(index).currentNumber
+          allTiles(index).currentNumber = None
+        end if
+
         val notFreeTiles: Int = tiles.count( tile => tile.currentNumber.isDefined )
         var targetSum: Int = subareas(subareaIndex).getTargetSum()
 
@@ -197,25 +205,50 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
           end if
         end for
 
-        // TODO: Add handling when some tiles are not free.
+
+        def placeCurrentNumBack(): Unit =
+          if removedCurrentNum.isDefined then
+            allTiles(index).currentNumber = removedCurrentNum
+          end if
+
+
+
         if amountOfTilesInSub == 2 && notFreeTiles == 0 then
-          twoTilesPossibleCombinations(index, subareaIndex, targetSum)
+          val combinations = twoTilesPossibleCombinations(index, subareaIndex, targetSum)
+          placeCurrentNumBack()
+          combinations
         else if amountOfTilesInSub == 3 && notFreeTiles == 0 then
-          threeTilesPossibleCombinations(index, subareaIndex, targetSum)
+          val combinations = threeTilesPossibleCombinations(index, subareaIndex, targetSum)
+          placeCurrentNumBack()
+          combinations
         else if amountOfTilesInSub == 4 && notFreeTiles == 0 then
-          fourTilesPossibleCombinations(index, subareaIndex, targetSum)
+          val combinations = fourTilesPossibleCombinations(index, subareaIndex, targetSum)
+          placeCurrentNumBack()
+          combinations
         else if amountOfTilesInSub == 2 && notFreeTiles == 1 then
-          oneTilePossibleCombinations(index, targetSum)
+          val combinations = oneTilePossibleCombinations(index, targetSum)
+          placeCurrentNumBack()
+          combinations
         else if amountOfTilesInSub == 3 && notFreeTiles == 1 then
-          twoTilesPossibleCombinations(index, subareaIndex, targetSum)
+          val combinations = twoTilesPossibleCombinations(index, subareaIndex, targetSum)
+          placeCurrentNumBack()
+          combinations
         else if amountOfTilesInSub == 4 && notFreeTiles == 1 then
-          threeTilesPossibleCombinations(index, subareaIndex, targetSum)
+          val combinations = threeTilesPossibleCombinations(index, subareaIndex, targetSum)
+          placeCurrentNumBack()
+          combinations
         else if amountOfTilesInSub == 3 && notFreeTiles == 2 then
-          oneTilePossibleCombinations(index, targetSum)
+          val combinations = oneTilePossibleCombinations(index, targetSum)
+          placeCurrentNumBack()
+          combinations
         else if amountOfTilesInSub == 4 && notFreeTiles == 2 then
-          twoTilesPossibleCombinations(index, subareaIndex, targetSum)
+          val combinations = twoTilesPossibleCombinations(index, subareaIndex, targetSum)
+          placeCurrentNumBack()
+          combinations
         else if amountOfTilesInSub == 4 && notFreeTiles == 3 then
-          oneTilePossibleCombinations(index, targetSum)
+          val combinations = oneTilePossibleCombinations(index, targetSum)
+          placeCurrentNumBack()
+          combinations
         else
           Buffer()
 
