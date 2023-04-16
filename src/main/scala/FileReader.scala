@@ -156,7 +156,7 @@ object FileReader:
   def setCurrentNumsToTiles(placedNums: Buffer[String], allTiles: Buffer[Tile]): Unit =
     try
       val withoutTagAndSpaces: Buffer[String] = placedNums.map( str => str.replaceAll(" ", "") ).dropWhile( str => !str.contains(":") ).drop(1) // Last is the sign ':' itself.
-      val str: String = withoutTagAndSpaces.reduceLeft( (first, second) => first + second )
+      val str: String = withoutTagAndSpaces.reduceLeft( (first, second) => first + second ).replaceAll(" ", "")
       val pairTileAndNumInStr: Array[Array[String]] = str.split(',').map( str => str.split(':') )
       assert(pairTileAndNumInStr.forall( arr => arr.length == 2 ))
 

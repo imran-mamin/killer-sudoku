@@ -4,13 +4,65 @@ import java.io.*
 
 
 object FWriter:
+
+  /**
+   * This method converts row and column integers into tileIndex in String.
+   * @param row of the tile
+   * @param col of the tile
+   * @return tileIndex in String, for example "a1"
+   */
+  private def rowColConverter(row: Int, col: Int): String =
+    val letters: Vector[Char] = ('a' to 'z').toVector
+    letters(col) + (row + 1).toString
+
+  // This method returns a string of the tiles, for example "tiles: e9, f9, g9".
+  private def tilesString(tiles: Vector[Tile]): String =
+    var str = "tiles: "
+    val tileIndexAsString = tiles.map( tile => rowColConverter(tile.getRow, tile.getColumn) )
+    str += tileIndexAsString.mkString(", ")
+    str
+
+  // This method returns a string of squares, for example "squares: 2, 2, 4"
+  private def squaresString(tiles: Vector[Tile]): String =
+    var str = "squares: "
+    val squares: Vector[Int] = tiles.map( tile => tile.getSquare )
+    str += squares.mkString(", ")
+    str
+
+
   // def eraseFile(file: String): Unit = ???
-  def writeFile(filename: String, directory: File, board: Puzzleboard): Unit =
+  def writeFile(filename: String, directory: File, board: Puzzleboard, rowNSize: Int, colNSize: Int): Unit =
     try
       val file = new File(directory, filename)
       val bw = new BufferedWriter(new FileWriter(file))
       // Writes the title of the puzzle (in this case the filename)
-      bw.write("#Title " + filename)
+      bw.write(s"#Title ${filename}\n")
+      bw.write("#Date: dd/mm/yyyy\n")
+      bw.write("#Time: 22:18\n")
+      bw.write(s"#colsize: ${colNSize}\n")
+      bw.write(s"#rowsize: ${rowNSize}\n\n")
+
+      val subareas: Vector[Subarea] = board.showSubareas()
+
+      for i <- subareas.indices do
+        val tilesInSub: Vector[Tile] = subareas(i).showTiles()
+        val tileWithTargetSum: Tile = tilesInSub.dropWhile( tile => tile.targetSum.isEmpty ).head
+
+        bw.write(s"#Subarea:\n")
+        bw.write(s"sum: ${subareas(i).getTargetSum()}\n")
+        bw.write(s"amountOfTiles: ${tilesInSub.length}\n")
+        bw.write(s"tileSum: ${rowColConverter(tileWithTargetSum.getRow, tileWithTargetSum.getColumn)}\n")
+        bw.write(this.tilesString(tilesInSub) + "\n")
+        bw.write(this.squaresString(tilesInSub) + "\n\n")
+      end for
+      val tilesWithNums: Vector[Tile] = board.showTiles().filter( tile => tile.currentNumber.isDefined )
+
+      bw.write("#placedNums: \n")
+
+      for j <- tilesWithNums.indices do
+        bw.write(s"${this.rowColConverter(tilesWithNums(j).getRow, tilesWithNums(j).getColumn)}: ${tilesWithNums(j).currentNumber.get}\n")
+      end for
+
 
       bw.close()
     catch

@@ -53,6 +53,8 @@ object Main extends JFXApp3:
 
 
     var puzzleboard: Option[Puzzleboard] = None
+    var colNSize: Option[Int] = None
+    var rowNSize: Option[Int] = None
     val previousFiles = Buffer[String]()
 
     val mainScene = Scene(parent = root)
@@ -479,6 +481,9 @@ object Main extends JFXApp3:
           val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
           val board = boardWithSize._1
           puzzleboard = Some(board)
+          rowNSize = Some(boardWithSize._2)
+          colNSize = Some(boardWithSize._3)
+          
           // This method creates sudoku board
           create3x3Squares(boardWithSize._2, boardWithSize._3, board)
           // This method creates a listView object for every tile.
@@ -560,7 +565,7 @@ object Main extends JFXApp3:
           val parentDir: File = selectedFile.getParentFile
           println(parentDir)
           // TODO: Add correct handling, when puzzleboard == None (Alert should popup)
-          FWriter.writeFile(fileName, parentDir, puzzleboard.get)
+          FWriter.writeFile(fileName, parentDir, puzzleboard.get, rowNSize.get, colNSize.get)
         end if
 
 
