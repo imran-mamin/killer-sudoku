@@ -156,8 +156,9 @@ object FileReader:
   def setCurrentNumsToTiles(placedNums: Buffer[String], allTiles: Buffer[Tile]): Unit =
     try
       val withoutTagAndSpaces: Buffer[String] = placedNums.map( str => str.replaceAll(" ", "") ).dropWhile( str => !str.contains(":") ).drop(1) // Last is the sign ':' itself.
-      val str: String = withoutTagAndSpaces.reduceLeft( (first, second) => first + second ).replaceAll(" ", "")
+      val str: String = withoutTagAndSpaces.mkString(",") //.reduceLeft( (first, second) => first + second ).replaceAll(" ", "")
       val pairTileAndNumInStr: Array[Array[String]] = str.split(',').map( str => str.split(':') )
+      pairTileAndNumInStr.foreach( n => n.foreach( m => println(m) ) )
       assert(pairTileAndNumInStr.forall( arr => arr.length == 2 ))
 
       for i <- pairTileAndNumInStr.indices do
@@ -166,6 +167,7 @@ object FileReader:
         val (row, col): (Int, Int) = this.findRowAndColumn(tileIndexStr)
 
         allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get.currentNumber = Some(num)
+
       end for
     catch
       case e => throw e
