@@ -1,4 +1,4 @@
-package GUI
+package sudoku.GUI
 
 
 import javafx.beans.property.ReadOnlyObjectProperty
@@ -405,6 +405,8 @@ object Main extends JFXApp3:
       gridWith9TilesInsets = Insets.EMPTY
       allListViews.remove(0, allListViews.length)
       tiles.remove(0, tiles.length)
+
+      // Will remove all the Text or Label nodes from the root (Pane()).
       root.getChildren.removeIf((node: Node) => {
         node.isInstanceOf[scalafx.scene.text.Text] || node.isInstanceOf[control.Label] || node.isInstanceOf[javafx.scene.text.Text]
       })
@@ -440,12 +442,12 @@ object Main extends JFXApp3:
         val file = fileChooser.showOpenDialog(stage)
 
         if file != null then
-          // println(root.getChildrenUnmodifiable)
+          // Removes previous board from the gui window.
           removeTextObjects()
           deletePossibleCombinations()
           initializeVariablesAfterNewFileIsClicked()
 
-          println(gridWith3x3Squares.getChildren.length)
+          // Creates new board according to the provided file.
           val lines = FileReader.readFile(file.toString) // returns all lines in the given file
           val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
           val board = boardWithSize._1
@@ -477,14 +479,14 @@ object Main extends JFXApp3:
         downloadFile.headerText = ""
         downloadFile.contentText = "Please, provide filepath here: "
         downloadFile.getDialogPane.setMinSize(400, 350)
-
+/*
       val result = downloadFile.showAndWait() // Result from the user input
       result match
         case filepath      => println("" + filepath)
         // case Optional(filepath) => println("" + filepath)
         // case None           => println("None")
         // case None           => println("Filepath was not provided")
-
+*/
 
 
     /*openPreviousItem.onAction = (event) =>
