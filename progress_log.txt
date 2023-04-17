@@ -17,3 +17,10 @@ such as, better error messages and error handling. I also created a new method i
 according to the size given in a file. If the provided size is not divisible by three, then the size will be set to standard
 9 x 9 and this method will create 81 tiles. This method also sets all the neighbors to every tile. Later, I want to create
 other file reading methods and try to display gui according to the provided file information.
+
+17.04.
+I created FWriter-object, which contains writeFile-method that allows the user to save a file into the directory provided by
+the user. The gui should display now possible combinations of numbers that can be placed in the particular sub-area. When the user
+clicks on a single tile, she/he should see candidates that can be placed there according to basic sudoku rules + target sum of
+the sub-area. Now sub-areas are separated with different colors, but I haven't used Greedy algorithm, yet. So, as a next step I want to
+implement Greedy algorithm.
