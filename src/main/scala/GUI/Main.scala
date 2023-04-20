@@ -3,12 +3,12 @@ package sudoku.GUI
 
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.geometry.{HPos, VPos}
-import javafx.scene.control
+import javafx.scene.{Node, control, shape}
 import javafx.scene.control.{Alert, ButtonType, ChoiceDialog, ContextMenu, ListCell, ListView, MenuButton, TextField}
 import javafx.scene.control.Alert.AlertType
 import javafx.scene.layout.{GridPane, VBox}
 import scalafx.application.JFXApp3
-import scalafx.scene.Scene
+import scalafx.scene.{Group, Scene, shape}
 import scalafx.scene.layout.{Background, Border, Pane, StackPane, TilePane}
 import scalafx.scene.control.{Button, Label, Menu, MenuBar, MenuItem, SeparatorMenuItem}
 import scalafx.Includes.*
@@ -16,22 +16,22 @@ import scalafx.geometry.Pos
 import scalafx.scene.canvas.*
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
-import scalafx.scene.text.{Font, Text}
+import scalafx.scene.text.{Font, FontWeight, Text}
 import javafx.geometry.Insets
-import scalafx.scene.Group
+import javafx.scene
 import scalafx.scene.layout.Region
-import javafx.scene.{Node, control}
+
 import scala.collection.mutable.Buffer
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.control.{TextInputDialog, ToolBar}
-import javafx.scene.shape.{Circle, Line}
+import javafx.scene.shape.{Circle, Line, Shape}
 import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
 import sudoku.*
 import sudoku.GUI.CustomListCell
-
 import javafx.stage.FileChooser.ExtensionFilter
-import java.awt.{Cursor, TextArea}
+
+import java.awt.{Cursor, Shape, TextArea}
 import java.io.FileInputStream
 import java.io.File
 
@@ -245,7 +245,7 @@ object Main extends JFXApp3:
     def placeCandidate(j: Int, row: Int, col: Int, board: Puzzleboard, candidate: String) =
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
-      println(candidate)
+      // println(candidate)
 
       texts(j).setText("")
       val candidateNum = candidate.toIntOption
@@ -266,6 +266,7 @@ object Main extends JFXApp3:
       text.setText(candidate)
       text.layoutX = tileToPlaceCandidate.xCoord + 18
       text.layoutY = tileToPlaceCandidate.yCoord + 26
+      text.setFont(Font.font("Arial", FontWeight.Bold, 14))
       text.visible = true
       allListViews(j).visible = false
 
@@ -385,7 +386,7 @@ object Main extends JFXApp3:
 
           initializeTextInTiles()
 
-          // When hovering the color changes to white
+          // When hovering, the color changes to white
           tiles(j).setOnMouseEntered( e =>
             tileHandler(j))
           // When the cursor leaves the tile, the color of the tile will be the same as before
@@ -422,6 +423,7 @@ object Main extends JFXApp3:
           texts(i).setText(currNum.toString)
           texts(i).layoutX = tileWithNum.xCoord + 18
           texts(i).layoutY = tileWithNum.yCoord + 26
+          texts(i).setFont(Font.font("Arial", FontWeight.Bold, 14))
           texts(i).visible = true
           // texts(i).toFront()
         end if
