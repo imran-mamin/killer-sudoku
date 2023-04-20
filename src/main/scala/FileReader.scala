@@ -173,6 +173,35 @@ object FileReader:
       case e => throw e
 
 
+  /**
+   * This method adds neighbors to all the sub-areas on the board.
+   */
+  def addNeighborsToSubareas(puzzle: Puzzleboard): Unit =
+    val tiles: Vector[Tile] = puzzle.showTiles()
+    val subareas: Vector[Subarea] = puzzle.showSubareas()
+
+
+    for i <- tiles.indices do
+      val neighbors: Vector[Tile] = tiles(i).neighbors.toVector
+      val cSubIndex: Int = tiles(i).subareaIndex.get
+
+      for j <- neighbors.indices do
+        val nSubIndex: Int = neighbors(j).subareaIndex.get
+
+        if nSubIndex != cSubIndex then
+          if !subareas(nSubIndex).neighbors.contains(subareas(cSubIndex)) then
+            subareas(nSubIndex).neighbors = subareas(nSubIndex).neighbors :+ subareas(cSubIndex)
+          end if
+          if !subareas(cSubIndex).neighbors.contains(subareas(nSubIndex)) then
+            subareas(cSubIndex).neighbors = subareas(cSubIndex).neighbors :+ subareas(nSubIndex)
+          end if
+        end if
+      end for
+    end for
+
+
+
+
   // TODO: Add more descriptive error messages
   /** This method takes all the lines of the text file as an input and
    * creates a Puzzleboard-object according to the information given in
@@ -238,7 +267,7 @@ object FileReader:
 
     val puzzle = new Puzzleboard(tiles.toVector, subareas.toVector)
     addSubareaIndexToTiles(puzzle)
-
+    addNeighborsToSubareas(puzzle)
     (puzzle, rowN.get, colN.get)
 
 end FileReader

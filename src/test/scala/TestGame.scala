@@ -194,5 +194,29 @@ class TestGame extends AnyFlatSpec with Matchers:
   }
 */
 
+  "addNeighborsToSubareas-method" should "add neighbors properly to sub-areas" in {
+    val file = "src/testingData/9x9_example_board.txt"
+    val lines = FileReader.readFile(file)
+
+    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
+    val allSba = board.showSubareas()
+    FileReader.addNeighborsToSubareas(board)
+    assert(allSba(0).neighbors.contains(allSba(1)), "First sub-area has two neighbors.")
+    assert(allSba(0).neighbors.contains(allSba(6)))
+    assert(allSba(0).neighbors.length == 2)
+
+    assert(allSba(1).neighbors.contains(allSba(0)), "Second sub-area has three neighbors.")
+    assert(allSba(1).neighbors.contains(allSba(2)))
+    assert(allSba(1).neighbors.contains(allSba(7)))
+    assert(allSba(1).neighbors.length == 3)
+
+    assert(allSba(7).neighbors.contains(allSba(1)), "Seventh sub-area has four neighbors.")
+    assert(allSba(7).neighbors.contains(allSba(2)))
+    assert(allSba(7).neighbors.contains(allSba(6)))
+    assert(allSba(7).neighbors.contains(allSba(8)))
+    assert(allSba(7).neighbors.length == 4)
+
+
+  }
 end TestGame
 
