@@ -51,7 +51,7 @@ object Main extends JFXApp3:
     gridWith3x3Squares.layoutY = 80
     gridWith3x3Squares.layoutX = 80
 
-
+    var unsavedChanges: Boolean = false // Flag to track unsaved changes in the file
     var puzzleboard: Option[Puzzleboard] = None
     var colNSize: Option[Int] = None
     var rowNSize: Option[Int] = None
@@ -63,6 +63,12 @@ object Main extends JFXApp3:
     val tiles: Buffer[Rectangle] = Buffer()
 
     var gridWith9TilesInsets: Insets = Insets.EMPTY
+
+
+    def updateTitle(): Unit =
+      val title = if (unsavedChanges) "Killer-Sudoku - *" else "Killer-Sudoku"
+      stage.title = title
+
 
     // TODO: Fix subarea sum placement to count border with.
     def create9Tiles(): GridPane =
@@ -269,7 +275,8 @@ object Main extends JFXApp3:
       text.setFont(Font.font("Arial", FontWeight.Bold, 14))
       text.visible = true
       allListViews(j).visible = false
-
+      unsavedChanges = true
+      updateTitle()
 
 
     def openListView(j: Int, row: Int, col: Int, board: Puzzleboard) =
@@ -345,13 +352,6 @@ object Main extends JFXApp3:
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
 
-
-      // TODO: Use Greedy algorithm.
-      // Creating the same amount of colors as subareas
-
-      /*for i <- subareas.indices do
-        colors += Color.rgb((16 * i + 128) % 255, (64 * i + 128) % 255, (128 * i + 128) % 255) // Color.rgb((200 + i * 4) % 255, (150 + i * 16) % 255, (150 + i) % 255)
-      end for */
 
       assert(tiles.length == tilesInBoard.length)
       def convertIndex(i: Int): Int =
@@ -576,6 +576,8 @@ object Main extends JFXApp3:
         if (selectedFile != null) then
           val fileName = selectedFile.getName
           val parentDir: File = selectedFile.getParentFile
+          unsavedChanges = false
+          updateTitle()
           println(parentDir)
           // TODO: Add correct handling, when puzzleboard == None (Alert should popup)
           FWriter.writeFile(fileName, parentDir, puzzleboard.get, rowNSize.get, colNSize.get)
