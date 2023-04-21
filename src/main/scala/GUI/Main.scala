@@ -580,7 +580,14 @@ object Main extends JFXApp3:
           updateTitle()
           println(parentDir)
           // TODO: Add correct handling, when puzzleboard == None (Alert should popup)
-          FWriter.writeFile(fileName, parentDir, puzzleboard.get, rowNSize.get, colNSize.get)
+          if puzzleboard.isDefined then
+            FWriter.writeFile(fileName, parentDir, puzzleboard.get, rowNSize.get, colNSize.get)
+          else
+            val cannotSaveFileAlert = new Alert(AlertType.WARNING)
+            cannotSaveFileAlert.setTitle("Cannot save the file!")
+            cannotSaveFileAlert.setHeaderText(null)
+            cannotSaveFileAlert.setContentText("File saving was unsuccessful! Please, make sure that you downloaded a board first.")
+            cannotSaveFileAlert.showAndWait()
         end if
 
 
