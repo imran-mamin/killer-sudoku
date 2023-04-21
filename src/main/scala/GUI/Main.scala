@@ -475,7 +475,7 @@ object Main extends JFXApp3:
     val openPrevious = new Menu("Open previous")
 
     def updateOpenPrevious() =
-      for i <- 0 until previousFiles.length do
+      for i <- previousFiles.indices do
         val currentMenuItem = new MenuItem(previousFiles(previousFiles.length - 1 - i))
         openPrevious.getItems.add(currentMenuItem)
       end for
