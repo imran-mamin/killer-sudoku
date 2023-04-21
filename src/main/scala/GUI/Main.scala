@@ -395,21 +395,17 @@ object Main extends JFXApp3:
             text.setX(tilesInBoard(convertIndex(j)).xCoord)
             text.setY(tilesInBoard(convertIndex(j)).yCoord + 20)
             text.setFont(new Font(9))
+            text.setMouseTransparent(true) // Gives an ability for a user to click on the text and it will still open ListView-object.
             root.children += text
           end if
 
           initializeTextInTiles()
 
           // When hovering, the color changes to white
-          tiles(j).setOnMouseEntered( e =>
-            if (tiles(j).boundsInLocal.value.contains(e.x, e.y) || tiles(j).boundsInParent.value.contains(e.x, e.y)) then
-              tileHandler(j)
-            )
+          tiles(j).setOnMouseEntered( e => tileHandler(j) )
+
           // When the cursor leaves the tile, the color of the tile will be the same as before
-          tiles(j).setOnMouseExited( e =>
-            if (!tiles(j).boundsInLocal.value.contains(e.x, e.y) && !tiles(j).boundsInParent.value.contains(e.x, e.y)) then
-              cursorOut(j)
-            )
+          tiles(j).setOnMouseExited( e => cursorOut(j) )
 
           // When the user clicks on the tile, then the program should display a drop down menu of possible candidates
           tiles(j).setOnMouseClicked( e =>
@@ -417,6 +413,7 @@ object Main extends JFXApp3:
             allListViews.foreach( listview => listview.visible = false )
             openListView(j, row: Int, col: Int, board: Puzzleboard) )
 
+          texts(j).setMouseTransparent(true)
         catch
           case e => throw e
       end for
@@ -472,13 +469,15 @@ object Main extends JFXApp3:
     val menuBar = new MenuBar
     val fileMenu = new Menu("File")
 
-    val openPrevious = new Menu("Open previous")
-
+    // val openPrevious = new Menu("Open previous")
+/*
     def updateOpenPrevious() =
       for i <- previousFiles.indices do
         val currentMenuItem = new MenuItem(previousFiles(previousFiles.length - 1 - i))
         openPrevious.getItems.add(currentMenuItem)
       end for
+*/
+
 
     val newFileItem = new MenuItem("New file")
     newFileItem.onAction = (event) =>
@@ -513,7 +512,7 @@ object Main extends JFXApp3:
           placeNumsAccordingToFile(board, boardWithSize._2, boardWithSize._3)
 
           previousFiles += file.toString
-          updateOpenPrevious()
+          // updateOpenPrevious()
 
         // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
@@ -529,35 +528,6 @@ object Main extends JFXApp3:
         case e => throw e
 
 
-/*
-      val downloadFile = new TextInputDialog("path")
-        downloadFile.initOwner(stage)
-        downloadFile.title = "New file"
-        downloadFile.headerText = ""
-        downloadFile.contentText = "Please, provide filepath here: "
-        downloadFile.getDialogPane.setMinSize(400, 350)
-
-
-      val result = downloadFile.showAndWait() // Result from the user input
-      result match
-        case filepath      => println("" + filepath)
-        // case Optional(filepath) => println("" + filepath)
-        // case None           => println("None")
-        // case None           => println("Filepath was not provided")
-*/
-
-
-    /*openPreviousItem.onAction = (event) =>
-        try
-          println("Open previous -button in the menubar is clicked")
-          val recentFilesMenu = new Menu("Open previous")
-          previousFiles.foreach( path =>
-            val menuItem = new MenuItem(path)
-            menuItem.onAction = (event) =>
-              println("Path clicked")
-            recentFilesMenu.getItems.add(menuItem)
-          )
-*/
     var fileNameOfSavedFile: Option[String] = None // Will contain the name of a file that have already been saved.
     var parentOfSavedFile: Option[File] = None // Will contains the parent directory of the saved file.
 
@@ -573,7 +543,7 @@ object Main extends JFXApp3:
         fileChooser.setInitialDirectory(initialDir)
 
         // Setting the initial name of the file
-        val initialFileName = s"myfile_${openPrevious.getItems.length}.txt"
+        val initialFileName = "Attempt.txt"// s"myfile_${openPrevious.getItems.length}.txt"
         fileChooser.setInitialFileName(initialFileName)
 
         // Show the save dialog and get the selected file
@@ -616,8 +586,9 @@ object Main extends JFXApp3:
 
 
 
-    fileMenu.items = List(newFileItem, SeparatorMenuItem(), openPrevious, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
+    fileMenu.items = List(newFileItem, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
     menuBar.menus = List(fileMenu)
+
     root.children += menuBar
 
 
