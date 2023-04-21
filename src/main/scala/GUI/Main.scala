@@ -394,10 +394,14 @@ object Main extends JFXApp3:
 
           // When hovering, the color changes to white
           tiles(j).setOnMouseEntered( e =>
-            tileHandler(j))
+            if (tiles(j).boundsInLocal.value.contains(e.x, e.y) || tiles(j).boundsInParent.value.contains(e.x, e.y)) then
+              tileHandler(j)
+            )
           // When the cursor leaves the tile, the color of the tile will be the same as before
           tiles(j).setOnMouseExited( e =>
-            cursorOut(j))
+            if (!tiles(j).boundsInLocal.value.contains(e.x, e.y) && !tiles(j).boundsInParent.value.contains(e.x, e.y)) then
+              cursorOut(j)
+            )
 
           // When the user clicks on the tile, then the program should display a drop down menu of possible candidates
           tiles(j).setOnMouseClicked( e =>
