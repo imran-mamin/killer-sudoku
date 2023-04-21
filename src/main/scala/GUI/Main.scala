@@ -34,6 +34,7 @@ import javafx.stage.FileChooser.ExtensionFilter
 import java.awt.{Cursor, Shape, TextArea}
 import java.io.FileInputStream
 import java.io.File
+import scala.language.postfixOps
 
 object Main extends JFXApp3:
 
@@ -52,6 +53,12 @@ object Main extends JFXApp3:
     gridWith3x3Squares.layoutX = 80
 
     var unsavedChanges: Boolean = false // Flag to track unsaved changes in the file
+
+    // This method is done to avoid "Advanced language feature: postfix operator notation"
+    def updateUnsavedChanges(b: Boolean): Unit =
+      unsavedChanges = b
+
+
     var puzzleboard: Option[Puzzleboard] = None
     var colNSize: Option[Int] = None
     var rowNSize: Option[Int] = None
@@ -275,7 +282,7 @@ object Main extends JFXApp3:
       text.setFont(Font.font("Arial", FontWeight.Bold, 14))
       text.visible = true
       allListViews(j).visible = false
-      unsavedChanges = true
+      updateUnsavedChanges(true)
       updateTitle()
 
 
@@ -551,13 +558,11 @@ object Main extends JFXApp3:
             recentFilesMenu.getItems.add(menuItem)
           )
 */
+    var fileNameOfSavedFile: Option[String] = None // Will contain the name of a file that have already been saved.
+    var parentOfSavedFile: Option[File] = None // Will contains the parent directory of the saved file.
 
-    val saveItem = new MenuItem("Save")
-      saveItem.onAction = (event) => println("Save-button in the menubar is clicked")
-    val saveAsItem = new MenuItem("Save as")
-      saveAsItem.onAction = (event) =>
-        println("Save as -button in the menubar is clicked")
-        val fileChooser = new FileChooser()
+    def openFileChooserToSaveFile: Unit =
+      val fileChooser = new FileChooser()
         fileChooser.setTitle("Save File")
 
         // set the extension filter to .txt
@@ -576,20 +581,38 @@ object Main extends JFXApp3:
         if (selectedFile != null) then
           val fileName = selectedFile.getName
           val parentDir: File = selectedFile.getParentFile
-          unsavedChanges = false
+          updateUnsavedChanges(false)
           updateTitle()
           println(parentDir)
-          // TODO: Add correct handling, when puzzleboard == None (Alert should popup)
+
           if puzzleboard.isDefined then
             FWriter.writeFile(fileName, parentDir, puzzleboard.get, rowNSize.get, colNSize.get)
+            fileNameOfSavedFile = Some(fileName)
+            parentOfSavedFile = Some(parentDir)
           else
             val cannotSaveFileAlert = new Alert(AlertType.WARNING)
             cannotSaveFileAlert.setTitle("Cannot save the file!")
             cannotSaveFileAlert.setHeaderText(null)
             cannotSaveFileAlert.setContentText("File saving was unsuccessful! Please, make sure that you downloaded a board first.")
             cannotSaveFileAlert.showAndWait()
-        end if
+        // end if
 
+
+    val saveItem = new MenuItem("Save")
+      saveItem.onAction = (event) =>
+        println("Save-button in the menubar is clicked")
+        if fileNameOfSavedFile.isDefined && parentOfSavedFile.isDefined then
+          FWriter.writeFile(fileNameOfSavedFile.get, parentOfSavedFile.get, puzzleboard.get, rowNSize.get, colNSize.get)
+          updateUnsavedChanges(false) // Delete asterisk
+          updateTitle()
+        else
+          openFileChooserToSaveFile
+
+
+    val saveAsItem = new MenuItem("Save as")
+      saveAsItem.onAction = (event) =>
+        println("Save as -button in the menubar is clicked")
+        openFileChooserToSaveFile // Opens a fileChooser, where the user can select, where she/he wants to save the file.
 
 
 
@@ -621,6 +644,8 @@ object Main extends JFXApp3:
             puzzleboard.get.showTiles().foreach( tile => tile.currentNumber = None )
             deleteText()
             deletePossibleCombinations()
+            updateUnsavedChanges(true)
+            updateTitle()
             println("Yes button is clicked")
           else
             println("No button clicked or dialog closed") )
