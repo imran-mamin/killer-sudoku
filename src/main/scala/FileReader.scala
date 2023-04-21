@@ -3,6 +3,7 @@ package sudoku
 import scala.io.Source
 import java.io.{FileNotFoundException, IOException, BufferedReader}
 import scala.collection.mutable.Buffer
+import java.awt.Color
 
 def initializeTiles(col: Int, row: Int) =
   val tiles: Buffer[Tile] = Buffer()
@@ -203,6 +204,30 @@ object FileReader:
 
 
 
+  /** This method adds colors to sub-areas using Greedy-algorithm. */
+  def addColorToSubareas(puzzle: Puzzleboard): Unit =
+    val subareas: Vector[Subarea] = puzzle.showSubareas()
+    val colors: Buffer[Color] = Buffer()
+    for i <- subareas.indices do
+      val currentSba = subareas(i)
+      if currentSba.color.isEmpty then
+        val neighbors: Vector[Subarea] = currentSba.neighbors
+        val colorInNeighbors: Buffer[Color] = Buffer()
+
+        // Adds colors that neighboring sub-areas have into colorInNeighbors-buffer.
+        neighbors.foreach( neighbor =>
+          if neighbor.color.isDefined && !colorInNeighbors.contains(neighbor.color.get) then
+            colorInNeighbors += neighbor.color.get )
+
+        val remainingColors: Buffer[Color] = colors.diff(colorInNeighbors)
+        if remainingColors.nonEmpty then
+          currentSba.color = Some(remainingColors.head) // Takes the first color from possible colors.
+        else
+          colors += Color.getHSBColor((16 * i + 128) % 360, (64 * i + 128) % 101, (128 * i + 128) % 101)
+          currentSba.color = Some(colors.last)
+      end if
+    end for
+
 
   // TODO: Add more descriptive error messages
   /** This method takes all the lines of the text file as an input and
@@ -224,18 +249,24 @@ object FileReader:
     if colNString.isDefined then
       colN = colNString.get.replaceAll(" ", "").split(":").last.toIntOption
 
-    assert(rowN.nonEmpty, "Amount of rows not specified!")
-    sys.exit(1)
-    assert(colN.nonEmpty, "Amount of columns not specified!")
-    sys.exit(1)
-    assert(rowN.get % 3 == 0, "Amount of rows are not divisible by three!")
-    sys.exit(1)
-    assert(rowN.get != 0, "Amount of rows cannot be 0!")
-    sys.exit(1)
-    assert(colN.get % 3 == 0, "Amount of columns are not divisible by three!")
-    sys.exit(1)
-    assert(colN.get != 0, "There cannot be 0 columns!")
-    sys.exit(1)
+    if rowN.isEmpty then
+      assert(rowN.nonEmpty, "Amount of rows not specified!")
+      sys.exit(1)
+    if colN.isEmpty then
+      assert(colN.nonEmpty, "Amount of columns not specified!")
+      sys.exit(1)
+    if rowN.getOrElse(1) % 3 != 0 then
+      assert(rowN.get % 3 == 0, "Amount of rows are not divisible by three!")
+      sys.exit(1)
+    if rowN.getOrElse(0) == 0 then
+      assert(rowN.get != 0, "Amount of rows cannot be 0!")
+      sys.exit(1)
+    if colN.getOrElse(1) % 3 != 0 then
+      assert(colN.get % 3 == 0, "Amount of columns are not divisible by three!")
+      sys.exit(1)
+    if colN.getOrElse(0) == 0 then
+      assert(colN.get != 0, "There cannot be 0 columns!")
+      sys.exit(1)
 
     val tiles: Buffer[Tile] = initializeTiles(colN.get, rowN.get)
 
@@ -276,6 +307,7 @@ object FileReader:
     val puzzle = new Puzzleboard(tiles.toVector, subareas.toVector)
     addSubareaIndexToTiles(puzzle)
     addNeighborsToSubareas(puzzle)
+    addColorToSubareas(puzzle)
     (puzzle, rowN.get, colN.get)
 
 end FileReader

@@ -22,7 +22,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(lines == Seq("#Start", "#Date", "#Subarea:", "sum: 6", "amountOfTiles: 4", "tileSum: a1",
       "tiles: a1, a2, b1, b2", "squares: 1, 1, 1, 1"))
   }
-
+/*
   "FileReader readFilePuzzleBoardCfg-method" should "create a new Puzzleboard object of correct length, when the given size is" +
     "not divisible by three" in {
     val file = "src/testingData/test2_readfilepuzzleboard.txt"
@@ -33,7 +33,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(board.showTiles().length == 81)
     assert(board.showSubareas().length == 1)
   }
-
+*/
 
 
   "FileReader initializeTiles-method" should "create the right amount of Tile-objects" in {

@@ -341,16 +341,17 @@ object Main extends JFXApp3:
     def createSubAreas(board: Puzzleboard, row: Int, col: Int) =
       val subareas: Vector[Subarea] = board.showSubareas()
       val tilesInBoard: Vector[Tile] = board.showTiles()
-      val colors: Buffer[Color] = Buffer()
+      // val colors: Buffer[Color] = Buffer()
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
 
 
       // TODO: Use Greedy algorithm.
       // Creating the same amount of colors as subareas
-      for i <- subareas.indices do
+
+      /*for i <- subareas.indices do
         colors += Color.rgb((16 * i + 128) % 255, (64 * i + 128) % 255, (128 * i + 128) % 255) // Color.rgb((200 + i * 4) % 255, (150 + i * 16) % 255, (150 + i) % 255)
-      end for
+      end for */
 
       assert(tiles.length == tilesInBoard.length)
       def convertIndex(i: Int): Int =
@@ -362,7 +363,9 @@ object Main extends JFXApp3:
 
       def cursorOut(j: Int) =
         val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
-        tiles(j).setFill(colors(subIndex))
+        // tiles(j).setFill(colors(subIndex))
+        val subareaColor = subareas(subIndex).color.get
+        tiles(j).setFill(Color.rgb(subareaColor.getRed, subareaColor.getGreen, subareaColor.getBlue))
         allListViews(j).setOnMouseExited( e =>
           allListViews(j).visible = false )
 
@@ -370,8 +373,11 @@ object Main extends JFXApp3:
       for j <- tiles.indices do
         try
           val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
-          tiles(j).fill = colors(subIndex)
-
+          if subareas(subIndex).color.isDefined then
+            val subareaColor = subareas(subIndex).color.get
+            tiles(j).fill = Color.rgb(subareaColor.getRed, subareaColor.getGreen, subareaColor.getBlue) // colors(subIndex)
+          else
+            assert(false)
           // Checks if current tile has a target sum of the sub-area.
           if tilesInBoard(convertIndex(j)).targetSum.isDefined then
 
