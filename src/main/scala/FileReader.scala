@@ -207,7 +207,7 @@ object FileReader:
   /** This method adds colors to sub-areas using Greedy-algorithm. */
   def addColorToSubareas(puzzle: Puzzleboard): Unit =
     val subareas: Vector[Subarea] = puzzle.showSubareas()
-    val colors: Buffer[Color] = Buffer()
+    val colors: Buffer[Color] = Buffer(Color.BLUE, Color.GREEN, Color.ORANGE, Color.PINK, Color.YELLOW)
     for i <- subareas.indices do
       val currentSba = subareas(i)
       if currentSba.color.isEmpty then
@@ -223,7 +223,7 @@ object FileReader:
         if remainingColors.nonEmpty then
           currentSba.color = Some(remainingColors.head) // Takes the first color from possible colors.
         else
-          colors += Color.getHSBColor((16 * i + 128) % 360, (64 * i + 128) % 101, (128 * i + 128) % 101)
+          colors += Color.getHSBColor((i * 20 + 19) % 360, 100, 100)
           currentSba.color = Some(colors.last)
       end if
     end for

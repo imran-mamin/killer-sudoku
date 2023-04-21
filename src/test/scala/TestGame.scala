@@ -215,8 +215,24 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(allSba(7).neighbors.contains(allSba(6)))
     assert(allSba(7).neighbors.contains(allSba(8)))
     assert(allSba(7).neighbors.length == 4)
-
-
   }
+
+  "Neigboring sub-areas" should "have different color" in {
+    val file = "src/testingData/9x9_example_board.txt"
+    val lines = FileReader.readFile(file)
+
+    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
+    val allSba = board.showSubareas()
+    var differentColorInNeighbors: Boolean = true
+
+    for i <- allSba.indices do
+      val neighbors = allSba(i).neighbors
+      if neighbors.exists( neighbor => neighbor.color.get == allSba(i).color.get ) then
+        differentColorInNeighbors = false
+      end if
+    end for
+    assert(differentColorInNeighbors, "Neighboring sub-areas should have different color.")
+  }
+
 end TestGame
 
