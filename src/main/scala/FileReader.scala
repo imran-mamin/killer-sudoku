@@ -113,14 +113,16 @@ object FileReader:
       else if currentLine.contains("squares:") then
           squares = squares ++= currentLine.drop(8).split(",").map( str => str.toInt ).toBuffer
       else
-          println("Not found error")
-          assert(false)
+          // println("Not found error")
+          assert(false, "Not found error!")
+          sys.exit(1)
     end for
 
     if sum.isEmpty || amountOfTiles.isEmpty || tileSum.isEmpty
       || tilesInStr.isEmpty || squares.isEmpty || squares.length != tilesInStr.length then
-      println("Not all information is provided!")
-      assert(false)
+      // println("")
+      assert(false, "Not all information is provided!")
+      sys.exit(1)
     end if
 
     // Index of tile, which contains information about subarea sum
@@ -222,26 +224,32 @@ object FileReader:
     if colNString.isDefined then
       colN = colNString.get.replaceAll(" ", "").split(":").last.toIntOption
 
-    assert(rowN.nonEmpty)
-    assert(colN.nonEmpty)
-    assert(rowN.get % 3 == 0)
-    assert(rowN.get != 0)
-    assert(colN.get % 3 == 0)
-    assert(colN.get != 0)
-
+    assert(rowN.nonEmpty, "Amount of rows not specified!")
+    sys.exit(1)
+    assert(colN.nonEmpty, "Amount of columns not specified!")
+    sys.exit(1)
+    assert(rowN.get % 3 == 0, "Amount of rows are not divisible by three!")
+    sys.exit(1)
+    assert(rowN.get != 0, "Amount of rows cannot be 0!")
+    sys.exit(1)
+    assert(colN.get % 3 == 0, "Amount of columns are not divisible by three!")
+    sys.exit(1)
+    assert(colN.get != 0, "There cannot be 0 columns!")
+    sys.exit(1)
 
     val tiles: Buffer[Tile] = initializeTiles(colN.get, rowN.get)
 
     val title: Option[String] = stripped.dropWhile( str => !str.contains("#title") ).headOption
     if title.isEmpty then
-      println("File does not have a title.")
-      assert(false)
-
+      // println("File does not have a title.")
+      assert(false, "File does not have a title.")
+      sys.exit(1)
 
     val date: Option[String] = stripped.dropWhile( str => !str.contains("#date") ).headOption
     if date.isEmpty then
-      println("No date found!")
-      assert(false)
+      // println("No date found!")
+      assert(false, "No date found!")
+      sys.exit(1)
 
     val subareas: Buffer[Subarea] = Buffer()
 
