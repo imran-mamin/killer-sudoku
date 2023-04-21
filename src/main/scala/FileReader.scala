@@ -37,6 +37,16 @@ def initializeTiles(col: Int, row: Int) =
   end for
   tiles
 
+
+
+def convertHSBtoRGB(hsbColor: Color): (Int, Int, Int) =
+  val rgb = hsbColor.getRGB
+  val red = (rgb >> 16) & 0xFF
+  val green = (rgb >> 8) & 0xFF
+  val blue = rgb & 0xFF
+  (red, green, blue)
+
+
 /**
  * This object has methods that reads the received file from the user input in the gui
  * and first divides it into a Buffer of lines and checks if there are errors in the
@@ -207,13 +217,12 @@ object FileReader:
   /** This method adds colors to sub-areas using Greedy-algorithm. */
   def addColorToSubareas(puzzle: Puzzleboard): Unit =
     val subareas: Vector[Subarea] = puzzle.showSubareas()
-    val colors: Buffer[Color] = Buffer(Color.BLUE, Color.GREEN, Color.ORANGE, Color.PINK, Color.YELLOW)
+    val colors: Buffer[Color] = Buffer() // Color.BLUE, Color.GREEN, Color.ORANGE, Color.PINK, Color.YELLOW
     for i <- subareas.indices do
       val currentSba = subareas(i)
       if currentSba.color.isEmpty then
         val neighbors: Vector[Subarea] = currentSba.neighbors
         val colorInNeighbors: Buffer[Color] = Buffer()
-
         // Adds colors that neighboring sub-areas have into colorInNeighbors-buffer.
         neighbors.foreach( neighbor =>
           if neighbor.color.isDefined && !colorInNeighbors.contains(neighbor.color.get) then
@@ -223,7 +232,7 @@ object FileReader:
         if remainingColors.nonEmpty then
           currentSba.color = Some(remainingColors.head) // Takes the first color from possible colors.
         else
-          colors += Color.getHSBColor((i * 20 + 19) % 360, 100, 100)
+          colors += Color.getHSBColor((Math.PI / i + 1).toFloat, 60, 100)
           currentSba.color = Some(colors.last)
       end if
     end for

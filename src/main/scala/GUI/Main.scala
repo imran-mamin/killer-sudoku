@@ -364,8 +364,9 @@ object Main extends JFXApp3:
       def cursorOut(j: Int) =
         val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
         // tiles(j).setFill(colors(subIndex))
-        val subareaColor = subareas(subIndex).color.get
-        tiles(j).setFill(Color.rgb(subareaColor.getRed, subareaColor.getGreen, subareaColor.getBlue))
+        val subareaColorInRGB = convertHSBtoRGB(subareas(subIndex).color.get)
+        tiles(j).setFill(Color.rgb(subareaColorInRGB._1, subareaColorInRGB._2, subareaColorInRGB._3))
+
         allListViews(j).setOnMouseExited( e =>
           allListViews(j).visible = false )
 
@@ -374,8 +375,8 @@ object Main extends JFXApp3:
         try
           val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
           if subareas(subIndex).color.isDefined then
-            val subareaColor = subareas(subIndex).color.get
-            tiles(j).fill = Color.rgb(subareaColor.getRed, subareaColor.getGreen, subareaColor.getBlue) // colors(subIndex)
+            val rgbCodes = convertHSBtoRGB(subareas(subIndex).color.get)
+            tiles(j).fill = Color.rgb(rgbCodes._1, rgbCodes._2, rgbCodes._3) // colors(subIndex)
           else
             assert(false)
           // Checks if current tile has a target sum of the sub-area.
