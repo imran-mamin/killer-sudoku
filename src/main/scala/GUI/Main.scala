@@ -51,6 +51,8 @@ object Main extends JFXApp3:
     end throwAlert
 
 
+
+
     stage = new JFXApp3.PrimaryStage:
       title = "Killer-Sudoku"
       width = 800
@@ -75,6 +77,19 @@ object Main extends JFXApp3:
 
     val mainScene = Scene(parent = root)
     stage.scene = mainScene
+
+
+
+    /** This method converts the index in the gui to the one in the back-end of the program. */
+
+    def convertIndex(i: Int): Int =
+      val amountOfSquaresHorizontal: Int = colNSize.get / 3
+      val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
+      val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
+      val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
+      ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
+    end convertIndex
+
 
     val tiles: Buffer[Rectangle] = Buffer()
 
@@ -180,15 +195,6 @@ object Main extends JFXApp3:
       val amountOfSquaresVertical: Int = row / 3
       val boardTiles = board.showTiles()
 
-      // This method converts index of UI into the index in back-end.
-      def convertIndex(i: Int): Int =
-        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
-        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
-        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
-        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
-
-
-
       for j <- tiles.indices do
         val currentListView = new ListView[String]()
         currentListView.setMaxSize(100, 100)
@@ -250,12 +256,6 @@ object Main extends JFXApp3:
       texts(j).setText("")
       val candidateNum = candidate.toIntOption
 
-      def convertIndex(i: Int): Int =
-        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
-        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
-        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
-        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
-
       // Updating currentNumber of the tile in back-end
       val boardTiles = board.showTiles()
       val tileToPlaceCandidate = boardTiles(convertIndex(j))
@@ -276,12 +276,6 @@ object Main extends JFXApp3:
     def openListView(j: Int, row: Int, col: Int, board: Puzzleboard) =
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
-
-      def convertIndex(i: Int): Int =
-        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
-        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
-        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
-        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
 
       // Displaying possible combinations in the gui.
       val sizeOfVbox: Int = vbox.getChildren.length
@@ -339,12 +333,6 @@ object Main extends JFXApp3:
 
 
       assert(tiles.length == tilesInBoard.length)
-      def convertIndex(i: Int): Int =
-        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
-        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
-        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
-        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
-
 
       def cursorOut(j: Int) =
         val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
@@ -400,13 +388,6 @@ object Main extends JFXApp3:
       val tilesInBoard: Vector[Tile] = board.showTiles()
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
-
-      def convertIndex(i: Int): Int =
-        val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
-        val n = (i / 9) % amountOfSquaresHorizontal // col of the 3x3 square
-        val topLeft3x3 = m * amountOfSquaresHorizontal * 3 * 3 + n * 3 // index of the tile in top left corner in 3x3square
-        ((i % 9) / 3) * amountOfSquaresHorizontal * 3 + (i % 9) % 3 + topLeft3x3
-
 
       for i <- tiles.indices do
         if tilesInBoard(convertIndex(i)).currentNumber.isDefined then
@@ -480,12 +461,18 @@ object Main extends JFXApp3:
 
           previousFiles += file.toString
 
-        else
+      catch
+        case e: java.io.IOException =>
+          val alertMessage: String = "The IOException was occuried while trying to open the file."
+        case e: java.io.FileNotFoundException =>
           val alertMessage: String = "File not found error! Please, make sure that you selected the correct file."
           throwAlert(AlertType.ERROR, "Error", alertMessage)
 
-      catch
-        case e => throw e
+        case e: java.util.NoSuchElementException =>
+          val alertMessage: String = "Cannot create the board, because the amount of rows and columns should be divisible by three." +
+            "Please, make sure that you specified the proper amount of tiles in the file."
+          throwAlert(AlertType.ERROR, "Error", alertMessage)
+
 
 
     var fileNameOfSavedFile: Option[String] = None // Will contain the name of a file that have already been saved.

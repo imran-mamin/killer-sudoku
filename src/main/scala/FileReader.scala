@@ -61,18 +61,10 @@ object FileReader:
    * @return Seq[String], which contains all the lines in the given file.
    */
   def readFile(file: String): Seq[String] =
-    try
-      val bufferedSource = Source.fromFile(file)
-      val allLines: Seq[String] = bufferedSource.getLines().toSeq
-      bufferedSource.close()
-      allLines;
-    catch
-      case e: FileNotFoundException =>
-        println("Couldn't find the file.")
-        throw e
-      case e: IOException           =>
-        println("IOException!")
-        throw e
+    val bufferedSource = Source.fromFile(file)
+    val allLines: Seq[String] = bufferedSource.getLines().toSeq
+    bufferedSource.close()
+    allLines;
 
 
   // def readFilePuzzleBoardHistory(): Seq[String] = ???
@@ -126,14 +118,12 @@ object FileReader:
       else
           // println("Not found error")
           assert(false, "Not found error!")
-          sys.exit(1)
     end for
 
     if sum.isEmpty || amountOfTiles.isEmpty || tileSum.isEmpty
       || tilesInStr.isEmpty || squares.isEmpty || squares.length != tilesInStr.length then
       // println("")
       assert(false, "Not all information is provided!")
-      sys.exit(1)
     end if
 
     // Index of tile, which contains information about subarea sum
@@ -167,23 +157,20 @@ object FileReader:
   // Will look something like this in the file: #placedNums:
   // a1: 6, a8: 8, ...
   def setCurrentNumsToTiles(placedNums: Buffer[String], allTiles: Buffer[Tile]): Unit =
-    try
-      val withoutTagAndSpaces: Buffer[String] = placedNums.map( str => str.replaceAll(" ", "") ).dropWhile( str => !str.contains(":") ).drop(1) // Last is the sign ':' itself.
-      val str: String = withoutTagAndSpaces.mkString(",") //.reduceLeft( (first, second) => first + second ).replaceAll(" ", "")
-      val pairTileAndNumInStr: Array[Array[String]] = str.split(',').map( str => str.split(':') )
-      pairTileAndNumInStr.foreach( n => n.foreach( m => println(m) ) )
-      assert(pairTileAndNumInStr.forall( arr => arr.length == 2 ))
+    val withoutTagAndSpaces: Buffer[String] = placedNums.map( str => str.replaceAll(" ", "") ).dropWhile( str => !str.contains(":") ).drop(1) // Last is the sign ':' itself.
+    val str: String = withoutTagAndSpaces.mkString(",") //.reduceLeft( (first, second) => first + second ).replaceAll(" ", "")
+    val pairTileAndNumInStr: Array[Array[String]] = str.split(',').map( str => str.split(':') )
+    pairTileAndNumInStr.foreach( n => n.foreach( m => println(m) ) )
+    assert(pairTileAndNumInStr.forall( arr => arr.length == 2 ))
 
-      for i <- pairTileAndNumInStr.indices do
-        val tileIndexStr: String = pairTileAndNumInStr(i)(0)
-        val num: Int = pairTileAndNumInStr(i)(1).toInt
-        val (row, col): (Int, Int) = this.findRowAndColumn(tileIndexStr)
+    for i <- pairTileAndNumInStr.indices do
+      val tileIndexStr: String = pairTileAndNumInStr(i)(0)
+      val num: Int = pairTileAndNumInStr(i)(1).toInt
+      val (row, col): (Int, Int) = this.findRowAndColumn(tileIndexStr)
 
-        allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get.currentNumber = Some(num)
+      allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get.currentNumber = Some(num)
 
-      end for
-    catch
-      case e => throw e
+    end for
 
 
   /**
@@ -260,22 +247,17 @@ object FileReader:
 
     if rowN.isEmpty then
       assert(rowN.nonEmpty, "Amount of rows not specified!")
-      sys.exit(1)
     if colN.isEmpty then
       assert(colN.nonEmpty, "Amount of columns not specified!")
-      sys.exit(1)
     if rowN.getOrElse(1) % 3 != 0 then
       assert(rowN.get % 3 == 0, "Amount of rows are not divisible by three!")
-      sys.exit(1)
     if rowN.getOrElse(0) == 0 then
       assert(rowN.get != 0, "Amount of rows cannot be 0!")
-      sys.exit(1)
     if colN.getOrElse(1) % 3 != 0 then
       assert(colN.get % 3 == 0, "Amount of columns are not divisible by three!")
-      sys.exit(1)
     if colN.getOrElse(0) == 0 then
       assert(colN.get != 0, "There cannot be 0 columns!")
-      sys.exit(1)
+
 
     val tiles: Buffer[Tile] = initializeTiles(colN.get, rowN.get)
 
@@ -283,7 +265,6 @@ object FileReader:
     if title.isEmpty then
       // println("File does not have a title.")
       assert(false, "File does not have a title.")
-      sys.exit(1)
 
     val subareas: Buffer[Subarea] = Buffer()
 
@@ -302,7 +283,7 @@ object FileReader:
     // Place numbers in the tiles that are specified in the provided file.
     if stripped.exists( str => str.contains("#placednums") ) then
       val placedNums: Buffer[String] = stripped.dropWhile( str => !str.contains("#placednums") )  //.takeWhile( str => !str.contains("#") )
-      placedNums(0) = placedNums(0).trim.replace("#placednums", "placednums")
+      placedNums(0) = placedNums.head.trim.replace("#placednums", "placednums")
       val placedNumsWithoutHash = placedNums.takeWhile( str => !str.contains("#") )
       setCurrentNumsToTiles(placedNumsWithoutHash, tiles)
     end if
