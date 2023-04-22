@@ -390,6 +390,11 @@ object Main extends JFXApp3:
           case e => throw e
       end for
 
+    // Removes possible combinations, when the cursor goes out of the GridPane object.
+    gridWith3x3Squares.setOnMouseExited( e => deletePossibleCombinations() )
+
+
+
     def placeNumsAccordingToFile(board: Puzzleboard, row: Int, col: Int): Unit =
       val tilesInBoard: Vector[Tile] = board.showTiles()
       val amountOfSquaresHorizontal: Int = col / 3
