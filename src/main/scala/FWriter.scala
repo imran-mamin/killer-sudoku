@@ -37,8 +37,6 @@ object FWriter:
       val bw = new BufferedWriter(new FileWriter(file))
       // Writes the title of the puzzle (in this case the filename)
       bw.write(s"#Title ${filename}\n")
-      bw.write("#Date: dd/mm/yyyy\n")
-      bw.write("#Time: 22:18\n")
       bw.write(s"#colsize: ${colNSize}\n")
       bw.write(s"#rowsize: ${rowNSize}\n\n")
 
