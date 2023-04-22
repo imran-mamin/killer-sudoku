@@ -97,7 +97,7 @@ object Main extends JFXApp3:
 
 
     def updateTitle(): Unit =
-      val title = if (unsavedChanges) "Killer-Sudoku - *" else "Killer-Sudoku"
+      val title = if (unsavedChanges) s"${stage.getTitle} - *" else s"${stage.getTitle}"
       stage.title = title
 
 
@@ -461,7 +461,7 @@ object Main extends JFXApp3:
           puzzleboard = Some(board)
           rowNSize = Some(boardWithSize._2)
           colNSize = Some(boardWithSize._3)
-          
+          stage.title = stage.getTitle + " - " + boardWithSize._4
           // This method creates sudoku board
           create3x3Squares(boardWithSize._2, boardWithSize._3, board)
           // This method creates a listView object for every tile.
@@ -482,6 +482,10 @@ object Main extends JFXApp3:
         case e: java.util.NoSuchElementException =>
           val alertMessage: String = "Cannot create the board, because the amount of rows and columns should be divisible by three." +
             "Please, make sure that you specified the proper amount of tiles in the file."
+          throwAlert(AlertType.ERROR, "Error", alertMessage)
+
+        case e: AssertionError =>
+          val alertMessage: String = e.getMessage
           throwAlert(AlertType.ERROR, "Error", alertMessage)
 
 

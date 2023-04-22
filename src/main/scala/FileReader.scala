@@ -64,7 +64,7 @@ object FileReader:
     val bufferedSource = Source.fromFile(file)
     val allLines: Seq[String] = bufferedSource.getLines().toSeq
     bufferedSource.close()
-    allLines;
+    allLines
 
 
   // def readFilePuzzleBoardHistory(): Seq[String] = ???
@@ -229,7 +229,7 @@ object FileReader:
   /** This method takes all the lines of the text file as an input and
    * creates a Puzzleboard-object according to the information given in
    * the text file. */
-  def readFilePuzzleBoardCfg(cfg: Seq[String]): (Puzzleboard, Int, Int) =
+  def readFilePuzzleBoardCfg(cfg: Seq[String]): (Puzzleboard, Int, Int, String) =
 
     // Will contain the stripped data after handling some of it.
     var stripped: Buffer[String] = cfg.toBuffer.filter( element => element != "" ).map( element => element.trim.toLowerCase)
@@ -261,6 +261,7 @@ object FileReader:
 
     val tiles: Buffer[Tile] = initializeTiles(colN.get, rowN.get)
 
+    // TODO: Remove #title from the title of the gui window.
     val title: Option[String] = stripped.dropWhile( str => !str.contains("#title") ).headOption
     if title.isEmpty then
       // println("File does not have a title.")
@@ -292,7 +293,7 @@ object FileReader:
     addSubareaIndexToTiles(puzzle)
     addNeighborsToSubareas(puzzle)
     addColorToSubareas(puzzle)
-    (puzzle, rowN.get, colN.get)
+    (puzzle, rowN.get, colN.get, title.get)
 
 end FileReader
 
