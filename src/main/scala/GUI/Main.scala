@@ -40,14 +40,23 @@ object Main extends JFXApp3:
 
 
   def start(): Unit =
+
+    // This method Displays an alert in the gui window.
+    def throwAlert(atype: AlertType, title: String, message: String) =
+      val alert = new Alert(atype)
+          alert.setTitle(title)
+          alert.setHeaderText(null)
+          alert.setContentText(message)
+          alert.showAndWait()
+    end throwAlert
+
+
     stage = new JFXApp3.PrimaryStage:
       title = "Killer-Sudoku"
       width = 800
       height = 600
 
     val root = Pane()
-    // grid.layoutY = 80
-    // grid.layoutX = 80
     val gridWith3x3Squares = GridPane()
     gridWith3x3Squares.layoutY = 80
     gridWith3x3Squares.layoutX = 80
@@ -86,19 +95,12 @@ object Main extends JFXApp3:
           val rectangle = new Rectangle:
             width = 40
             height = 40
-          /* val text = new Text("22")
-          // text.setFont(Font.font("Arial", FontWeight.BOLD, 14))
-          text.setFill(Color.Yellow)
-          text.setX(rectangle.getX() + 10)
-          text.setY(rectangle.getY() + 20) */
           rectangle.setStroke(Color.Black)
           rectangle.setStrokeWidth(0.5)
           tiles += rectangle
           gridWith9Tiles.add(rectangle, j + 1, i + 1)
-          // gridWith9Tiles.add(text, j + 1, i + 1)
       gridWith9Tiles.border = Border.stroke(Color.Black)
       gridWith9TilesInsets = gridWith9Tiles.getBorder.getInsets
-      // println("gridWith9Tiles Insets: " + gridWith9Tiles.getBorder.getInsets)
       gridWith9Tiles
 
 
@@ -147,7 +149,6 @@ object Main extends JFXApp3:
           val borderTopOf3x3Square: Double = 2
           boardTiles((i * col) + j).yCoord = gridWith3x3Squares.getLayoutY + i * tiles.head.getHeight +
             borderTopOf9x9Square
-          // boardTiles((i * col) + j).edgeSize = tiles(0).getWidth
 
         end for
       end for
@@ -166,9 +167,6 @@ object Main extends JFXApp3:
       end for
       setCoordinates(board, row, col)
 
-      // This method will rearrange tiles, so that the order of them will be the same as in back-end
-      // rearrangeTilesAsInBackEnd(row: Int, col: Int)
-      // board.showTiles().foreach( tile => println("xCoord: " + tile.xCoord + " yCoord: " + tile.yCoord) )
       setNumAndCharAsPos(row, col)
 
     root.children += gridWith3x3Squares
@@ -211,7 +209,6 @@ object Main extends JFXApp3:
 
         val xCoord = boardTiles(convertIndex(j)).xCoord
         val yCoord = boardTiles(convertIndex(j)).yCoord
-       //  println(s"xCoord: ${xCoord}, yCoord: ${yCoord}")
         currentListView.layoutX = xCoord
         currentListView.layoutY = yCoord + 20
       end for
@@ -231,18 +228,9 @@ object Main extends JFXApp3:
 
      // Possible combinations of the tiles in subarea
     val possibleComLabel = new Label("Possible combinations")
-    // possibleComLabel.resize(20, 10)
     possibleComLabel.setFont(new Font(18))
     possibleComLabel.setStyle("-fx-font-weight: bold")
-    /*val toolbar = new ToolBar {
-      layoutX = 540
-      layoutY = 60
-      content = List(possibleComLabel)
-    }
-    toolbar.border = Border.stroke(2)
 
-    root.children += toolbar
-*/
 
     val vbox = new VBox()
     vbox.layoutX = 540
@@ -258,7 +246,6 @@ object Main extends JFXApp3:
     def placeCandidate(j: Int, row: Int, col: Int, board: Puzzleboard, candidate: String) =
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
-      // println(candidate)
 
       texts(j).setText("")
       val candidateNum = candidate.toIntOption
@@ -301,33 +288,25 @@ object Main extends JFXApp3:
       vbox.getChildren.remove(1, sizeOfVbox)
       val combinations: Buffer[String] = board.showPossibleCombinationsInStr(convertIndex(j))
       val listOfLabels: List[Label] = combinations.toList.map( str => new Label(str) )
-      // toolbar.getItems.removeAll()
-      // listOfLabels.foreach( label => label.visible = true)
-      // listOfLabels.foreach( label => label.layoutX = vbox.getLayoutX + 20 )
       listOfLabels.foreach( label => label.setTextFill(Color.Red) )
       listOfLabels.foreach( label => label.setFont(new Font(16)) )
       listOfLabels.foreach( label => vbox.children += label )
-      // toolbar.getItems.addAll(listOfLabels.prepended(possibleComLabel): _*)
+
 
 
 
       val listView = allListViews(j)
       listView.toFront()
-      // val text = new Text(listView.getSelectionModel.getSelectedItem)
-      // text.append(listView.getSelectionModel.getSelectedItem)
       listView.getItems.remove(0, listView.getItems.length)
-      // val candidates = board.getCandidates(convertIndex(j))
       val candidates = board.getCandidatesAfterSbaFilter(convertIndex(j))
       val subareaIndex: Int = board.showTiles()((convertIndex(j))).subareaIndex.get // TODO: Make sure it is defined.
       val amountOfFreeTiles: Int = board.showSubareas()(subareaIndex).showTiles().count( tile => tile.currentNumber.isEmpty )
 
       // Displays alertbox if we run out of candidates.
       if candidates.isEmpty && (amountOfFreeTiles != 0) then
-        val alert = new Alert(AlertType.ERROR)
-        alert.setTitle("Error")
-        alert.setHeaderText(null)
-        alert.setContentText("There are no candidates left! Please, consider removing some numbers from other squares or click 'Start again' button.")
-        alert.showAndWait()
+        val alertMessage: String = "There are no candidates left! Please, consider removing some numbers from other squares or click 'Start again' button."
+        throwAlert(AlertType.ERROR, "Error", alertMessage)
+
         println("Candidates is empty")
       else
         listView.getItems.add("")
@@ -355,7 +334,6 @@ object Main extends JFXApp3:
     def createSubAreas(board: Puzzleboard, row: Int, col: Int) =
       val subareas: Vector[Subarea] = board.showSubareas()
       val tilesInBoard: Vector[Tile] = board.showTiles()
-      // val colors: Buffer[Color] = Buffer()
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
 
@@ -390,7 +368,6 @@ object Main extends JFXApp3:
           if tilesInBoard(convertIndex(j)).targetSum.isDefined then
 
             val text = new Text(tilesInBoard(convertIndex(j)).targetSum.get.toString)
-            // text.setFont(Font.font("Arial", FontWeight.BOLD, 14))
             text.setFill(Color.Black)
             text.setX(tilesInBoard(convertIndex(j)).xCoord)
             text.setY(tilesInBoard(convertIndex(j)).yCoord + 20)
@@ -440,7 +417,6 @@ object Main extends JFXApp3:
           texts(i).layoutY = tileWithNum.yCoord + 26
           texts(i).setFont(Font.font("Arial", FontWeight.Bold, 14))
           texts(i).visible = true
-          // texts(i).toFront()
         end if
       end for
 
@@ -468,15 +444,6 @@ object Main extends JFXApp3:
     // Menu
     val menuBar = new MenuBar
     val fileMenu = new Menu("File")
-
-    // val openPrevious = new Menu("Open previous")
-/*
-    def updateOpenPrevious() =
-      for i <- previousFiles.indices do
-        val currentMenuItem = new MenuItem(previousFiles(previousFiles.length - 1 - i))
-        openPrevious.getItems.add(currentMenuItem)
-      end for
-*/
 
 
     val newFileItem = new MenuItem("New file")
@@ -512,17 +479,10 @@ object Main extends JFXApp3:
           placeNumsAccordingToFile(board, boardWithSize._2, boardWithSize._3)
 
           previousFiles += file.toString
-          // updateOpenPrevious()
-
-        // C:\Users\imran\IdeaProjects\Killer_Sudoku\src\testingData
 
         else
-          val alert = new Alert(AlertType.ERROR)
-          alert.setTitle("Error")
-          alert.setHeaderText(null)
-          alert.setContentText("File not found error! Please, make sure that you selected the correct file.")
-          alert.showAndWait()
-        end if
+          val alertMessage: String = "File not found error! Please, make sure that you selected the correct file."
+          throwAlert(AlertType.ERROR, "Error", alertMessage)
 
       catch
         case e => throw e
@@ -560,12 +520,9 @@ object Main extends JFXApp3:
             fileNameOfSavedFile = Some(fileName)
             parentOfSavedFile = Some(parentDir)
           else
-            val cannotSaveFileAlert = new Alert(AlertType.WARNING)
-            cannotSaveFileAlert.setTitle("Cannot save the file!")
-            cannotSaveFileAlert.setHeaderText(null)
-            cannotSaveFileAlert.setContentText("File saving was unsuccessful! Please, make sure that you downloaded a board first.")
-            cannotSaveFileAlert.showAndWait()
-        // end if
+            val alertMessage: String = "File saving was unsuccessful! Please, make sure that you downloaded a board first."
+            throwAlert(AlertType.WARNING, "Cannot save the file!", alertMessage)
+
 
 
     val saveItem = new MenuItem("Save")
@@ -630,38 +587,6 @@ object Main extends JFXApp3:
      startAgainButton.border = Border.stroke(2)
 
      root.children += startAgainButton
-
-
-
-/*
-    // Undo step -button
-    val input = new FileInputStream("src/images/left_arrow_circle_shape.png")
-    val image = new Image(input)
-    val imageViewUndo = new ImageView(image)
-
-    val undoButton = Button(null, imageViewUndo)
-      undoButton.scaleX = 0.5
-      undoButton.scaleY = 0.5
-      undoButton.layoutX = 40
-      undoButton.layoutY = 450
-      undoButton.setShape(new Circle(70))
-      undoButton.setPadding(Insets.Empty)
-    root.children += undoButton
-
-    // Redo step -button
-    val imageViewRedo = new ImageView(image)
-      imageViewRedo.scaleX = -imageViewRedo.getScaleX
-
-    val redoButton = Button(null, imageViewRedo)
-      redoButton.scaleX = 0.5
-      redoButton.scaleY = 0.5
-      redoButton.layoutX = 320
-      redoButton.layoutY = 450
-      redoButton.setShape(new Circle(70))
-      redoButton.setPadding(Insets.Empty)
-    root.children += redoButton
-
-*/
 
 
 end Main
