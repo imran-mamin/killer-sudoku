@@ -285,12 +285,6 @@ object FileReader:
       assert(false, "File does not have a title.")
       sys.exit(1)
 
-    val date: Option[String] = stripped.dropWhile( str => !str.contains("#date") ).headOption
-    if date.isEmpty then
-      // println("No date found!")
-      assert(false, "No date found!")
-      sys.exit(1)
-
     val subareas: Buffer[Subarea] = Buffer()
 
     for i <- stripped.indices do

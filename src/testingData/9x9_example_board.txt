@@ -1,8 +1,4 @@
 #Title Attempt 4
-#Date:
-dd/mm/yyyy
-#Time:
-22:18
 
 #Subarea:
 sum: 3
