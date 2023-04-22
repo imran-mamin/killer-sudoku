@@ -200,7 +200,7 @@ object Main extends JFXApp3:
         currentListView.setMaxSize(100, 100)
         currentListView.visible = false
 
-        currentListView.setCellFactory(_ => new CustomListCell())
+        currentListView.setCellFactory(_ => new CustomListCell(tiles.toVector, board, colNSize.get))
         allListViews += currentListView
         // val stack = new StackPane(currentListView, tiles(j))
         root.children += currentListView
@@ -589,6 +589,7 @@ object Main extends JFXApp3:
      startAgainButton.border = Border.stroke(2)
 
      root.children += startAgainButton
+
 
 
 end Main
