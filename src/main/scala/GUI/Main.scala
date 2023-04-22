@@ -277,18 +277,10 @@ object Main extends JFXApp3:
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
 
-      // Displaying possible combinations in the gui.
-      val sizeOfVbox: Int = vbox.getChildren.length
-      vbox.getChildren.remove(1, sizeOfVbox)
-      val combinations: Buffer[String] = board.showPossibleCombinationsInStr(convertIndex(j))
-      val listOfLabels: List[Label] = combinations.toList.map( str => new Label(str) )
-      listOfLabels.foreach( label => label.setTextFill(Color.Red) )
-      listOfLabels.foreach( label => label.setFont(new Font(16)) )
-      listOfLabels.foreach( label => vbox.children += label )
+      // Will show possible combinations
+      showPossibleCombs(board, j)
 
-
-
-
+      // Display a listView object
       val listView = allListViews(j)
       listView.toFront()
       listView.getItems.remove(0, listView.getItems.length)
@@ -314,6 +306,16 @@ object Main extends JFXApp3:
           if candidate != null then
             placeCandidate(j, row, col, board, candidate) )
 
+
+    def showPossibleCombs(board: Puzzleboard, j: Int): Unit =
+      // Displaying possible combinations in the gui.
+      val sizeOfVbox: Int = vbox.getChildren.length
+      vbox.getChildren.remove(1, sizeOfVbox)
+      val combinations: Buffer[String] = board.showPossibleCombinationsInStr(convertIndex(j))
+      val listOfLabels: List[Label] = combinations.toList.map( str => new Label(str) )
+      listOfLabels.foreach( label => label.setTextFill(Color.Red) )
+      listOfLabels.foreach( label => label.setFont(new Font(16)) )
+      listOfLabels.foreach( label => vbox.children += label )
 
 
 
@@ -367,10 +369,15 @@ object Main extends JFXApp3:
           initializeTextInTiles()
 
           // When hovering, the color changes to white
-          tiles(j).setOnMouseEntered( e => tileHandler(j) )
+          tiles(j).setOnMouseEntered( e =>
+            showPossibleCombs(board, j)
+            tileHandler(j) )
 
           // When the cursor leaves the tile, the color of the tile will be the same as before
-          tiles(j).setOnMouseExited( e => cursorOut(j) )
+          tiles(j).setOnMouseExited( e =>
+            // deletePossibleCombinations()
+            cursorOut(j)
+          )
 
           // When the user clicks on the tile, then the program should display a drop down menu of possible candidates
           tiles(j).setOnMouseClicked( e =>
@@ -382,7 +389,6 @@ object Main extends JFXApp3:
         catch
           case e => throw e
       end for
-
 
     def placeNumsAccordingToFile(board: Puzzleboard, row: Int, col: Int): Unit =
       val tilesInBoard: Vector[Tile] = board.showTiles()
