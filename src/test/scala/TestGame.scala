@@ -109,7 +109,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(board.getTiles.forall( tile => tile.getSquare == 0 ))
   }
 
-  "rowCandidates()-method" should "return all possible candidates so that" +
+  "getRowCandidates()-method" should "return all possible candidates so that" +
     "there will be no two same digits in the same row" in {
     val row0 = Vector(new Tile(0, 0, 1), new Tile(1, 0, 1), new Tile(2, 0, 1))
     val row1 = Vector(new Tile(0, 1, 1), new Tile(1, 1, 1), new Tile(2, 1, 1))
@@ -128,25 +128,25 @@ class TestGame extends AnyFlatSpec with Matchers:
  
   }
 /*
-  "colCandidates()-method" should "return all possible candidates so that" +
+  "getColCandidates()-method" should "return all possible candidates so that" +
     "there will be no two same digits in the same column." in {
     
   }
   */
 
-  "twoTilesPossibleCombinations()-method" should "return possible combinations of tiles' candidates." in {
+  "getLastTwoTilesCombinations()-method" should "return possible combinations of tiles' candidates." in {
     val tile1 = Tile(0, 0, 1)
     val tile2 = Tile(1, 0, 1)
     val targetSum: Int = 4
     val subarea = Subarea(targetSum, Vector(tile1, tile2), tile1)
     val board = Puzzleboard(Vector(tile1, tile2), Vector(subarea))
 
-    val combinations: Buffer[Vector[Int]] = board.twoTilesPossibleCombinations(1, 0, targetSum)
+    val combinations: Buffer[Vector[Int]] = board.getLastTwoTilesCombinations(1, 0, targetSum)
     assert(combinations.size == 1, "Method should return only one combination.")
     assert(combinations.contains(Vector(1, 3)), "The only combination should be '1 + 3'.")
   }
 
-  "twoTilesPossibleCombinations()-method" should "return proper possible combinations of tiles' candidates," +
+  "getLastTwoTilesCombinations()-method" should "return proper possible combinations of tiles' candidates," +
     "when the sub-area consists of three tiles and one number is already placed in one tile." in {
     val tile1 = Tile(3, 0, 2)
     val tile2 = Tile(3, 1, 2)
@@ -157,12 +157,12 @@ class TestGame extends AnyFlatSpec with Matchers:
 
     tile1.currentNumber = Some(4)
     targetSum -= 4
-    val combinations: Buffer[Vector[Int]] = board.twoTilesPossibleCombinations(1, 0, targetSum)
+    val combinations: Buffer[Vector[Int]] = board.getLastTwoTilesCombinations(1, 0, targetSum)
     assert(combinations.size == 2, "Method should return two combinations.")
     assert(combinations.contains(Vector(5, 9)) && combinations.contains(Vector(6, 8)), s"${combinations} did not equal Buffer('5 + 9', '6 + 8')")
   }
 
-  "twoTilesPossibleCombinations()-method" should "return proper possible combinations of tiles' candidates," +
+  "getLastTwoTilesCombinations()-method" should "return proper possible combinations of tiles' candidates," +
     "when the sub-area consists of fours tiles and numbers are already placed in two tiles." in {
     val tile1 = Tile(3, 0, 2)
     val tile2 = Tile(3, 1, 2)
@@ -176,7 +176,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     tile4.currentNumber = Some(8)
     targetSum -= 6
     targetSum -= 8
-    val combinations: Buffer[Vector[Int]] = board.twoTilesPossibleCombinations(3, 0, targetSum)
+    val combinations: Buffer[Vector[Int]] = board.getLastTwoTilesCombinations(3, 0, targetSum)
 
     // 1 + 9, 2 + 8, 3 + 7, 4 + 6 (because 8 and 6 are placed, combinations 2 + 8 and 4 + 6 should be ignored.)
     assert(combinations.size == 2, "Method should return four possible combinations.")
@@ -186,7 +186,7 @@ class TestGame extends AnyFlatSpec with Matchers:
   }
 
 
-  "threeTilesPossibleCombinations()-method" should "return possible combinations of tiles' candidates" in {
+  "getLastThreeTilesCombinations()-method" should "return possible combinations of tiles' candidates" in {
     val tile1 = Tile(0, 0, 1)
     val tile2 = Tile(1, 0, 1)
     val tile3 = Tile(0, 1, 1)
@@ -194,7 +194,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     val subarea = Subarea(targetSum, Vector(tile1, tile2, tile3), tile1)
     val board = Puzzleboard(Vector(tile1, tile2, tile3), Vector(subarea))
 
-    val combinations: Buffer[Vector[Int]] = board.threeTilesPossibleCombinations(1, 0, targetSum)
+    val combinations: Buffer[Vector[Int]] = board.getLastThreeTilesCombinations(1, 0, targetSum)
     assert(combinations.contains(Vector(1, 2, 5)) && combinations.contains(Vector(1, 3, 4)), s"${combinations} did not equal Buffer('1 + 2 + 5', '1 + 3 + 4').")
     assert(combinations.size == 2, "The amount of combinations is not the same.")
   }

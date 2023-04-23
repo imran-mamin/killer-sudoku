@@ -19,9 +19,7 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, Text}
 import javafx.geometry.Insets
 import javafx.scene
-// import javafx.scene.input.KeyEvent
 import scalafx.scene.layout.Region
-
 import scala.collection.mutable.Buffer
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.control.{TextInputDialog, ToolBar}
@@ -31,11 +29,11 @@ import javafx.stage.{FileChooser, WindowEvent}
 import sudoku.*
 import sudoku.GUI.CustomListCell
 import javafx.stage.FileChooser.ExtensionFilter
-
 import java.awt.{Cursor, Shape, TextArea}
 import java.io.FileInputStream
 import java.io.File
 import scala.language.postfixOps
+
 
 object Main extends JFXApp3:
 
@@ -66,11 +64,6 @@ object Main extends JFXApp3:
 
     var unsavedChanges: Boolean = false // Flag to track unsaved changes in the file
 
-    // This method is done to avoid "Advanced language feature: postfix operator notation"
-    def updateUnsavedChanges(b: Boolean): Unit =
-      unsavedChanges = b
-
-
     var puzzleboard: Option[Puzzleboard] = None
     var colNSize: Option[Int] = None
     var rowNSize: Option[Int] = None
@@ -81,8 +74,7 @@ object Main extends JFXApp3:
 
 
 
-    /** This method converts the index in the gui to the one in the back-end of the program. */
-
+    /** Convert tile index in gui to back-end */
     def convertIndex(i: Int): Int =
       val amountOfSquaresHorizontal: Int = colNSize.get / 3
       val m = (i / 9) / amountOfSquaresHorizontal // row of the 3x3 square
@@ -96,9 +88,11 @@ object Main extends JFXApp3:
 
     var gridWith9TilesInsets: Insets = Insets.EMPTY
 
+    // To avoid "Advanced language feature: postfix operator notation" warning
+    def updateUnsavedChanges(b: Boolean): Unit =
+      unsavedChanges = b
 
     def updateTitle(): Unit =
-      // val title = if (unsavedChanges) s"${stage.getTitle} - *" else s"${stage.getTitle}"
       var title: String = stage.getTitle
 
       // Add asterisk, if there are unsaved changes in the file.
@@ -134,11 +128,11 @@ object Main extends JFXApp3:
 
     val characters: List[Char] = ('a' to 'z').toList
 
-    // Sets coordinates of each tile
-    def setNumAndCharAsPos(row: Int, col: Int) =
+    // Show a,b,c,... and 1,2,3,... coordinates of puzzleboard
+    def showNumAndCharCoordinates(row: Int, col: Int) =
       for i <- 0 until row do // equals y-coordinate
 
-         // Displaying the y-coordinates in the GUI window
+        // Displaying the y-coordinates in the GUI window
         val colText = new Label:
           text = " " + (i + 1) + " "
         // - 1/4 is to display text on top of tiles at the center.
@@ -160,8 +154,8 @@ object Main extends JFXApp3:
 
 
 
-    // Set coordinates of the tile's top left corner and store it in the back-end of the program.
-    def setCoordinates(board: Puzzleboard, row: Int, col: Int) =
+    // Set coordinates of the tile's top left corner and store it in the back-end
+    def setTopLeftXYTileCoordinates(board: Puzzleboard, row: Int, col: Int) =
       val boardTiles = board.getTiles
       for i <- 0 until row do
         for j <- 0 until col do
@@ -194,17 +188,17 @@ object Main extends JFXApp3:
           gridWith3x3Squares.border = Border.stroke(Color.Black)
         end for
       end for
-      setCoordinates(board, row, col)
+      setTopLeftXYTileCoordinates(board, row, col)
 
-      setNumAndCharAsPos(row, col)
+      showNumAndCharCoordinates(row, col)
 
     root.children += gridWith3x3Squares
 
 
-    val allListViews: Buffer[ListView[String]] = Buffer()
+    val candidateLists: Buffer[ListView[String]] = Buffer()
 
 
-    def initializeListViews(board: Puzzleboard, row: Int, col: Int): Unit =
+    def initializeCandidateLists(board: Puzzleboard, row: Int, col: Int): Unit =
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
       val boardTiles = board.getTiles
@@ -215,12 +209,10 @@ object Main extends JFXApp3:
         currentListView.visible = false
 
         currentListView.setCellFactory(_ => new CustomListCell(tiles.toVector, board, colNSize.get))
-        allListViews += currentListView
-        // val stack = new StackPane(currentListView, tiles(j))
+        candidateLists += currentListView
         root.children += currentListView
 
         currentListView.getItems.add("")
-        // val candidates = board.getCandidates(convertIndex(j)) // boardTiles(convertIndex(j)).candidates
         val candidates = board.getCandidatesAfterSbaFilter(convertIndex(j))
 
         for k <- candidates.indices do
@@ -262,7 +254,7 @@ object Main extends JFXApp3:
     vbox.alignment = Pos.Center
     root.children += vbox
 
-    // This method will place a candidate number into a rectangle, which the user clicks
+    // Place a candidate number into a rectangle, which user clicks
     def placeCandidate(j: Int, row: Int, col: Int, board: Puzzleboard, candidate: String) =
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
@@ -270,39 +262,39 @@ object Main extends JFXApp3:
       texts(j).setText("")
       val candidateNum = candidate.toIntOption
 
-      // Updating currentNumber of the tile in back-end
+      // Update currentNumber of the tile in back-end
       val boardTiles = board.getTiles
       val tileToPlaceCandidate = boardTiles(convertIndex(j))
       tileToPlaceCandidate.currentNumber = candidateNum
 
-      // Placing the candidate to the rectangle
+      // Place the candidate to the rectangle
       val text = texts(j)
       text.setText(candidate)
       text.layoutX = tileToPlaceCandidate.xCoord + 18
       text.layoutY = tileToPlaceCandidate.yCoord + 26
       text.setFont(Font.font("Arial", FontWeight.Bold, 14))
       text.visible = true
-      allListViews(j).visible = false
+      candidateLists(j).visible = false
       updateUnsavedChanges(true)
       updateTitle()
 
 
-    def openListView(j: Int, row: Int, col: Int, board: Puzzleboard) =
+    def openCandidatesListView(j: Int, row: Int, col: Int, board: Puzzleboard) =
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
 
-      // Will show possible combinations
+      // Show possible combinations
       showPossibleCombs(board, j)
 
       // Display a listView object
-      val listView = allListViews(j)
+      val listView = candidateLists(j)
       listView.toFront()
       listView.getItems.remove(0, listView.getItems.length)
       val candidates = board.getCandidatesAfterSbaFilter(convertIndex(j))
-      val subareaIndex: Int = board.getTiles((convertIndex(j))).subareaIndex.get // TODO: Make sure it is defined.
+      val subareaIndex: Int = board.getTiles((convertIndex(j))).subareaIndex.get
       val amountOfFreeTiles: Int = board.getSubareas(subareaIndex).getTiles.count(tile => tile.currentNumber.isEmpty )
 
-      // Displays alertbox if we run out of candidates.
+      // Display alertbox if we run out of candidates.
       if candidates.isEmpty && (amountOfFreeTiles != 0) then
         val alertMessage: String = "There are no candidates left! Please, consider removing some numbers from other squares or click 'Start again' button."
         throwAlert(AlertType.ERROR, "Error", alertMessage)
@@ -325,12 +317,11 @@ object Main extends JFXApp3:
       // Displaying possible combinations in the gui.
       val sizeOfVbox: Int = vbox.getChildren.length
       vbox.getChildren.remove(1, sizeOfVbox)
-      val combinations: Buffer[String] = board.showPossibleCombinationsInStr(convertIndex(j))
+      val combinations: Buffer[String] = board.getCombinationsInStr(convertIndex(j))
       val listOfLabels: List[Label] = combinations.toList.map( str => new Label(str) )
       listOfLabels.foreach( label => label.setTextFill(Color.Red) )
       listOfLabels.foreach( label => label.setFont(new Font(16)) )
       listOfLabels.foreach( label => vbox.children += label )
-
 
 
     def tileHandler(j: Int) =
@@ -341,7 +332,7 @@ object Main extends JFXApp3:
 
     var cursorInRectOrListView: Boolean = false
 
-    def createSubAreas(board: Puzzleboard, row: Int, col: Int) =
+    def showSubareas(board: Puzzleboard, row: Int, col: Int) =
       val subareas: Vector[Subarea] = board.getSubareas
       val tilesInBoard: Vector[Tile] = board.getTiles
       val amountOfSquaresHorizontal: Int = col / 3
@@ -350,14 +341,13 @@ object Main extends JFXApp3:
 
       assert(tiles.length == tilesInBoard.length)
 
-      def cursorOut(j: Int) =
+      def handleCursorOut(j: Int) =
         val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
-        // tiles(j).setFill(colors(subIndex))
         val subareaColorInRGB = convertHSBtoRGB(subareas(subIndex).color.get)
         tiles(j).setFill(Color.rgb(subareaColorInRGB._1, subareaColorInRGB._2, subareaColorInRGB._3))
 
-        allListViews(j).setOnMouseExited( e =>
-          allListViews(j).visible = false )
+        candidateLists(j).setOnMouseExited( e =>
+          candidateLists(j).visible = false )
 
       // Add color to every tile
       for j <- tiles.indices do
@@ -389,27 +379,27 @@ object Main extends JFXApp3:
 
           // When the cursor leaves the tile, the color of the tile will be the same as before
           tiles(j).setOnMouseExited( e =>
-            // deletePossibleCombinations()
-            cursorOut(j)
+            // removeCombinations()
+            handleCursorOut(j)
           )
 
           // When the user clicks on the tile, then the program should display a drop down menu of possible candidates
           tiles(j).setOnMouseClicked( e =>
             tileHandler(j)
-            allListViews.foreach( listview => listview.visible = false )
-            openListView(j, row: Int, col: Int, board: Puzzleboard) )
+            candidateLists.foreach( listview => listview.visible = false )
+            openCandidatesListView(j, row: Int, col: Int, board: Puzzleboard) )
 
           texts(j).setMouseTransparent(true)
         catch
           case e => throw e
       end for
 
-    // Removes possible combinations, when the cursor goes out of the GridPane object.
-    gridWith3x3Squares.setOnMouseExited( e => deletePossibleCombinations() )
+    // Remove possible combinations, when cursor goes out of the GridPane object.
+    gridWith3x3Squares.setOnMouseExited( e => removeCombinations() )
 
 
 
-    def placeNumsAccordingToFile(board: Puzzleboard, row: Int, col: Int): Unit =
+    def showPuzzleboardUserNums(board: Puzzleboard, row: Int, col: Int): Unit =
       val tilesInBoard: Vector[Tile] = board.getTiles
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
@@ -427,10 +417,10 @@ object Main extends JFXApp3:
       end for
 
 
-    def initializeVariablesAfterNewFileIsClicked(): Unit =
+    def initCanvas(): Unit =
       gridWith3x3Squares.getChildren.remove(0, gridWith3x3Squares.getChildren.length)
       gridWith9TilesInsets = Insets.EMPTY
-      allListViews.remove(0, allListViews.length)
+      candidateLists.remove(0, candidateLists.length)
       tiles.remove(0, tiles.length)
 
       // Will remove all the Text or Label nodes from the root (Pane()).
@@ -439,11 +429,10 @@ object Main extends JFXApp3:
       })
 
 
-
     def removeTextObjects(): Unit =
       texts.remove(0, texts.length)
 
-    def deletePossibleCombinations() =
+    def removeCombinations() =
       val sizeOfBox: Int = vbox.getChildren.length
       vbox.getChildren.remove(1, sizeOfBox)
 
@@ -463,26 +452,26 @@ object Main extends JFXApp3:
         val file = fileChooser.showOpenDialog(stage)
 
         if file != null then
-          // Removes previous board from the gui window.
+          // Remove previous board from the gui window.
           removeTextObjects()
-          deletePossibleCombinations()
-          initializeVariablesAfterNewFileIsClicked()
+          removeCombinations()
+          initCanvas()
 
-          // Creates new board according to the provided file.
-          val lines = FileReader.readFile(file.toString) // returns all lines in the given file
-          val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Returns (board, row, column)
+          // Create new board according to the provided file.
+          val lines = FileReader.readFile(file.toString) // return all lines in the given file
+          val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Return (board, row, column)
           val board = boardWithSize._1
           puzzleboard = Some(board)
           rowNSize = Some(boardWithSize._2)
           colNSize = Some(boardWithSize._3)
           stage.title = stage.getTitle + " - " + boardWithSize._4
-          // This method creates sudoku board
+          // Create sudoku board
           create3x3Squares(boardWithSize._2, boardWithSize._3, board)
-          // This method creates a listView object for every tile.
-          initializeListViews(board, boardWithSize._2, boardWithSize._3)
-          // This method colour sub-areas with different colors.
-          createSubAreas(board, boardWithSize._2, boardWithSize._3)
-          placeNumsAccordingToFile(board, boardWithSize._2, boardWithSize._3)
+          // Create listView object for every tile.
+          initializeCandidateLists(board, boardWithSize._2, boardWithSize._3)
+          // Color sub-areas with different colors.
+          showSubareas(board, boardWithSize._2, boardWithSize._3)
+          showPuzzleboardUserNums(board, boardWithSize._2, boardWithSize._3)
 
           previousFiles += file.toString
           println(tiles(8).localToScene(2, 2))
@@ -520,11 +509,11 @@ object Main extends JFXApp3:
         val initialDir = new File(System.getProperty("user.home"))
         fileChooser.setInitialDirectory(initialDir)
 
-        // Setting the initial name of the file
+        // Set initial name of the file
         val initialFileName = "Attempt.txt"// s"myfile_${openPrevious.getItems.length}.txt"
         fileChooser.setInitialFileName(initialFileName)
 
-        // Show the save dialog and get the selected file
+        // Show save dialog and get the selected file
         val selectedFile = fileChooser.showSaveDialog(null)
         if (selectedFile != null) then
           val fileName = selectedFile.getName
@@ -589,7 +578,7 @@ object Main extends JFXApp3:
           if (e.getText == "Yes") && (puzzleboard.isDefined) then
             puzzleboard.get.getTiles.foreach( tile => tile.currentNumber = None )
             deleteText()
-            deletePossibleCombinations()
+            removeCombinations()
             updateUnsavedChanges(true)
             updateTitle()
             println("Yes button is clicked")
@@ -605,23 +594,6 @@ object Main extends JFXApp3:
      startAgainButton.border = Border.stroke(2)
 
      root.children += startAgainButton
-
-
-
-    // TODO: Make this work properly!
-    // User can save the file using Ctrl + S.
-    mainScene.onKeyPressed = (event: KeyEvent) =>
-      if (event.isControlDown && event.getCode == KeyCode.S) then
-        println("Key pressed")
-        event.consume()
-        if fileNameOfSavedFile.isDefined && parentOfSavedFile.isDefined then
-          FWriter.writeFile(fileNameOfSavedFile.get, parentOfSavedFile.get, puzzleboard.get, rowNSize.get, colNSize.get)
-          updateUnsavedChanges(false) // Delete asterisk
-          updateTitle()
-        else
-          openFileChooserToSaveFile
-      end if
-
 
     // The warning alert will appear, if there are unsaved changes and the user clicks on exit
     // button in the gui.
