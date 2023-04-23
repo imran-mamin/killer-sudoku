@@ -261,11 +261,12 @@ object FileReader:
 
     val tiles: Buffer[Tile] = initializeTiles(colN.get, rowN.get)
 
-    // TODO: Remove #title from the title of the gui window.
-    val title: Option[String] = stripped.dropWhile( str => !str.contains("#title") ).headOption
-    if title.isEmpty then
+    val titleOpt: Option[String] = stripped.dropWhile( str => !str.contains("#title") ).headOption
+    if titleOpt.isEmpty then
       // println("File does not have a title.")
       assert(false, "File does not have a title.")
+
+    val title: String = titleOpt.get.trim.drop(6).trim
 
     val subareas: Buffer[Subarea] = Buffer()
 
@@ -293,7 +294,7 @@ object FileReader:
     addSubareaIndexToTiles(puzzle)
     addNeighborsToSubareas(puzzle)
     addColorToSubareas(puzzle)
-    (puzzle, rowN.get, colN.get, title.get)
+    (puzzle, rowN.get, colN.get, title)
 
 end FileReader
 
