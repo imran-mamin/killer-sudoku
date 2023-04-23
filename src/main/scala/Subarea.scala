@@ -10,10 +10,6 @@ class Subarea(targetSum: Int, tiles: Vector[Tile], tileWithTargetSum: Tile):
   
   def showTiles(): Vector[Tile] = tiles
 
-  def showPossibleCombinations(): List[String] =
-    // var combinations: Buffer[String] = Buffer()
-    ???
-
   def getTargetSum(): Int = targetSum
   
   // These may be redundant TODO: Check this out later, when implementing graph-coloring

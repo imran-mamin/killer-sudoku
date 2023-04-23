@@ -498,7 +498,9 @@ object Main extends JFXApp3:
           throwAlert(AlertType.ERROR, "Error", alertMessage)
 
         case e: AssertionError =>
-          val alertMessage: String = e.getMessage
+          val alertWithAssert: String = e.getMessage
+          // Remove "assertion failed:" string
+          val alertMessage: String = alertWithAssert.split(':').apply(1).trim
           throwAlert(AlertType.ERROR, "Error", alertMessage)
 
 
