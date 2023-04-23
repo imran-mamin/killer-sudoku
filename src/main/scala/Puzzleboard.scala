@@ -3,62 +3,20 @@ package sudoku
 import scala.collection.mutable.Buffer
 import java.awt.Color
 
+/**
+ * This class represents the sudoku board, which consists of tiles and sub-areas.
+ * @param allTiles is a Vector-data structure, which contains all the Tile-objects that are placed
+ *                 in the Puzzleboard.
+ * @param subareas is a Vector-data structure, which contains all the Subarea-instances that are
+ *                 placed in the Puzzleboard.
+ */
 class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
-  // var colors: Vector[Color] = Vector(Color(255, 179, 179), Color(255, 77, 77), Color(153, 0, 0), Color(255, 214, 153), Color(255, 153, 0), Color(204, 255, 204), Color(51, 255, 51), Color(0, 128, 0), Color(255, 255, 0), Color(128, 128, 0), Color(230, 230, 255), Color(153, 153, 255), Color(0, 0, 255), Color(0, 0, 102), Color(236, 179, 255), Color(210, 77, 255), Color(57, 0, 77), Color(255, 153, 230), Color(179, 255, 255), Color(26, 255, 255), Color(0, 179, 179))
 
-  def makeGraph(): Unit = ???
-  def paintGraph(): Unit = ???
 
   def showTiles() = allTiles
+
   def showSubareas() = subareas
   
-  /**
-   * This method sets a number to the Tile-object, which index in "allTiles"-Vector is given as a
-   * parameter of the function.
-   *
-   * @param tileIndex index of the Tile in the "allTiles"-Vector.
-   * @param num the number, which will be placed in the Tile.
-   */
-
-  def addNumber(tileIndex: Int, num: Int): Unit =
-    allTiles(tileIndex).currentNumber = Some(num)
-
-  /**
-   * This method removes a number from the Tile, if there is one.
-   * @param tileIndex is an index of a Tile in "allTiles"-Vector.
-   */
-
-  def removeNumber(tileIndex: Int): Unit =
-    allTiles(tileIndex).currentNumber = None
-
-  /**
-   * Returns the number wrapped in an Option-data structure, which is placed in the Tile, if there is
-   * one. If there is no number placed in the given Tile-object, then this method will return None.
-   * @param tileIndex
-   * @return If there is a number, then Some(Int), else None.
-   */
-  def getTileNumber(tileIndex: Int): Option[Int] =
-    allTiles(tileIndex).currentNumber
-
-  /**
-   * This method tells us in which subarea given tile is placed using color.
-   * @param tileIndex
-   * @return If Tile-object has color, then Some(Color), else None
-   */
-
-  def getTileColor(tileIndex: Int): Option[Color] =
-    allTiles(tileIndex).color
-
-  /**
-   * Returns the number wrapped in an Option that tells us, what the sum of the subarea
-   * should be.
-   * @param tileIndex
-   * @return If Tile-object contains targetSum, then Some(Int), else None.
-   */
-
-  def getTileTargetSum(tileIndex: Int): Option[Int] =
-    allTiles(tileIndex).targetSum
-
 
   def oneTilePossibleCombinations(index: Int, targetSum: Int): Buffer[Vector[Int]] =
     val candidates: Buffer[Int] = this.getCandidates(index)
@@ -269,11 +227,17 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     intersection
 
 
-
+  /**
+   * This method takes the index of the Tile-instance in allTiles Vector and filters possible candidates
+   * according to already placed numbers in the Tiles that are in the same row with this one.
+   * @param index of the Tile in allTiles Vector
+   * @return Buffer[Int] of possible candidates.
+   */
   def rowCandidates(index: Int): Buffer[Int] =
     val candidates = (1 to 9).toBuffer
     val row: Int = allTiles(index).getRow
 
+    // Removes already placed numbers from the candidates Buffer.
     for i <- allTiles.indices do
       if (allTiles(i).getRow == row) && (allTiles(i).currentNumber.isDefined) then
         candidates -= allTiles(i).currentNumber.get
@@ -282,11 +246,17 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     candidates
 
 
-
-  private def colCandidates(index: Int) =
-    val candidates = (1 to 9).toBuffer
+  /**
+   * This method takes the index of the Tile-instance in allTiles Vector and filters possible candidates
+   * according to already placed numbers in the Tiles that are in the same column with this one.
+   * @param index of the Tile in allTiles Vector
+   * @return Buffer[Int] of possible candidates.
+   */
+  private def colCandidates(index: Int): Buffer[Int] =
+    val candidates = (1 to 9).toBuffer // initializing all candidates 1-9.
     val column: Int = allTiles(index).getColumn
 
+    // Removes already placed numbers from the candidates Buffer.
     for i <- allTiles.indices do
       if (allTiles(i).getColumn == column) && (allTiles(i).currentNumber.isDefined) then
         candidates -= allTiles(i).currentNumber.get
@@ -295,11 +265,17 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     candidates
 
 
-
+  /**
+   * This method takes the index of the Tile-instance in allTiles Vector and filters possible candidates
+   * according to already placed numbers in the Tiles that are in the same square with this one.
+   * @param index of the Tile in allTiles Vector
+   * @return Buffer[Int] of possible candidates.
+   */
   private def squareCandidates(index: Int) =
     val candidates = (1 to 9).toBuffer
     val square: Int = allTiles(index).getSquare
 
+    // Removes already placed numbers from the candidates Buffer.
     for i <- allTiles.indices do
       if (allTiles(i).getSquare == square) && (allTiles(i).currentNumber.isDefined) then
         candidates -= allTiles(i).currentNumber.get
@@ -308,12 +284,23 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     candidates
 
 
+  /**
+   * This method takes the index of the Tile (indexation should be same as here in back-end of
+   * the program) and gives all the possible candidate numbers that can be placed in this Tile-instance.
+   * This method although gives candidates according to standard sudoku rules, which are the same two
+   * numbers can't be placed in the same row, column or square.
+   * @param index is the index of the Tile in allTiles Vector.
+   * @return Buffer[Int] returns a Buffer of integers that are the possible candidates according to
+   *         the standard sudoku rules.
+   */
   def getCandidates(index: Int): Buffer[Int] =
-    val candidatesRow = this.rowCandidates(index)
-    val candidatesCol = this.colCandidates(index)
-    val candidatesSqr = this.squareCandidates(index)
+    val candidatesRow = this.rowCandidates(index) // Remaining candidates after row filtering.
+    val candidatesCol = this.colCandidates(index) // Remaining candidates after column filtering.
+    val candidatesSqr = this.squareCandidates(index) // Remaining candidates after square filtering.
 
+    // Possible candidates after row and column filtering.
     var intersection = candidatesRow.intersect(candidatesCol)
+    // Possible candidates after also square filtering.
     intersection = intersection.intersect(candidatesSqr)
 
     intersection
