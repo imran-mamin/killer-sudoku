@@ -102,6 +102,7 @@ object Main extends JFXApp3:
 
 
     // TODO: Fix subarea sum placement to count border with.
+    // TODO: Fix placement of row and column coordinates.
     def create9Tiles(): GridPane =
       val gridWith9Tiles = GridPane()
 
@@ -128,17 +129,18 @@ object Main extends JFXApp3:
          // Displaying the y-coordinates in the GUI window
         val colText = new Label:
           text = " " + (i + 1) + " "
-        colText.layoutX = 60
-        // Starting point plus amount of tiles multiplied by their width
-        colText.layoutY = 95 + i * 41.5
+        // - 1/4 is to display text on top of tiles at the center.
+        colText.layoutX = gridWith3x3Squares.getLayoutX - 0.25 * gridWith3x3Squares.getLayoutX
+        // Starting point plus amount of tiles multiplied by their height
+        colText.layoutY = 95 + i * tiles.head.getHeight
         root.children += colText
 
         for j <- 0 until col do // equals x-coordinate
           if i == 0 then
             val row = new Label:
               text = characters(j).toString
-            row.layoutX = 100 + j * 41.5
-            row.layoutY = 60
+            row.layoutX = 100 + j * tiles.head.getWidth
+            row.layoutY = gridWith3x3Squares.getLayoutY - 0.25 * gridWith3x3Squares.getLayoutY
             root.children += row
           end if
         end for

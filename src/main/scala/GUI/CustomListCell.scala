@@ -26,10 +26,24 @@ class CustomListCell(tiles: Vector[Rectangle], board: Puzzleboard, colNSize: Int
   setOnMouseEntered((event: MouseEvent) => {
     if (!isEmpty) then
       setStyle("-fx-background-color: #1e90ff;")
+      // Contains the Option[Int] of the ListItem.
+      val numOpt: Option[Int] = getItem.toIntOption
+      val boardTiles = board.showTiles()
+      if numOpt.isDefined then
+        val num: Int = numOpt.get
+        for i <- tiles.indices do
+          if boardTiles(convertIndex(i)).currentNumber.isDefined && boardTiles(convertIndex(i)).currentNumber.get == num then
+            tiles(i).setStroke(Color.Yellow)
+            tiles(i).setStrokeWidth(0.5)
+          end if
+        end for
   })
 
   setOnMouseExited((event: MouseEvent) => {
     setStyle("")
+    for i <- tiles.indices do
+      tiles(i).setStroke(Color.Black)
+      tiles(i).setStrokeWidth(0.5)
   })
 
   /** This method converts the index in the gui to the one in the back-end of the program. */
