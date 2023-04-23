@@ -162,7 +162,7 @@ object Main extends JFXApp3:
 
     // Set coordinates of the tile's top left corner and store it in the back-end of the program.
     def setCoordinates(board: Puzzleboard, row: Int, col: Int) =
-      val boardTiles = board.showTiles()
+      val boardTiles = board.getTiles
       for i <- 0 until row do
         for j <- 0 until col do
           val borderLeftOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getLeft
@@ -207,7 +207,7 @@ object Main extends JFXApp3:
     def initializeListViews(board: Puzzleboard, row: Int, col: Int): Unit =
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
-      val boardTiles = board.showTiles()
+      val boardTiles = board.getTiles
 
       for j <- tiles.indices do
         val currentListView = new ListView[String]()
@@ -271,7 +271,7 @@ object Main extends JFXApp3:
       val candidateNum = candidate.toIntOption
 
       // Updating currentNumber of the tile in back-end
-      val boardTiles = board.showTiles()
+      val boardTiles = board.getTiles
       val tileToPlaceCandidate = boardTiles(convertIndex(j))
       tileToPlaceCandidate.currentNumber = candidateNum
 
@@ -299,8 +299,8 @@ object Main extends JFXApp3:
       listView.toFront()
       listView.getItems.remove(0, listView.getItems.length)
       val candidates = board.getCandidatesAfterSbaFilter(convertIndex(j))
-      val subareaIndex: Int = board.showTiles()((convertIndex(j))).subareaIndex.get // TODO: Make sure it is defined.
-      val amountOfFreeTiles: Int = board.showSubareas()(subareaIndex).showTiles().count( tile => tile.currentNumber.isEmpty )
+      val subareaIndex: Int = board.getTiles((convertIndex(j))).subareaIndex.get // TODO: Make sure it is defined.
+      val amountOfFreeTiles: Int = board.getSubareas(subareaIndex).getTiles.count(tile => tile.currentNumber.isEmpty )
 
       // Displays alertbox if we run out of candidates.
       if candidates.isEmpty && (amountOfFreeTiles != 0) then
@@ -342,8 +342,8 @@ object Main extends JFXApp3:
     var cursorInRectOrListView: Boolean = false
 
     def createSubAreas(board: Puzzleboard, row: Int, col: Int) =
-      val subareas: Vector[Subarea] = board.showSubareas()
-      val tilesInBoard: Vector[Tile] = board.showTiles()
+      val subareas: Vector[Subarea] = board.getSubareas
+      val tilesInBoard: Vector[Tile] = board.getTiles
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
 
@@ -410,7 +410,7 @@ object Main extends JFXApp3:
 
 
     def placeNumsAccordingToFile(board: Puzzleboard, row: Int, col: Int): Unit =
-      val tilesInBoard: Vector[Tile] = board.showTiles()
+      val tilesInBoard: Vector[Tile] = board.getTiles
       val amountOfSquaresHorizontal: Int = col / 3
       val amountOfSquaresVertical: Int = row / 3
 
@@ -587,7 +587,7 @@ object Main extends JFXApp3:
 
       result.ifPresent( e =>
           if (e.getText == "Yes") && (puzzleboard.isDefined) then
-            puzzleboard.get.showTiles().foreach( tile => tile.currentNumber = None )
+            puzzleboard.get.getTiles.foreach( tile => tile.currentNumber = None )
             deleteText()
             deletePossibleCombinations()
             updateUnsavedChanges(true)

@@ -19,9 +19,9 @@ class Subarea(targetSum: Int, tiles: Vector[Tile], tileWithTargetSum: Tile):
   var color: Option[Color] = None // Will contain the color of each sub-area.
 
   // Tells which tiles belongs to the particular sub-area.
-  def showTiles(): Vector[Tile] = tiles
+  def getTiles: Vector[Tile] = tiles
 
   // Gives the targetSum of the sub-area.
-  def getTargetSum(): Int = targetSum
+  def getTargetSum: Int = targetSum
 
 end Subarea

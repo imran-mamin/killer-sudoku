@@ -22,8 +22,8 @@ class TestGame extends AnyFlatSpec with Matchers:
 
     val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
     // When the given size is not divisible by three, then program should create a board 9 x 9
-    assert(board.showTiles().length == 81)
-    assert(board.showSubareas().length == 1)
+    assert(board.getTiles.length == 81)
+    assert(board.getSubareas.length == 1)
   }
 */
 
@@ -53,13 +53,13 @@ class TestGame extends AnyFlatSpec with Matchers:
 
    // Create a sudoku board of size (3 x 3)
     val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
-    val tiles = board.showTiles()
-    val subareas = board.showSubareas()
+    val tiles = board.getTiles
+    val subareas = board.getSubareas
 
-    println(subareas(0).showTiles().length)
-    assert(subareas.head.showTiles().contains(tiles(9)))
-    assert(subareas.head.showTiles().contains(tiles.head))
-    assert(subareas.head.showTiles().contains(tiles(1)))
+    println(subareas(0).getTiles.length)
+    assert(subareas.head.getTiles.contains(tiles(9)))
+    assert(subareas.head.getTiles.contains(tiles.head))
+    assert(subareas.head.getTiles.contains(tiles(1)))
     assert(tiles(9).subareaIndex.get == tiles.head.subareaIndex.get, "First and 9th tile should be in the same sub-area.")
     assert(tiles(9).subareaIndex.get == tiles(1).subareaIndex.get, "Second tile and 9th tile should be in the same sub-area.")
   }
@@ -71,7 +71,7 @@ class TestGame extends AnyFlatSpec with Matchers:
 
    // Create a sudoku board of size (3 x 3)
     val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
-    val allSba = board.showSubareas()
+    val allSba = board.getSubareas
     var differentColorInNeighbors: Boolean = true
 
     for i <- allSba.indices do
@@ -92,21 +92,21 @@ class TestGame extends AnyFlatSpec with Matchers:
     val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
 
     // Amount of tiles should be as specified in the file
-    assert(board.showTiles().length == 9)
+    assert(board.getTiles.length == 9)
 
     // All tiles should have correct row and column number.
-    assert(board.showTiles().head.getRow == 0 && board.showTiles().head.getColumn == 0)
-    assert(board.showTiles()(1).getRow == 0 && board.showTiles()(1).getColumn == 1)
-    assert(board.showTiles()(2).getRow == 0 && board.showTiles()(2).getColumn == 2)
-    assert(board.showTiles()(3).getRow == 1 && board.showTiles()(3).getColumn == 0)
-    assert(board.showTiles()(4).getRow == 1 && board.showTiles()(4).getColumn == 1)
-    assert(board.showTiles()(5).getRow == 1 && board.showTiles()(5).getColumn == 2)
-    assert(board.showTiles()(6).getRow == 2 && board.showTiles()(6).getColumn == 0)
-    assert(board.showTiles()(7).getRow == 2 && board.showTiles()(7).getColumn == 1)
-    assert(board.showTiles()(8).getRow == 2 && board.showTiles()(8).getColumn == 2)
+    assert(board.getTiles.head.getRow == 0 && board.getTiles.head.getColumn == 0)
+    assert(board.getTiles(1).getRow == 0 && board.getTiles(1).getColumn == 1)
+    assert(board.getTiles(2).getRow == 0 && board.getTiles(2).getColumn == 2)
+    assert(board.getTiles(3).getRow == 1 && board.getTiles(3).getColumn == 0)
+    assert(board.getTiles(4).getRow == 1 && board.getTiles(4).getColumn == 1)
+    assert(board.getTiles(5).getRow == 1 && board.getTiles(5).getColumn == 2)
+    assert(board.getTiles(6).getRow == 2 && board.getTiles(6).getColumn == 0)
+    assert(board.getTiles(7).getRow == 2 && board.getTiles(7).getColumn == 1)
+    assert(board.getTiles(8).getRow == 2 && board.getTiles(8).getColumn == 2)
 
     // All tiles should be in the same square
-    assert(board.showTiles().forall( tile => tile.getSquare == 0 ))
+    assert(board.getTiles.forall( tile => tile.getSquare == 0 ))
   }
 
   "rowCandidates()-method" should "return all possible candidates so that" +
@@ -207,8 +207,8 @@ class TestGame extends AnyFlatSpec with Matchers:
 
   val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
   // When the given size is not divisible by three, then program should create a board 9 x 9
-  assert(board.showTiles()(0).currentNumber.isDefined)
-  assert(board.showTiles()(1).currentNumber.isDefined)
+  assert(board.getTiles(0).currentNumber.isDefined)
+  assert(board.getTiles(1).currentNumber.isDefined)
   }
 /*
   "FileReader readFilePuzzleBoardCfg-method" should "read a Puzzleboard object properly" in {
@@ -217,9 +217,9 @@ class TestGame extends AnyFlatSpec with Matchers:
 
   val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
   // When the given size is not divisible by three, then program should create a board 9 x 9
-  assert(board.showTiles()(0).currentNumber.isDefined)
-  assert(board.showTiles()(1).currentNumber.isDefined)
-  assert(board.showTiles()(32).currentNumber.isDefined)
+  assert(board.getTiles(0).currentNumber.isDefined)
+  assert(board.getTiles(1).currentNumber.isDefined)
+  assert(board.getTiles(32).currentNumber.isDefined)
   }
 */
 
@@ -228,7 +228,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     val lines = FileReader.readFile(file)
 
     val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
-    val allSba = board.showSubareas()
+    val allSba = board.getSubareas
     FileReader.addNeighborsToSubareas(board)
     assert(allSba(0).neighbors.contains(allSba(1)), "First sub-area has two neighbors.")
     assert(allSba(0).neighbors.contains(allSba(6)))
@@ -251,7 +251,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     val lines = FileReader.readFile(file)
 
     val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
-    val allSba = board.showSubareas()
+    val allSba = board.getSubareas
     var differentColorInNeighbors: Boolean = true
 
     for i <- allSba.indices do

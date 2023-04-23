@@ -138,11 +138,11 @@ object FileReader:
  * in this subarea. */
 
   def addSubareaIndexToTiles(puzzleboard: Puzzleboard): Unit =
-    val subareas = puzzleboard.showSubareas()
-    val allTilesSet: Set[Tile] = puzzleboard.showTiles().toSet
+    val subareas = puzzleboard.getSubareas
+    val allTilesSet: Set[Tile] = puzzleboard.getTiles.toSet
 
     for i <- subareas.indices do
-      val tilesInSubarea: Vector[Tile] = subareas(i).showTiles()
+      val tilesInSubarea: Vector[Tile] = subareas(i).getTiles
 
       for j <- tilesInSubarea.indices do
         // Add subarea index to the single tile
@@ -174,8 +174,8 @@ object FileReader:
    * This method adds neighbors to all sub-areas on the board.
    */
   def addNeighborsToSubareas(puzzle: Puzzleboard): Unit =
-    val tiles: Vector[Tile] = puzzle.showTiles()
-    val subareas: Vector[Subarea] = puzzle.showSubareas()
+    val tiles: Vector[Tile] = puzzle.getTiles
+    val subareas: Vector[Subarea] = puzzle.getSubareas
 
 
     for i <- tiles.indices do
@@ -202,7 +202,7 @@ object FileReader:
 
   /** This method adds colors to sub-areas using Greedy-algorithm. */
   def addColorToSubareas(puzzle: Puzzleboard): Unit =
-    val subareas: Vector[Subarea] = puzzle.showSubareas()
+    val subareas: Vector[Subarea] = puzzle.getSubareas
     val colors: Buffer[Color] = Buffer()
 
     for i <- subareas.indices do

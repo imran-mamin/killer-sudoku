@@ -28,7 +28,7 @@ class CustomListCell(tiles: Vector[Rectangle], board: Puzzleboard, colNSize: Int
       setStyle("-fx-background-color: #1e90ff;")
       // Contains the Option[Int] of the ListItem.
       val numOpt: Option[Int] = getItem.toIntOption
-      val boardTiles = board.showTiles()
+      val boardTiles = board.getTiles
       if numOpt.isDefined then
         val num: Int = numOpt.get
         for i <- tiles.indices do

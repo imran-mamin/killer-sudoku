@@ -12,9 +12,9 @@ import scala.collection.mutable.Buffer
 class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
 
 
-  def showTiles() = allTiles
+  def getTiles = allTiles
 
-  def showSubareas() = subareas
+  def getSubareas = subareas
   
 
   def oneTilePossibleCombinations(index: Int, targetSum: Int): Buffer[Vector[Int]] =
@@ -33,7 +33,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
   // When the subarea consists of two tiles
   def twoTilesPossibleCombinations(index: Int, subareaIndex: Int, targetSum: Int): Buffer[Vector[Int]] =
     val possibleNums: Buffer[Vector[Int]] = Buffer()
-    val tilesInSub: Vector[Tile] = subareas(subareaIndex).showTiles().filter( tile => tile.currentNumber.isEmpty )
+    val tilesInSub: Vector[Tile] = subareas(subareaIndex).getTiles.filter( tile => tile.currentNumber.isEmpty )
     val tile1Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(0)))
     val tile2Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(1)))
     // Calculating possible pairs and adding them to the possiblePairsBuffer.
@@ -53,7 +53,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
 
   def threeTilesPossibleCombinations(index: Int, subareaIndex: Int, targetSum: Int): Buffer[Vector[Int]] =
     val possibleNums: Buffer[Vector[Int]] = Buffer()
-    val tilesInSub: Vector[Tile] = subareas(subareaIndex).showTiles().filter( tile => tile.currentNumber.isEmpty )
+    val tilesInSub: Vector[Tile] = subareas(subareaIndex).getTiles.filter( tile => tile.currentNumber.isEmpty )
     val tile1Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(0)))
     val tile2Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(1)))
     val tile3Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(2)))
@@ -82,7 +82,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
 
   def fourTilesPossibleCombinations(index: Int, subareaIndex: Int, targetSum: Int) =
     val possibleNums: Buffer[Vector[Int]] = Buffer()
-    val tilesInSub: Vector[Tile] = subareas(subareaIndex).showTiles()
+    val tilesInSub: Vector[Tile] = subareas(subareaIndex).getTiles
     val tile1Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(0)))
     val tile2Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(1)))
     val tile3Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(2)))
@@ -142,8 +142,8 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
   def showPossibleCombinations(index: Int): Buffer[Vector[Int]] =
       try
         val subareaIndex: Int = allTiles(index).subareaIndex.get
-        val amountOfTilesInSub: Int = subareas(subareaIndex).showTiles().size
-        val tiles: Vector[Tile] = subareas(subareaIndex).showTiles()
+        val amountOfTilesInSub: Int = subareas(subareaIndex).getTiles.size
+        val tiles: Vector[Tile] = subareas(subareaIndex).getTiles
         var removedCurrentNum: Option[Int] = None
 
         // Removes current number for calculations and then returns it back.
@@ -153,7 +153,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
         end if
 
         val notFreeTiles: Int = tiles.count( tile => tile.currentNumber.isDefined )
-        var targetSum: Int = subareas(subareaIndex).getTargetSum()
+        var targetSum: Int = subareas(subareaIndex).getTargetSum
 
         // Removes placed candidates from the subarea's targetSum.
         for i <- tiles.indices do

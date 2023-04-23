@@ -40,20 +40,20 @@ object FWriter:
       bw.write(s"#colsize: ${colNSize}\n")
       bw.write(s"#rowsize: ${rowNSize}\n\n")
 
-      val subareas: Vector[Subarea] = board.showSubareas()
+      val subareas: Vector[Subarea] = board.getSubareas
 
       for i <- subareas.indices do
-        val tilesInSub: Vector[Tile] = subareas(i).showTiles()
+        val tilesInSub: Vector[Tile] = subareas(i).getTiles
         val tileWithTargetSum: Tile = tilesInSub.dropWhile( tile => tile.targetSum.isEmpty ).head
 
         bw.write(s"#Subarea:\n")
-        bw.write(s"sum: ${subareas(i).getTargetSum()}\n")
+        bw.write(s"sum: ${subareas(i).getTargetSum}\n")
         bw.write(s"amountOfTiles: ${tilesInSub.length}\n")
         bw.write(s"tileSum: ${rowColConverter(tileWithTargetSum.getRow, tileWithTargetSum.getColumn)}\n")
         bw.write(this.tilesString(tilesInSub) + "\n")
         bw.write(this.squaresString(tilesInSub) + "\n\n")
       end for
-      val tilesWithNums: Vector[Tile] = board.showTiles().filter( tile => tile.currentNumber.isDefined )
+      val tilesWithNums: Vector[Tile] = board.getTiles.filter( tile => tile.currentNumber.isDefined )
 
       bw.write("#placedNums: \n")
 
