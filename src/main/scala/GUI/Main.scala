@@ -1,6 +1,5 @@
 package sudoku.GUI
 
-
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.geometry.{HPos, VPos}
 import javafx.scene.{Node, control, shape}
@@ -26,7 +25,7 @@ import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.control.{TextInputDialog, ToolBar}
 import javafx.scene.shape.{Circle, Line, Shape}
 import javafx.scene.text.TextAlignment
-import javafx.stage.FileChooser
+import javafx.stage.{FileChooser, WindowEvent}
 import sudoku.*
 import sudoku.GUI.CustomListCell
 import javafx.stage.FileChooser.ExtensionFilter
@@ -606,5 +605,25 @@ object Main extends JFXApp3:
      root.children += startAgainButton
 
 
+    // The warning alert will appear, if there are unsaved changes and the user clicks on exit
+    // button in the gui.
+    stage.onCloseRequest = (event: WindowEvent) =>
+      if unsavedChanges then
+        val alertClose = new Alert(Alert.AlertType.WARNING)
+        alertClose.contentText = "There are unsaved changes. Are you sure you want to exit?"
+        alertClose.title = "Unsaved Changes"
+        alertClose.buttonTypes = Seq(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL)
+        val result = Option(alertClose.showAndWait().orElse(null))
+
+        result match
+          case Some(ButtonType.YES) =>
+            openFileChooserToSaveFile
+            event.consume()
+          case Some(ButtonType.NO) =>
+            // Discard changes
+            sys.exit(0)
+          case _ =>
+            // Cancel closing the window
+            event.consume()
 
 end Main
