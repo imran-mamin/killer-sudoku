@@ -97,7 +97,18 @@ object Main extends JFXApp3:
 
 
     def updateTitle(): Unit =
-      val title = if (unsavedChanges) s"${stage.getTitle} - *" else s"${stage.getTitle}"
+      // val title = if (unsavedChanges) s"${stage.getTitle} - *" else s"${stage.getTitle}"
+      var title: String = stage.getTitle
+
+      // Add asterisk, if there are unsaved changes in the file.
+      if unsavedChanges && !stage.getTitle.contains("*") then
+        title = title + " - *"
+      end if
+
+      // Remove asterisk, if there are not unsaved changes in the file.
+      if !unsavedChanges && stage.getTitle.contains("*") then
+        title = title.dropRight(4) // Four because " - *" contains four chars.
+      end if
       stage.title = title
 
 
