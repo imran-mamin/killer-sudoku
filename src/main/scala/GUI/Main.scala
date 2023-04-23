@@ -1,5 +1,6 @@
 package sudoku.GUI
 
+import scalafx.scene.input.{KeyCode, KeyEvent}
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.geometry.{HPos, VPos}
 import javafx.scene.{Node, control, shape}
@@ -18,6 +19,7 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, Text}
 import javafx.geometry.Insets
 import javafx.scene
+// import javafx.scene.input.KeyEvent
 import scalafx.scene.layout.Region
 
 import scala.collection.mutable.Buffer
@@ -483,7 +485,7 @@ object Main extends JFXApp3:
           placeNumsAccordingToFile(board, boardWithSize._2, boardWithSize._3)
 
           previousFiles += file.toString
-
+          println(tiles(8).localToScene(2, 2))
       catch
         case e: java.io.IOException =>
           val alertMessage: String = "The IOException was occuried while trying to open the file."
@@ -498,9 +500,9 @@ object Main extends JFXApp3:
 
         case e: AssertionError =>
           val alertWithAssert: String = e.getMessage
-          // Remove "assertion failed:" string
-          val alertMessage: String = alertWithAssert.split(':').apply(1).trim
+          val alertMessage: String = alertWithAssert.split("assertion failed:").apply(1).trim
           throwAlert(AlertType.ERROR, "Error", alertMessage)
+
 
 
 
@@ -603,6 +605,22 @@ object Main extends JFXApp3:
      startAgainButton.border = Border.stroke(2)
 
      root.children += startAgainButton
+
+
+
+    // TODO: Make this work properly!
+    // User can save the file using Ctrl + S.
+    mainScene.onKeyPressed = (event: KeyEvent) =>
+      if (event.isControlDown && event.getCode == KeyCode.S) then
+        println("Key pressed")
+        event.consume()
+        if fileNameOfSavedFile.isDefined && parentOfSavedFile.isDefined then
+          FWriter.writeFile(fileNameOfSavedFile.get, parentOfSavedFile.get, puzzleboard.get, rowNSize.get, colNSize.get)
+          updateUnsavedChanges(false) // Delete asterisk
+          updateTitle()
+        else
+          openFileChooserToSaveFile
+      end if
 
 
     // The warning alert will appear, if there are unsaved changes and the user clicks on exit

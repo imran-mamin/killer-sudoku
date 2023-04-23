@@ -1,7 +1,6 @@
 package sudoku
 
 import scala.collection.mutable.Buffer
-import java.awt.Color
 
 /**
  * This class represents the sudoku board, which consists of tiles and sub-areas.

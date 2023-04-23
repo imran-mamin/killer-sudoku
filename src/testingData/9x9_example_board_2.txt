@@ -143,12 +143,6 @@ tileSum: g6
 tiles: g6, h6, g7, h7
 squares: 6, 6, 9, 9
 
-#Subarea:
-sum: 10
-amountOfTiles: 2
-tileSum: a1
-tiles: a1, b1
-squares: 1, 1
 
 #Subarea:
 sum: 7
@@ -212,6 +206,4 @@ amountOfTiles: 2
 tileSum: c9
 tiles: c9, d9
 squares: 7, 8
-
-
 

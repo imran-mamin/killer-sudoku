@@ -3,6 +3,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sudoku.{FileReader, Puzzleboard, Subarea, Tile}
 import sudoku._
+import java.awt.Color
 
 class TestGame extends AnyFlatSpec with Matchers:
 
@@ -44,6 +45,43 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(tiles(10).neighbors == Buffer(tiles(1), tiles(9), tiles(11), tiles(19)))
     assert(tiles(80).neighbors == Buffer(tiles(71), tiles(79)))
     assert(tiles(19).neighbors == Buffer(tiles(10), tiles(18), tiles(20), tiles(28)))
+  }
+
+  "FileReader createSubareaAndUpdateTiles" should "place the correct subareaIndex to every tile" in {
+    val file = "src/testingData/9x9_example_board_2.txt"
+    val lines = FileReader.readFile(file)
+
+   // Create a sudoku board of size (3 x 3)
+    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
+    val tiles = board.showTiles()
+    val subareas = board.showSubareas()
+
+    println(subareas(0).showTiles().length)
+    assert(subareas.head.showTiles().contains(tiles(9)))
+    assert(subareas.head.showTiles().contains(tiles.head))
+    assert(subareas.head.showTiles().contains(tiles(1)))
+    assert(tiles(9).subareaIndex.get == tiles.head.subareaIndex.get, "First and 9th tile should be in the same sub-area.")
+    assert(tiles(9).subareaIndex.get == tiles(1).subareaIndex.get, "Second tile and 9th tile should be in the same sub-area.")
+  }
+
+
+  "FileReader addNeighborsToSubareas" should "add proper neighbors to every sub-area" in {
+    val file = "src/testingData/9x9_example_board_2.txt"
+    val lines = FileReader.readFile(file)
+
+   // Create a sudoku board of size (3 x 3)
+    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
+    val allSba = board.showSubareas()
+    var differentColorInNeighbors: Boolean = true
+
+    for i <- allSba.indices do
+      val neighbors = allSba(i).neighbors
+      if neighbors.exists( neighbor => neighbor.color.get == allSba(i).color.get ) then
+        differentColorInNeighbors = false
+      end if
+    end for
+    assert(differentColorInNeighbors, "Neighboring sub-areas should have different color.")
+
   }
 
   "FileReader readFilePuzzleboard-method" should "create a correct Puzzleboard-object" in {

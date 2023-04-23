@@ -66,11 +66,6 @@ object FileReader:
     bufferedSource.close()
     allLines
 
-
-  // def readFilePuzzleBoardHistory(): Seq[String] = ???
-  // def readFilePuzzleBoardHistory(file: String, history: PuzzleBoardHistory): Seq[String] = ???
-
-
   // This is a helper method, which updates tiles and returns Buffer[Tile].
   private def updateTiles(tileInStr: Buffer[String], allTiles: Buffer[Tile]): Buffer[Tile] =
     val tiles: Buffer[Tile] = Buffer()
@@ -79,10 +74,10 @@ object FileReader:
       val tileCode: String = tileInStr(i)
       val (row, col) = this.findRowAndColumn(tileCode)
       tiles += allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get
+      assert(!tiles.last.inUse, s"Tile row: ${row}, column: ${col} duplicate found.")
+      tiles.last.inUse = true
     end for
     tiles
-
-
 
   // Finds a row and a column of the given tile string
   private def findRowAndColumn(strTile: String): (Int, Int) =
@@ -112,9 +107,9 @@ object FileReader:
       else if currentLine.contains("tilesum:") then
           tileSum = Some(currentLine.drop(8)) // Single tile, which contains information about the sum of subarea
       else if currentLine.contains("tiles:") then
-          tilesInStr = tilesInStr ++= currentLine.drop(6).split(",").toBuffer
+          tilesInStr ++= currentLine.drop(6).split(",").toBuffer
       else if currentLine.contains("squares:") then
-          squares = squares ++= currentLine.drop(8).split(",").map( str => str.toInt ).toBuffer
+          squares ++= currentLine.drop(8).split(",").map( str => str.toInt ).toBuffer
       else
           // println("Not found error")
           assert(false, "Not found error!")
@@ -144,15 +139,17 @@ object FileReader:
 
   def addSubareaIndexToTiles(puzzleboard: Puzzleboard): Unit =
     val subareas = puzzleboard.showSubareas()
+    val allTilesSet: Set[Tile] = puzzleboard.showTiles().toSet
 
     for i <- subareas.indices do
-      val tilesInSubarea = subareas(i).showTiles()
+      val tilesInSubarea: Vector[Tile] = subareas(i).showTiles()
 
       for j <- tilesInSubarea.indices do
         // Add subarea index to the single tile
         tilesInSubarea(j).subareaIndex = Some(i)
       end for
     end for
+
 
   // Will look something like this in the file: #placedNums:
   // a1: 6, a8: 8, ...
@@ -174,7 +171,7 @@ object FileReader:
 
 
   /**
-   * This method adds neighbors to all the sub-areas on the board.
+   * This method adds neighbors to all sub-areas on the board.
    */
   def addNeighborsToSubareas(puzzle: Puzzleboard): Unit =
     val tiles: Vector[Tile] = puzzle.showTiles()
@@ -182,8 +179,10 @@ object FileReader:
 
 
     for i <- tiles.indices do
-      val neighbors: Vector[Tile] = tiles(i).neighbors.toVector
-      val cSubIndex: Int = tiles(i).subareaIndex.get
+      // This two variables will be used, when comparing two Tile-instances below.
+      val neighbors: Vector[Tile] = tiles(i).neighbors.toVector // neighbors of the tile(i).
+      val cSubIndex: Int = tiles(i).subareaIndex.get // sub-area index of this tile.
+
 
       for j <- neighbors.indices do
         val nSubIndex: Int = neighbors(j).subareaIndex.get
@@ -204,13 +203,15 @@ object FileReader:
   /** This method adds colors to sub-areas using Greedy-algorithm. */
   def addColorToSubareas(puzzle: Puzzleboard): Unit =
     val subareas: Vector[Subarea] = puzzle.showSubareas()
-    val colors: Buffer[Color] = Buffer() // Color.BLUE, Color.GREEN, Color.ORANGE, Color.PINK, Color.YELLOW
+    val colors: Buffer[Color] = Buffer()
+
     for i <- subareas.indices do
       val currentSba = subareas(i)
       if currentSba.color.isEmpty then
         val neighbors: Vector[Subarea] = currentSba.neighbors
         val colorInNeighbors: Buffer[Color] = Buffer()
         // Adds colors that neighboring sub-areas have into colorInNeighbors-buffer.
+        // TODO: Use Set instead of Buffer[Color]
         neighbors.foreach( neighbor =>
           if neighbor.color.isDefined && !colorInNeighbors.contains(neighbor.color.get) then
             colorInNeighbors += neighbor.color.get )
@@ -281,6 +282,10 @@ object FileReader:
         case _          => None
 
     end for
+
+    var i = -1
+    tiles.foreach( tile => if !tile.inUse then i = tiles.indexOf(tile) )
+    assert(i == -1, s"Tile row: ${tiles(i).getRow} and column: ${tiles(i).getColumn} info is missing in config file.")
 
     // Place numbers in the tiles that are specified in the provided file.
     if stripped.exists( str => str.contains("#placednums") ) then
