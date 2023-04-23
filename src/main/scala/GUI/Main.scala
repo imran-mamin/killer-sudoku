@@ -628,7 +628,7 @@ object Main extends JFXApp3:
     stage.onCloseRequest = (event: WindowEvent) =>
       if unsavedChanges then
         val alertClose = new Alert(Alert.AlertType.WARNING)
-        alertClose.contentText = "There are unsaved changes. Are you sure you want to exit?"
+        alertClose.contentText = "There are unsaved changes. Would you like to save changes?"
         alertClose.title = "Unsaved Changes"
         alertClose.buttonTypes = Seq(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL)
         val result = Option(alertClose.showAndWait().orElse(null))
