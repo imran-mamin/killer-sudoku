@@ -134,26 +134,26 @@ object Main extends JFXApp3:
 
     // Show a,b,c,... and 1,2,3,... coordinates of puzzleboard
     def showNumAndCharCoordinates(row: Int, col: Int) =
-      for i <- 0 until row do // equals y-coordinate
+      val boardTiles: Vector[Tile] = puzzleboard.get.getTiles
+      for i <- tiles.indices do
+        if i / 9 == 0 then
+           val row = new Label:
+              text = characters(i).toString
+           row.layoutX = boardTiles(i).xCoord + tiles.head.getWidth / 2.0
+           row.layoutY = gridWith3x3Squares.getLayoutY - 0.25 * gridWith3x3Squares.getLayoutY
+           root.children += row
+        end if
 
-        // Displaying the y-coordinates in the GUI window
-        val colText = new Label:
-          text = " " + (i + 1) + " "
-        // - 1/4 is to display text on top of tiles at the center.
-        colText.layoutX = gridWith3x3Squares.getLayoutX - 0.25 * gridWith3x3Squares.getLayoutX
-        // Starting point plus amount of tiles multiplied by their height
-        colText.layoutY = 95 + i * tiles.head.getHeight
-        root.children += colText
-
-        for j <- 0 until col do // equals x-coordinate
-          if i == 0 then
-            val row = new Label:
-              text = characters(j).toString
-            row.layoutX = 100 + j * tiles.head.getWidth
-            row.layoutY = gridWith3x3Squares.getLayoutY - 0.25 * gridWith3x3Squares.getLayoutY
-            root.children += row
-          end if
-        end for
+        if i % 9 == 0 then
+          // Displaying the y-coordinates in the GUI window
+          val colText = new Label:
+            text = "" + (i / 9 + 1) // Tells row of tiles
+          // - 1/4 is to display text on top of tiles at the center.
+          colText.layoutX = gridWith3x3Squares.getLayoutX - 0.25 * gridWith3x3Squares.getLayoutX
+          // Starting point plus amount of tiles multiplied by their height
+          colText.layoutY = boardTiles(i).yCoord + tiles.head.getHeight / 3.0
+          root.children += colText
+        end if
       end for
 
 
