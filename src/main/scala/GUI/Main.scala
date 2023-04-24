@@ -162,7 +162,7 @@ object Main extends JFXApp3:
           val borderLeftOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getLeft
           val borderLeftOf3x3Square: Double = gridWith9TilesInsets.getLeft
           val tileBorder: Double = tiles.head.getStrokeWidth
-
+          // println(gridWith3x3Squares.getChildren.get(2).localToScene(i, j))
           // X-coordinate is layoutX of 9x9 Square + tilesWidth * amountOfTiles before this one +
           // the border of 9x9 square + borders of 3x3 squares + single tile border.
           boardTiles((i * col) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles.head.getWidth +
@@ -464,6 +464,8 @@ object Main extends JFXApp3:
           puzzleboard = Some(board)
           rowNSize = Some(boardWithSize._2)
           colNSize = Some(boardWithSize._3)
+          // Delete name of previous file.
+          stage.title = "Killer-Sudoku"
           stage.title = stage.getTitle + " - " + boardWithSize._4
           // Create sudoku board
           create3x3Squares(boardWithSize._2, boardWithSize._3, board)
