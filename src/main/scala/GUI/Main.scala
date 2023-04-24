@@ -33,6 +33,10 @@ import java.awt.{Cursor, Shape, TextArea}
 import java.io.FileInputStream
 import java.io.File
 import scala.language.postfixOps
+import scalafx.scene.layout.BorderStroke
+import scalafx.scene.layout.BorderStrokeStyle
+import scalafx.scene.layout.BorderWidths
+
 
 
 object Main extends JFXApp3:
@@ -153,10 +157,10 @@ object Main extends JFXApp3:
       end for
 
 
-
     // Set coordinates of the tile's top left corner and store it in the back-end
     def setTopLeftXYTileCoordinates(board: Puzzleboard, row: Int, col: Int) =
       val boardTiles = board.getTiles
+
       for i <- 0 until row do
         for j <- 0 until col do
           val borderLeftOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getLeft
@@ -166,12 +170,12 @@ object Main extends JFXApp3:
           // X-coordinate is layoutX of 9x9 Square + tilesWidth * amountOfTiles before this one +
           // the border of 9x9 square + borders of 3x3 squares + single tile border.
           boardTiles((i * col) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles.head.getWidth +
-            borderLeftOf9x9Square + ((j / 3) * 2 + 1) * borderLeftOf3x3Square + (j + 1 + j / 3) * tileBorder
+            borderLeftOf9x9Square + ((j / 3) * 2 + 1) * borderLeftOf3x3Square + (2 * j + 1) * tileBorder
 
           val borderTopOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getTop
-          val borderTopOf3x3Square: Double = 2
+          val borderTopOf3x3Square: Double = gridWith9TilesInsets.getTop
           boardTiles((i * col) + j).yCoord = gridWith3x3Squares.getLayoutY + i * tiles.head.getHeight +
-            borderTopOf9x9Square
+            borderTopOf9x9Square + ((i / 3) * 2 + 1) * borderTopOf3x3Square + (2 * i + 1) * tileBorder
 
         end for
       end for
@@ -186,8 +190,11 @@ object Main extends JFXApp3:
         for j <- 0 until amountOfSquaresHorizontal do  // columns (x)
           gridWith3x3Squares.add(create9Tiles(), j, i)
           gridWith3x3Squares.border = Border.stroke(Color.Black)
+
+          // gridWith3x3Squares.setStyle("-fx-border-color: black; -fx-border-width: 2px;")
         end for
       end for
+
       setTopLeftXYTileCoordinates(board, row, col)
 
       showNumAndCharCoordinates(row, col)
@@ -254,6 +261,8 @@ object Main extends JFXApp3:
     vbox.alignment = Pos.Center
     root.children += vbox
 
+    var numOffsetX = 15
+    var numOffsetY = 26
     // Place a candidate number into a rectangle, which user clicks
     def placeCandidate(j: Int, row: Int, col: Int, board: Puzzleboard, candidate: String) =
       val amountOfSquaresHorizontal: Int = col / 3
@@ -270,8 +279,8 @@ object Main extends JFXApp3:
       // Place the candidate to the rectangle
       val text = texts(j)
       text.setText(candidate)
-      text.layoutX = tileToPlaceCandidate.xCoord + 18
-      text.layoutY = tileToPlaceCandidate.yCoord + 26
+      text.layoutX = tileToPlaceCandidate.xCoord + numOffsetX
+      text.layoutY = tileToPlaceCandidate.yCoord + numOffsetY
       text.setFont(Font.font("Arial", FontWeight.Bold, 14))
       text.visible = true
       candidateLists(j).visible = false
@@ -363,8 +372,8 @@ object Main extends JFXApp3:
 
             val text = new Text(tilesInBoard(convertIndex(j)).targetSum.get.toString)
             text.setFill(Color.Black)
-            text.setX(tilesInBoard(convertIndex(j)).xCoord)
-            text.setY(tilesInBoard(convertIndex(j)).yCoord + 20)
+            text.setX(tilesInBoard(convertIndex(j)).xCoord + 1)
+            text.setY(tilesInBoard(convertIndex(j)).yCoord + 9)
             text.setFont(new Font(9))
             text.setMouseTransparent(true) // Gives an ability for a user to click on the text and it will still open ListView-object.
             root.children += text
@@ -409,8 +418,8 @@ object Main extends JFXApp3:
           val tileWithNum = tilesInBoard(convertIndex(i))
           val currNum: Int = tileWithNum.currentNumber.get
           texts(i).setText(currNum.toString)
-          texts(i).layoutX = tileWithNum.xCoord + 18
-          texts(i).layoutY = tileWithNum.yCoord + 26
+          texts(i).layoutX = tileWithNum.xCoord + numOffsetX
+          texts(i).layoutY = tileWithNum.yCoord + numOffsetY
           texts(i).setFont(Font.font("Arial", FontWeight.Bold, 14))
           texts(i).visible = true
         end if
@@ -476,7 +485,6 @@ object Main extends JFXApp3:
           showPuzzleboardUserNums(board, boardWithSize._2, boardWithSize._3)
 
           previousFiles += file.toString
-          println(tiles(8).localToScene(2, 2))
       catch
         case e: java.io.IOException =>
           val alertMessage: String = "The IOException was occuried while trying to open the file."

@@ -96,7 +96,7 @@ object FileReader:
     var squares: Buffer[Int] = Buffer()
     var tiles: Buffer[Tile] = Buffer()
 
-
+    // TODO: Add NumberFormatException handling, when user doesn't provide digits after ':'.
     for i <- data.indices do
       var currentLine = data(i).trim.toLowerCase.replaceAll(" ", "")
 
