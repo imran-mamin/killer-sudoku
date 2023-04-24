@@ -545,19 +545,25 @@ object Main extends JFXApp3:
     val saveItem = new MenuItem("Save")
       saveItem.onAction = (event) =>
         println("Save-button in the menubar is clicked")
-        if fileNameOfSavedFile.isDefined && parentOfSavedFile.isDefined then
-          FWriter.writeFile(fileNameOfSavedFile.get, parentOfSavedFile.get, puzzleboard.get, rowNSize.get, colNSize.get)
-          updateUnsavedChanges(false) // Delete asterisk
-          updateTitle()
+        if puzzleboard.isDefined then
+          saveItem.disable = false
+          if fileNameOfSavedFile.isDefined && parentOfSavedFile.isDefined then
+            FWriter.writeFile(fileNameOfSavedFile.get, parentOfSavedFile.get, puzzleboard.get, rowNSize.get, colNSize.get)
+            updateUnsavedChanges(false) // Delete asterisk
+            updateTitle()
+          else
+            openFileChooserToSaveFile
         else
-          openFileChooserToSaveFile
-
+          saveItem.disable = true
 
     val saveAsItem = new MenuItem("Save as")
       saveAsItem.onAction = (event) =>
-        println("Save as -button in the menubar is clicked")
-        openFileChooserToSaveFile // Opens a fileChooser, where the user can select, where she/he wants to save the file.
-
+        if puzzleboard.isDefined then
+          saveAsItem.disable = false
+          println("Save as -button in the menubar is clicked")
+          openFileChooserToSaveFile // Opens a fileChooser, where the user can select, where she/he wants to save the file.
+        else
+          saveAsItem.disable = true
 
 
     fileMenu.items = List(newFileItem, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
