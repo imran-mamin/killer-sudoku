@@ -7,6 +7,7 @@ import java.awt.Color
 
 class TestGame extends AnyFlatSpec with Matchers:
 
+  // Test FileReader methods
   "FileReader readFile-method" should "return all the lines in the given file" in {
     val file = "src/testingData/test1.txt"
     val lines = FileReader.readFile(file)
@@ -41,9 +42,11 @@ class TestGame extends AnyFlatSpec with Matchers:
     val tiles = initializeTiles(9, 9)
     assert(tiles.head.neighbors == Buffer(tiles(1), tiles(9)))
     assert(tiles(1).neighbors == Buffer(tiles(0), tiles(2), tiles(10)))
+    assert(tiles(8).neighbors.contains(tiles(7)) && tiles(8).neighbors.contains(tiles(17)))
     assert(tiles(9).neighbors == Buffer(tiles(0), tiles(10), tiles(18)))
     assert(tiles(10).neighbors == Buffer(tiles(1), tiles(9), tiles(11), tiles(19)))
     assert(tiles(80).neighbors == Buffer(tiles(71), tiles(79)))
+    assert(tiles(17).neighbors.contains(tiles(8)) && tiles(17).neighbors.contains(tiles(26)))
     assert(tiles(19).neighbors == Buffer(tiles(10), tiles(18), tiles(20), tiles(28)))
   }
 
@@ -56,7 +59,6 @@ class TestGame extends AnyFlatSpec with Matchers:
     val tiles = board.getTiles
     val subareas = board.getSubareas
 
-    println(subareas(0).getTiles.length)
     assert(subareas.head.getTiles.contains(tiles(9)))
     assert(subareas.head.getTiles.contains(tiles.head))
     assert(subareas.head.getTiles.contains(tiles(1)))
@@ -109,6 +111,58 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(board.getTiles.forall( tile => tile.getSquare == 0 ))
   }
 
+
+  "FileReader readFilePuzzleBoardCfg-method" should "create a new Puzzleboard object with correctly placed" +
+  "nums in some tiles" in {
+  val file = "src/testingData/9x9_example_board.txt"
+  val lines = FileReader.readFile(file)
+
+  val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
+  // When the given size is not divisible by three, then program should create a board 9 x 9
+  assert(board.getTiles(0).currentNumber.isDefined)
+  assert(board.getTiles(1).currentNumber.isDefined)
+  }
+/*
+  "FileReader readFilePuzzleBoardCfg-method" should "read a Puzzleboard object properly" in {
+  val file = "C:\\Users\\imran\\IdeaProjects\\Killer_Sudoku\\src\\testingData\\myfile_1.txt"
+  val lines = FileReader.readFile(file)
+
+  val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
+  // When the given size is not divisible by three, then program should create a board 9 x 9
+  assert(board.getTiles(0).currentNumber.isDefined)
+  assert(board.getTiles(1).currentNumber.isDefined)
+  assert(board.getTiles(32).currentNumber.isDefined)
+  }
+*/
+
+  "addNeighborsToSubareas-method" should "add neighbors properly to sub-areas" in {
+    val file = "src/testingData/9x9_example_board.txt"
+    val lines = FileReader.readFile(file)
+
+    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
+    val allSba = board.getSubareas
+    FileReader.addNeighborsToSubareas(board)
+    assert(allSba(0).neighbors.contains(allSba(1)), "First sub-area has two neighbors.")
+    assert(allSba(0).neighbors.contains(allSba(6)))
+    assert(allSba(0).neighbors.length == 2)
+
+    assert(allSba(1).neighbors.contains(allSba(0)), "Second sub-area has three neighbors.")
+    assert(allSba(1).neighbors.contains(allSba(2)))
+    assert(allSba(1).neighbors.contains(allSba(7)))
+    assert(allSba(1).neighbors.length == 3)
+
+    assert(allSba(7).neighbors.contains(allSba(1)), "Seventh sub-area has four neighbors.")
+    assert(allSba(7).neighbors.contains(allSba(2)))
+    assert(allSba(7).neighbors.contains(allSba(6)))
+    assert(allSba(7).neighbors.contains(allSba(8)))
+    assert(allSba(7).neighbors.length == 4)
+  }
+
+
+
+
+
+  // Test Puzzleboard methods
   "getRowCandidates()-method" should "return all possible candidates so that" +
     "there will be no two same digits in the same row" in {
     val row0 = Vector(new Tile(0, 0, 1), new Tile(1, 0, 1), new Tile(2, 0, 1))
@@ -127,12 +181,6 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(board.getCandidates(2) == (3 to 9).toBuffer)
  
   }
-/*
-  "getColCandidates()-method" should "return all possible candidates so that" +
-    "there will be no two same digits in the same column." in {
-    
-  }
-  */
 
   "getLastTwoTilesCombinations()-method" should "return possible combinations of tiles' candidates." in {
     val tile1 = Tile(0, 0, 1)
@@ -199,52 +247,6 @@ class TestGame extends AnyFlatSpec with Matchers:
     assert(combinations.size == 2, "The amount of combinations is not the same.")
   }
 
-
-  "FileReader readFilePuzzleBoardCfg-method" should "create a new Puzzleboard object with correctly placed" +
-  "nums in some tiles" in {
-  val file = "src/testingData/9x9_example_board.txt"
-  val lines = FileReader.readFile(file)
-
-  val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
-  // When the given size is not divisible by three, then program should create a board 9 x 9
-  assert(board.getTiles(0).currentNumber.isDefined)
-  assert(board.getTiles(1).currentNumber.isDefined)
-  }
-/*
-  "FileReader readFilePuzzleBoardCfg-method" should "read a Puzzleboard object properly" in {
-  val file = "C:\\Users\\imran\\IdeaProjects\\Killer_Sudoku\\src\\testingData\\myfile_1.txt"
-  val lines = FileReader.readFile(file)
-
-  val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
-  // When the given size is not divisible by three, then program should create a board 9 x 9
-  assert(board.getTiles(0).currentNumber.isDefined)
-  assert(board.getTiles(1).currentNumber.isDefined)
-  assert(board.getTiles(32).currentNumber.isDefined)
-  }
-*/
-
-  "addNeighborsToSubareas-method" should "add neighbors properly to sub-areas" in {
-    val file = "src/testingData/9x9_example_board.txt"
-    val lines = FileReader.readFile(file)
-
-    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
-    val allSba = board.getSubareas
-    FileReader.addNeighborsToSubareas(board)
-    assert(allSba(0).neighbors.contains(allSba(1)), "First sub-area has two neighbors.")
-    assert(allSba(0).neighbors.contains(allSba(6)))
-    assert(allSba(0).neighbors.length == 2)
-
-    assert(allSba(1).neighbors.contains(allSba(0)), "Second sub-area has three neighbors.")
-    assert(allSba(1).neighbors.contains(allSba(2)))
-    assert(allSba(1).neighbors.contains(allSba(7)))
-    assert(allSba(1).neighbors.length == 3)
-
-    assert(allSba(7).neighbors.contains(allSba(1)), "Seventh sub-area has four neighbors.")
-    assert(allSba(7).neighbors.contains(allSba(2)))
-    assert(allSba(7).neighbors.contains(allSba(6)))
-    assert(allSba(7).neighbors.contains(allSba(8)))
-    assert(allSba(7).neighbors.length == 4)
-  }
 
   "Neigboring sub-areas" should "have different color" in {
     val file = "src/testingData/9x9_example_board.txt"
