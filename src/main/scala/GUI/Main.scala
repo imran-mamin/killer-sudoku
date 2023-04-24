@@ -228,8 +228,8 @@ object Main extends JFXApp3:
 
         val xCoord = boardTiles(convertIndex(j)).xCoord
         val yCoord = boardTiles(convertIndex(j)).yCoord
-        currentListView.layoutX = xCoord
-        currentListView.layoutY = yCoord + 20
+        currentListView.layoutX = xCoord - tiles.head.getWidth / 2.0
+        currentListView.layoutY = yCoord + tiles.head.getHeight
       end for
 
 
@@ -303,8 +303,8 @@ object Main extends JFXApp3:
       val subareaIndex: Int = board.getTiles((convertIndex(j))).subareaIndex.get
       val amountOfFreeTiles: Int = board.getSubareas(subareaIndex).getTiles.count(tile => tile.currentNumber.isEmpty )
 
-      // Display alertbox if we run out of candidates.
-      if candidates.isEmpty && (amountOfFreeTiles != 0) then
+      // Display alertbox if we run out of candidates and there are no placed num in the tile.
+      if candidates.isEmpty && (amountOfFreeTiles != 0) && (texts(j).getText == "") then
         val alertMessage: String = "There are no candidates left! Please, consider removing some numbers from other squares or click 'Start again' button."
         throwAlert(AlertType.ERROR, "Error", alertMessage)
 
