@@ -54,12 +54,11 @@ object Main extends JFXApp3:
     end throwAlert
 
 
-
-
     stage = new JFXApp3.PrimaryStage:
       title = "Killer-Sudoku"
       width = 800
       height = 600
+
 
     val root = Pane()
     val gridWith3x3Squares = GridPane()
@@ -69,15 +68,12 @@ object Main extends JFXApp3:
     var unsavedChanges: Boolean = false // Flag to track unsaved changes in the file
     var puzzleboardIsUpdated: Boolean = false // Flag to check whether file opening was successful or not
                                               // Is used later, for disabling save items.
-
     var puzzleboard: Option[Puzzleboard] = None
     var colNSize: Option[Int] = None
     var rowNSize: Option[Int] = None
     val previousFiles = Buffer[String]()
-
     val mainScene = Scene(parent = root)
     stage.scene = mainScene
-
 
 
     /** Convert tile index in gui to back-end */
@@ -92,11 +88,13 @@ object Main extends JFXApp3:
 
     val tiles: Buffer[Rectangle] = Buffer()
 
+    // This information will be used later when calculating coordinates of tiles.
     var gridWith9TilesInsets: Insets = Insets.EMPTY
 
     // To avoid "Advanced language feature: postfix operator notation" warning
     def updateUnsavedChanges(b: Boolean): Unit =
       unsavedChanges = b
+
 
     def updateTitle(): Unit =
       var title: String = stage.getTitle
@@ -113,8 +111,6 @@ object Main extends JFXApp3:
       stage.title = title
 
 
-    // TODO: Fix subarea sum placement to count border with.
-    // TODO: Fix placement of row and column coordinates.
     def create9Tiles(): GridPane =
       val gridWith9Tiles = GridPane()
 
@@ -135,7 +131,7 @@ object Main extends JFXApp3:
     val characters: List[Char] = ('a' to 'z').toList
 
     // Show a,b,c,... and 1,2,3,... coordinates of puzzleboard
-    def showNumAndCharCoordinates(row: Int, col: Int) =
+    def showNumAndCharCoordinates() =
       val boardTiles: Vector[Tile] = puzzleboard.get.getTiles
       for i <- tiles.indices do
         if i / 9 == 0 then
@@ -160,69 +156,61 @@ object Main extends JFXApp3:
 
 
     // Set coordinates of the tile's top left corner and store it in the back-end
-    def setTopLeftXYTileCoordinates(board: Puzzleboard, row: Int, col: Int) =
-      val boardTiles = board.getTiles
+    def setTopLeftXYTileCoordinates() =
+      val boardTiles = puzzleboard.get.getTiles
 
-      for i <- 0 until row do
-        for j <- 0 until col do
+      for i <- 0 until rowNSize.get do
+        for j <- 0 until colNSize.get do
           val borderLeftOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getLeft
           val borderLeftOf3x3Square: Double = gridWith9TilesInsets.getLeft
-          val tileBorder: Double = tiles.head.getStrokeWidth
+          val tileBorder: Double = tiles.head.getStrokeWidth // Border of rectangle object
           // println(gridWith3x3Squares.getChildren.get(2).localToScene(i, j))
           // X-coordinate is layoutX of 9x9 Square + tilesWidth * amountOfTiles before this one +
           // the border of 9x9 square + borders of 3x3 squares + single tile border.
-          boardTiles((i * col) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles.head.getWidth +
+          boardTiles((i * colNSize.get) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles.head.getWidth +
             borderLeftOf9x9Square + ((j / 3) * 2 + 1) * borderLeftOf3x3Square + (2 * j + 1) * tileBorder
 
           val borderTopOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getTop
           val borderTopOf3x3Square: Double = gridWith9TilesInsets.getTop
-          boardTiles((i * col) + j).yCoord = gridWith3x3Squares.getLayoutY + i * tiles.head.getHeight +
+          boardTiles((i * colNSize.get) + j).yCoord = gridWith3x3Squares.getLayoutY + i * tiles.head.getHeight +
             borderTopOf9x9Square + ((i / 3) * 2 + 1) * borderTopOf3x3Square + (2 * i + 1) * tileBorder
-
         end for
       end for
 
 
-
-    def create3x3Squares(row: Int, col: Int, board: Puzzleboard) =
-      val amountOfSquaresHorizontal: Int = col / 3
-      val amountOfSquaresVertical: Int = row / 3
+    def create3x3Squares() =
+      val amountOfSquaresHorizontal: Int = colNSize.get / 3
+      val amountOfSquaresVertical: Int = rowNSize.get / 3
 
       for i <- 0 until amountOfSquaresVertical do  // rows (y)
         for j <- 0 until amountOfSquaresHorizontal do  // columns (x)
           gridWith3x3Squares.add(create9Tiles(), j, i)
-          gridWith3x3Squares.border = Border.stroke(Color.Black)
-
-          // gridWith3x3Squares.setStyle("-fx-border-color: black; -fx-border-width: 2px;")
         end for
       end for
+      gridWith3x3Squares.border = Border.stroke(Color.Black) // Add border to puzzleboard.
+      setTopLeftXYTileCoordinates() // Set top left corner's coordinates of rectangle object.
+      showNumAndCharCoordinates()   // Show coordinates for user.
 
-      setTopLeftXYTileCoordinates(board, row, col)
 
-      showNumAndCharCoordinates(row, col)
-
-    root.children += gridWith3x3Squares
+    root.children += gridWith3x3Squares // Add gridWith3x3Squares to root.
 
 
     val candidateLists: Buffer[ListView[String]] = Buffer()
 
-
-    def initializeCandidateLists(board: Puzzleboard, row: Int, col: Int): Unit =
-      val amountOfSquaresHorizontal: Int = col / 3
-      val amountOfSquaresVertical: Int = row / 3
-      val boardTiles = board.getTiles
+    def initializeCandidateLists(): Unit =
+      val amountOfSquaresHorizontal: Int = colNSize.get / 3
+      val amountOfSquaresVertical: Int = rowNSize.get / 3
+      val boardTiles = puzzleboard.get.getTiles
 
       for j <- tiles.indices do
         val currentListView = new ListView[String]()
         currentListView.setMaxSize(100, 100)
         currentListView.visible = false
-
-        currentListView.setCellFactory(_ => new CustomListCell(tiles.toVector, board, colNSize.get))
+        currentListView.setCellFactory(_ => new CustomListCell(tiles.toVector, puzzleboard.get, colNSize.get))
         candidateLists += currentListView
         root.children += currentListView
-
         currentListView.getItems.add("")
-        val candidates = board.getCandidatesAfterSbaFilter(convertIndex(j))
+        val candidates = puzzleboard.get.getCandidatesAfterSbaFilter(convertIndex(j))
 
         for k <- candidates.indices do
           currentListView.getItems.add(candidates(k).toString)
@@ -246,7 +234,6 @@ object Main extends JFXApp3:
       end for
 
 
-
      // Possible combinations of the tiles in subarea
     val possibleComLabel = new Label("Possible combinations")
     possibleComLabel.setFont(new Font(18))
@@ -263,18 +250,19 @@ object Main extends JFXApp3:
     vbox.alignment = Pos.Center
     root.children += vbox
 
+
     var numOffsetX = 15
     var numOffsetY = 26
-    // Place a candidate number into a rectangle, which user clicks
-    def placeCandidate(j: Int, row: Int, col: Int, board: Puzzleboard, candidate: String) =
-      val amountOfSquaresHorizontal: Int = col / 3
-      val amountOfSquaresVertical: Int = row / 3
 
+    // Place a candidate number into a rectangle, which user clicks
+    def placeCandidate(j: Int, candidate: String) =
+      val amountOfSquaresHorizontal: Int = colNSize.get / 3
+      val amountOfSquaresVertical: Int = rowNSize.get / 3
       texts(j).setText("")
       val candidateNum = candidate.toIntOption
 
       // Update currentNumber of the tile in back-end
-      val boardTiles = board.getTiles
+      val boardTiles = puzzleboard.get.getTiles
       val tileToPlaceCandidate = boardTiles(convertIndex(j))
       tileToPlaceCandidate.currentNumber = candidateNum
 
@@ -290,27 +278,26 @@ object Main extends JFXApp3:
       updateTitle()
 
 
-    def openCandidatesListView(j: Int, row: Int, col: Int, board: Puzzleboard) =
-      val amountOfSquaresHorizontal: Int = col / 3
-      val amountOfSquaresVertical: Int = row / 3
+    def openCandidatesListView(j: Int) =
+      val amountOfSquaresHorizontal: Int = colNSize.get / 3
+      val amountOfSquaresVertical: Int = rowNSize.get / 3
 
       // Show possible combinations
-      showPossibleCombs(board, j)
+      showPossibleCombs(j)
 
       // Display a listView object
       val listView = candidateLists(j)
-      listView.setOnMouseEntered( e => showPossibleCombs(board, j) ) // Show combinations also, when the cursor is in ListView.
+      listView.setOnMouseEntered( e => showPossibleCombs(j) ) // Show combinations also, when the cursor is in ListView.
       listView.toFront()
       listView.getItems.remove(0, listView.getItems.length)
-      val candidates = board.getCandidatesAfterSbaFilter(convertIndex(j))
-      val subareaIndex: Int = board.getTiles((convertIndex(j))).subareaIndex.get
-      val amountOfFreeTiles: Int = board.getSubareas(subareaIndex).getTiles.count(tile => tile.currentNumber.isEmpty )
+      val candidates = puzzleboard.get.getCandidatesAfterSbaFilter(convertIndex(j))
+      val subareaIndex: Int = puzzleboard.get.getTiles((convertIndex(j))).subareaIndex.get
+      val amountOfFreeTiles: Int = puzzleboard.get.getSubareas(subareaIndex).getTiles.count(tile => tile.currentNumber.isEmpty )
 
       // Display alertbox if we run out of candidates and there are no placed num in the tile.
       if candidates.isEmpty && (amountOfFreeTiles != 0) && (texts(j).getText == "") then
         val alertMessage: String = "There are no candidates left! Please, consider removing some numbers from other squares or click 'Start again' button."
         throwAlert(AlertType.ERROR, "Error", alertMessage)
-
         println("Candidates is empty")
       else
         listView.getItems.add("")
@@ -322,14 +309,14 @@ object Main extends JFXApp3:
         listView.getSelectionModel.selectedItemProperty().addListener( e =>
           val candidate: String = listView.getSelectionModel.selectedItemProperty().get()
           if candidate != null then
-            placeCandidate(j, row, col, board, candidate) )
+            placeCandidate(j, candidate) )
 
 
-    def showPossibleCombs(board: Puzzleboard, j: Int): Unit =
+    def showPossibleCombs(j: Int): Unit =
       // Displaying possible combinations in the gui.
       val sizeOfVbox: Int = vbox.getChildren.length
       vbox.getChildren.remove(1, sizeOfVbox)
-      val combinations: Buffer[String] = board.getCombinationsInStr(convertIndex(j))
+      val combinations: Buffer[String] = puzzleboard.get.getCombinationsInStr(convertIndex(j))
       val listOfLabels: List[Label] = combinations.toList.map( str => new Label(str) )
       listOfLabels.foreach( label => label.setTextFill(Color.Red) )
       listOfLabels.foreach( label => label.setFont(new Font(16)) )
@@ -340,24 +327,17 @@ object Main extends JFXApp3:
       tiles(j).setFill(Color.White)
 
 
-
-
     var cursorInRectOrListView: Boolean = false
 
-    def showSubareas(board: Puzzleboard, row: Int, col: Int) =
-      val subareas: Vector[Subarea] = board.getSubareas
-      val tilesInBoard: Vector[Tile] = board.getTiles
-      val amountOfSquaresHorizontal: Int = col / 3
-      val amountOfSquaresVertical: Int = row / 3
-
-
+    def showSubareas() =
+      val subareas: Vector[Subarea] = puzzleboard.get.getSubareas
+      val tilesInBoard: Vector[Tile] = puzzleboard.get.getTiles
       assert(tiles.length == tilesInBoard.length)
 
       def handleCursorOut(j: Int) =
         val subIndex: Int = tilesInBoard(convertIndex(j)).subareaIndex.get
         val subareaColorInRGB = convertHSBtoRGB(subareas(subIndex).color.get)
         tiles(j).setFill(Color.rgb(subareaColorInRGB._1, subareaColorInRGB._2, subareaColorInRGB._3))
-
         candidateLists(j).setOnMouseExited( e =>
           candidateLists(j).visible = false )
 
@@ -372,7 +352,6 @@ object Main extends JFXApp3:
             assert(false)
           // Checks if current tile has a target sum of the sub-area.
           if tilesInBoard(convertIndex(j)).targetSum.isDefined then
-
             val text = new Text(tilesInBoard(convertIndex(j)).targetSum.get.toString)
             text.setFill(Color.Black)
             text.setX(tilesInBoard(convertIndex(j)).xCoord + 1)
@@ -381,17 +360,16 @@ object Main extends JFXApp3:
             text.setMouseTransparent(true) // Gives an ability for a user to click on the text and it will still open ListView-object.
             root.children += text
           end if
-
           initializeTextInTiles()
 
           // When hovering, the color changes to white
           tiles(j).setOnMouseEntered( e =>
-            showPossibleCombs(board, j)
-            tileHandler(j) )
+            showPossibleCombs(j)
+            tileHandler(j)
+          )
 
           // When the cursor leaves the tile, the color of the tile will be the same as before
           tiles(j).setOnMouseExited( e =>
-            // removeCombinations()
             handleCursorOut(j)
           )
 
@@ -399,22 +377,22 @@ object Main extends JFXApp3:
           tiles(j).setOnMouseClicked( e =>
             tileHandler(j)
             candidateLists.foreach( listview => listview.visible = false )
-            openCandidatesListView(j, row: Int, col: Int, board: Puzzleboard) )
-
-          texts(j).setMouseTransparent(true)
+            openCandidatesListView(j)
+          )
+          texts(j).setMouseTransparent(true) // Cursor should ignore text placed in tile.
         catch
           case e => throw e
       end for
+
 
     // Remove possible combinations, when cursor goes out of the GridPane object.
     gridWith3x3Squares.setOnMouseExited( e => removeCombinations() )
 
 
-
-    def showPuzzleboardUserNums(board: Puzzleboard, row: Int, col: Int): Unit =
-      val tilesInBoard: Vector[Tile] = board.getTiles
-      val amountOfSquaresHorizontal: Int = col / 3
-      val amountOfSquaresVertical: Int = row / 3
+    def showPuzzleboardUserNums(): Unit =
+      val tilesInBoard: Vector[Tile] = puzzleboard.get.getTiles
+      val amountOfSquaresHorizontal: Int = colNSize.get / 3
+      val amountOfSquaresVertical: Int = rowNSize.get / 3
 
       for i <- tiles.indices do
         if tilesInBoard(convertIndex(i)).currentNumber.isDefined then
@@ -444,9 +422,11 @@ object Main extends JFXApp3:
     def removeTextObjects(): Unit =
       texts.remove(0, texts.length)
 
+
     def removeCombinations() =
       val sizeOfBox: Int = vbox.getChildren.length
       vbox.getChildren.remove(1, sizeOfBox)
+
 
     // Menu
     val menuBar = new MenuBar
@@ -454,6 +434,7 @@ object Main extends JFXApp3:
 
     var fileNameOfSavedFile: Option[String] = None // Will contain the name of a file that have already been saved.
     var parentOfSavedFile: Option[File] = None // Will contains the parent directory of the saved file.
+
 
     def openFileChooserToSaveFile: Unit =
       val fileChooser = new FileChooser()
@@ -488,7 +469,6 @@ object Main extends JFXApp3:
             throwAlert(AlertType.WARNING, "Cannot save the file!", alertMessage)
 
 
-
     val saveItem = new MenuItem("Save")
       saveItem.disable = true // In the beginning should be disabled
       saveItem.onAction = (event) =>
@@ -504,6 +484,7 @@ object Main extends JFXApp3:
         else
           saveItem.disable = true
 
+
     val saveAsItem = new MenuItem("Save as")
       saveAsItem.disable = true  // In the beginning should be disabled
       saveAsItem.onAction = (event) =>
@@ -513,6 +494,7 @@ object Main extends JFXApp3:
           openFileChooserToSaveFile // Opens a fileChooser, where the user can select, where she/he wants to save the file.
         else
           saveAsItem.disable = true
+
 
     val newFileItem = new MenuItem("New file")
     newFileItem.onAction = (event) =>
@@ -541,12 +523,12 @@ object Main extends JFXApp3:
           stage.title = "Killer-Sudoku"
           stage.title = stage.getTitle + " - " + boardWithSize._4
           // Create sudoku board
-          create3x3Squares(boardWithSize._2, boardWithSize._3, board)
+          create3x3Squares()
           // Create listView object for every tile.
-          initializeCandidateLists(board, boardWithSize._2, boardWithSize._3)
+          initializeCandidateLists()
           // Color sub-areas with different colors.
-          showSubareas(board, boardWithSize._2, boardWithSize._3)
-          showPuzzleboardUserNums(board, boardWithSize._2, boardWithSize._3)
+          showSubareas()
+          showPuzzleboardUserNums()
           previousFiles += file.toString
 
           // Remove disabling of save items
@@ -585,14 +567,10 @@ object Main extends JFXApp3:
           throwAlert(AlertType.ERROR, "Error", alertMessage)
 
 
-
-
     fileMenu.items = List(newFileItem, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
     menuBar.menus = List(fileMenu)
 
     root.children += menuBar
-
-
 
 
     def showAlertStartAgain() =
@@ -604,12 +582,10 @@ object Main extends JFXApp3:
       val yesButtonType = ButtonType.YES
       val noButtonType = ButtonType.NO
       alert.getButtonTypes.setAll(yesButtonType, noButtonType)
-
       val result = alert.showAndWait()
 
       def deleteText() =
         texts.foreach( text => text.setText("") )
-
 
       result.ifPresent( e =>
           if (e.getText == "Yes") && (puzzleboard.isDefined) then
@@ -622,6 +598,7 @@ object Main extends JFXApp3:
           else
             println("No button clicked or dialog closed") )
 
+
     // Start Again -button
     val startAgainButton = Button("Start Again")
      startAgainButton.onAction = (event) => showAlertStartAgain()
@@ -629,8 +606,8 @@ object Main extends JFXApp3:
      startAgainButton.layoutY = 0
      startAgainButton.setMinSize(80, 35)
      startAgainButton.border = Border.stroke(2)
-
      root.children += startAgainButton
+
 
     // The warning alert will appear, if there are unsaved changes and the user clicks on exit
     // button in the gui.
