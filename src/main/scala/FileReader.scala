@@ -76,7 +76,7 @@ object FileReader:
       val tileCode: String = tileInStr(i)
       val (row, col) = this.findRowAndColumn(tileCode)
       tiles += allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get
-      assert(!tiles.last.inUse, s"Tile column: ${chars(col)}, row: ${row}, duplicate found.")
+      assert(!tiles.last.inUse, s"Tile column: ${chars(col)}, row: ${row + 1}, duplicate found.")
       tiles.last.inUse = true
     end for
     tiles
@@ -88,6 +88,10 @@ object FileReader:
     (row, column)
 
 
+  /**
+   * Checks for key duplicates in the given data.
+   * @param linesWithoutSpace Buffer[String], which contains information about sub-area.
+   */
   private def checkForKeyDuplicatesInSubareaInfo(linesWithoutSpace: Buffer[String]): Unit =
     var sumCount: Int = 0
     var amountoftilesCount: Int = 0
@@ -142,9 +146,11 @@ object FileReader:
           tilesInStr ++= currentLine.drop(6).split(",").toBuffer
       else if currentLine.contains("squares:") then
           squares ++= currentLine.drop(8).split(",").map( str => str.toInt ).toBuffer
+      else if !currentLine.contains(":") then
+        assert(false, s"The line doesn't contain colon: '${currentLine}'")
       else
-          // println("Not found error")
-          assert(false, "Not found error!")
+        assert(false, s"The line violates with the file format rules: '${currentLine}'")
+
     end for
 
     if sum.isEmpty || amountOfTiles.isEmpty || tileSum.isEmpty
