@@ -1,5 +1,3 @@
-#Start
-#Date
 #Subarea:
 sum: 6
 amountOfTiles: 4
