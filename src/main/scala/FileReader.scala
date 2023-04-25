@@ -5,6 +5,7 @@ import java.io.{FileNotFoundException, IOException, BufferedReader}
 import scala.collection.mutable.Buffer
 import java.awt.Color
 
+
 def initializeTiles(col: Int, row: Int) =
   val tiles: Buffer[Tile] = Buffer()
 
@@ -36,7 +37,6 @@ def initializeTiles(col: Int, row: Int) =
     end for
   end for
   tiles
-
 
 
 def convertHSBtoRGB(hsbColor: Color): (Int, Int, Int) =
@@ -79,7 +79,10 @@ object FileReader:
     for i <- tileInStr.indices do
       val tileCode: String = tileInStr(i)
       val (row, col) = this.findRowAndColumn(tileCode)
+      // Make sure that given tile exists, if not assertion will fail.
+      assert(allTiles.exists( tile => tile.getRow == row && tile.getColumn == col ), s"Sub-area from top: ${createdSubareaCount}, error in the code of the tile in tiles-keyword: '${tileCode}'.")
       tiles += allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get
+      // Check that this tile is new one and not duplicate.
       assert(!tiles.last.inUse, s"Sub-area from top: ${createdSubareaCount}, Tile column: ${chars(col)}, row: ${row + 1}, duplicate found.")
       tiles.last.inUse = true
     end for
@@ -185,6 +188,9 @@ object FileReader:
     assert(tilesInStr.forall( str => str.length == 2 ), s"Sub-area from top: ${createdSubareaCount}, in key tiles some tiles are not comma separated or contain extra characters.")
     // Index of tile, which contains information about subarea sum
     val indexOfSumTile = tilesInStr.indexOf(tileSum.get)
+    // If tile with sub-area sum is not found, then assert should be false.
+    assert(indexOfSumTile != -1, s"Sub-area from top: ${createdSubareaCount}, tileSum value is not defined or has a typo: '${tileSum.get}'.")
+
     // Set up all tiles in the given subarea.
     tiles = this.updateTiles(tilesInStr, allTiles)
 
