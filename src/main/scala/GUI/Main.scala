@@ -452,68 +452,6 @@ object Main extends JFXApp3:
     val menuBar = new MenuBar
     val fileMenu = new Menu("File")
 
-
-    val newFileItem = new MenuItem("New file")
-    newFileItem.onAction = (event) =>
-
-      try
-        println("New file -button in the menubar is clicked")
-        val fileChooser = new FileChooser
-        fileChooser.setTitle("Open new file")
-        fileChooser.getExtensionFilters.addAll(new FileChooser.ExtensionFilter("TEXT", "*.txt"))
-        val file = fileChooser.showOpenDialog(stage)
-
-        if file != null then
-          // Remove previous board from the gui window.
-          removeTextObjects()
-          removeCombinations()
-          initCanvas()
-
-          // Create new board according to the provided file.
-          val lines = FileReader.readFile(file.toString) // return all lines in the given file
-          val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Return (board, row, column)
-          val board = boardWithSize._1
-          puzzleboard = Some(board)
-          rowNSize = Some(boardWithSize._2)
-          colNSize = Some(boardWithSize._3)
-          // Delete name of previous file.
-          stage.title = "Killer-Sudoku"
-          stage.title = stage.getTitle + " - " + boardWithSize._4
-          // Create sudoku board
-          create3x3Squares(boardWithSize._2, boardWithSize._3, board)
-          // Create listView object for every tile.
-          initializeCandidateLists(board, boardWithSize._2, boardWithSize._3)
-          // Color sub-areas with different colors.
-          showSubareas(board, boardWithSize._2, boardWithSize._3)
-          showPuzzleboardUserNums(board, boardWithSize._2, boardWithSize._3)
-          previousFiles += file.toString
-          puzzleboardIsUpdated = true
-      catch
-        case e: java.io.IOException =>
-          puzzleboardIsUpdated = false
-          val alertMessage: String = "The IOException was occuried while trying to open the file."
-          throwAlert(AlertType.ERROR, "Error", alertMessage)
-
-        case e: java.io.FileNotFoundException =>
-          puzzleboardIsUpdated = false
-          val alertMessage: String = "File not found error! Please, make sure that you selected the correct file."
-          throwAlert(AlertType.ERROR, "Error", alertMessage)
-
-        case e: java.util.NoSuchElementException =>
-          puzzleboardIsUpdated = false
-          val alertMessage: String = "Cannot create the board, because the amount of rows and columns should be divisible by three." +
-            "Please, make sure that you specified the proper amount of tiles in the file."
-          throwAlert(AlertType.ERROR, "Error", alertMessage)
-
-        case e: AssertionError =>
-          puzzleboardIsUpdated = false
-          val alertWithAssert: String = e.getMessage
-          val alertMessage: String = alertWithAssert.split("assertion failed:").apply(1).trim
-          throwAlert(AlertType.ERROR, "Error", alertMessage)
-
-
-
-
     var fileNameOfSavedFile: Option[String] = None // Will contain the name of a file that have already been saved.
     var parentOfSavedFile: Option[File] = None // Will contains the parent directory of the saved file.
 
@@ -552,6 +490,7 @@ object Main extends JFXApp3:
 
 
     val saveItem = new MenuItem("Save")
+      saveItem.disable = true // In the beginning should be disabled
       saveItem.onAction = (event) =>
         println("Save-button in the menubar is clicked")
         if puzzleboardIsUpdated then
@@ -566,6 +505,7 @@ object Main extends JFXApp3:
           saveItem.disable = true
 
     val saveAsItem = new MenuItem("Save as")
+      saveAsItem.disable = true  // In the beginning should be disabled
       saveAsItem.onAction = (event) =>
         if puzzleboardIsUpdated then
           saveAsItem.disable = false
@@ -573,6 +513,78 @@ object Main extends JFXApp3:
           openFileChooserToSaveFile // Opens a fileChooser, where the user can select, where she/he wants to save the file.
         else
           saveAsItem.disable = true
+
+    val newFileItem = new MenuItem("New file")
+    newFileItem.onAction = (event) =>
+
+      try
+        println("New file -button in the menubar is clicked")
+        val fileChooser = new FileChooser
+        fileChooser.setTitle("Open new file")
+        fileChooser.getExtensionFilters.addAll(new FileChooser.ExtensionFilter("TEXT", "*.txt"))
+        val file = fileChooser.showOpenDialog(stage)
+
+        if file != null then
+          // Remove previous board from the gui window.
+          removeTextObjects()
+          removeCombinations()
+          initCanvas()
+
+          // Create new board according to the provided file.
+          val lines = FileReader.readFile(file.toString) // return all lines in the given file
+          val boardWithSize = FileReader.readFilePuzzleBoardCfg(lines) // Return (board, row, column)
+          val board = boardWithSize._1
+          puzzleboard = Some(board)
+          rowNSize = Some(boardWithSize._2)
+          colNSize = Some(boardWithSize._3)
+          // Delete name of previous file.
+          stage.title = "Killer-Sudoku"
+          stage.title = stage.getTitle + " - " + boardWithSize._4
+          // Create sudoku board
+          create3x3Squares(boardWithSize._2, boardWithSize._3, board)
+          // Create listView object for every tile.
+          initializeCandidateLists(board, boardWithSize._2, boardWithSize._3)
+          // Color sub-areas with different colors.
+          showSubareas(board, boardWithSize._2, boardWithSize._3)
+          showPuzzleboardUserNums(board, boardWithSize._2, boardWithSize._3)
+          previousFiles += file.toString
+
+          // Remove disabling of save items
+          puzzleboardIsUpdated = true
+          saveItem.disable = false
+          saveAsItem.disable = false
+      catch
+        case e: java.io.IOException =>
+          puzzleboardIsUpdated = false // Cannot save file if we cannot open it
+          saveItem.disable = true      // Disable saving ability
+          saveAsItem.disable = true
+          val alertMessage: String = "The IOException was occuried while trying to open the file."
+          throwAlert(AlertType.ERROR, "Error", alertMessage)
+
+        case e: java.io.FileNotFoundException =>
+          puzzleboardIsUpdated = false
+          saveItem.disable = true
+          saveAsItem.disable = true
+          val alertMessage: String = "File not found error! Please, make sure that you selected the correct file."
+          throwAlert(AlertType.ERROR, "Error", alertMessage)
+
+        case e: java.util.NoSuchElementException =>
+          puzzleboardIsUpdated = false
+          saveItem.disable = true
+          saveAsItem.disable = true
+          val alertMessage: String = "Cannot create the board, because the amount of rows and columns should be divisible by three." +
+            "Please, make sure that you specified the proper amount of tiles in the file."
+          throwAlert(AlertType.ERROR, "Error", alertMessage)
+
+        case e: AssertionError =>
+          puzzleboardIsUpdated = false
+          saveItem.disable = true
+          saveAsItem.disable = true
+          val alertWithAssert: String = e.getMessage
+          val alertMessage: String = alertWithAssert.split("assertion failed:").apply(1).trim
+          throwAlert(AlertType.ERROR, "Error", alertMessage)
+
+
 
 
     fileMenu.items = List(newFileItem, SeparatorMenuItem(), saveItem, SeparatorMenuItem(), saveAsItem)
