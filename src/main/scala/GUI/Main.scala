@@ -549,7 +549,7 @@ object Main extends JFXApp3:
           saveAsItem.disable = true
           val alertMessage: String = "File not found error! Please, make sure that you selected the correct file."
           throwAlert(AlertType.ERROR, "Error", alertMessage)
-
+/*
         case e: java.util.NoSuchElementException =>
           puzzleboardIsUpdated = false
           saveItem.disable = true
@@ -557,6 +557,7 @@ object Main extends JFXApp3:
           val alertMessage: String = "Cannot create the board, because the amount of rows and columns should be divisible by three." +
             "Please, make sure that you specified the proper amount of tiles in the file."
           throwAlert(AlertType.ERROR, "Error", alertMessage)
+*/
 
         case e: AssertionError =>
           puzzleboardIsUpdated = false
