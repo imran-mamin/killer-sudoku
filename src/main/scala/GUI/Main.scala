@@ -142,8 +142,8 @@ object Main extends JFXApp3:
            root.children += col
         end if
 
-        if i % rowNSize.get == 0 then
-          // Displaying the y-coordinates in the GUI window
+        if i % colNSize.get == 0 then
+          // Display the y-coordinates in the GUI window
           val rowText = new Label:
             text = "" + (i / rowNSize.get + 1) // Tells row of tiles
           // - 1/4 is to display text on top of tiles at the center.

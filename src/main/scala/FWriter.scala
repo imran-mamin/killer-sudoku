@@ -30,7 +30,7 @@ object FWriter:
     str
 
 
-  // def eraseFile(file: String): Unit = ???
+  // Writes file to the given directory
   def writeFile(filename: String, directory: File, board: Puzzleboard, rowNSize: Int, colNSize: Int): Unit =
     try
       val file = new File(directory, filename)
