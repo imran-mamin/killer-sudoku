@@ -67,6 +67,8 @@ object Main extends JFXApp3:
     gridWith3x3Squares.layoutX = 80
 
     var unsavedChanges: Boolean = false // Flag to track unsaved changes in the file
+    var puzzleboardIsUpdated: Boolean = false // Flag to check whether file opening was successful or not
+                                              // Is used later, for disabling save items.
 
     var puzzleboard: Option[Puzzleboard] = None
     var colNSize: Option[Int] = None
@@ -484,21 +486,27 @@ object Main extends JFXApp3:
           // Color sub-areas with different colors.
           showSubareas(board, boardWithSize._2, boardWithSize._3)
           showPuzzleboardUserNums(board, boardWithSize._2, boardWithSize._3)
-
           previousFiles += file.toString
+          puzzleboardIsUpdated = true
       catch
         case e: java.io.IOException =>
+          puzzleboardIsUpdated = false
           val alertMessage: String = "The IOException was occuried while trying to open the file."
+          throwAlert(AlertType.ERROR, "Error", alertMessage)
+
         case e: java.io.FileNotFoundException =>
+          puzzleboardIsUpdated = false
           val alertMessage: String = "File not found error! Please, make sure that you selected the correct file."
           throwAlert(AlertType.ERROR, "Error", alertMessage)
 
         case e: java.util.NoSuchElementException =>
+          puzzleboardIsUpdated = false
           val alertMessage: String = "Cannot create the board, because the amount of rows and columns should be divisible by three." +
             "Please, make sure that you specified the proper amount of tiles in the file."
           throwAlert(AlertType.ERROR, "Error", alertMessage)
 
         case e: AssertionError =>
+          puzzleboardIsUpdated = false
           val alertWithAssert: String = e.getMessage
           val alertMessage: String = alertWithAssert.split("assertion failed:").apply(1).trim
           throwAlert(AlertType.ERROR, "Error", alertMessage)
@@ -546,7 +554,7 @@ object Main extends JFXApp3:
     val saveItem = new MenuItem("Save")
       saveItem.onAction = (event) =>
         println("Save-button in the menubar is clicked")
-        if puzzleboard.isDefined then
+        if puzzleboardIsUpdated then
           saveItem.disable = false
           if fileNameOfSavedFile.isDefined && parentOfSavedFile.isDefined then
             FWriter.writeFile(fileNameOfSavedFile.get, parentOfSavedFile.get, puzzleboard.get, rowNSize.get, colNSize.get)
@@ -559,7 +567,7 @@ object Main extends JFXApp3:
 
     val saveAsItem = new MenuItem("Save as")
       saveAsItem.onAction = (event) =>
-        if puzzleboard.isDefined then
+        if puzzleboardIsUpdated then
           saveAsItem.disable = false
           println("Save as -button in the menubar is clicked")
           openFileChooserToSaveFile // Opens a fileChooser, where the user can select, where she/he wants to save the file.
