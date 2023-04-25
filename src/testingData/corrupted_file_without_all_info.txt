@@ -1,8 +1,4 @@
 #Title Attempt 1
-#Date:
-dd/mm/yyyy
-#Time:
-22:18
 #Subarea:
 sum: 6
 amountOfTiles: 4
