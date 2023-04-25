@@ -1,0 +1,211 @@
+#Title Attempt 4
+
+#Subarea:
+sum: 3
+amountOfTiles: 2
+tileSum: a1
+tiles: a1, b1
+squares: 1, 1
+#colsize: 9
+#rowsize: 9
+
+#Subarea:
+sum: 15
+amountOfTiles: 3
+tileSum: c1
+tiles: c1, d1, e1
+squares: 1, 2, 2
+
+# Subarea:
+sum: 22
+amountOfTiles: 4
+tileSum: f1
+tiles: f1, f2, e2, e3
+squares: 2, 2, 2, 2
+
+#Subarea:
+sum: 4
+amountOfTiles: 2
+tileSum: g1
+tiles: g1, g2
+squares: 3, 3
+
+#Subarea:
+sum: 16
+amountOfTiles: 2
+tileSum: h1
+tiles: h1, h2
+squares: 3, 3
+
+#Subarea:
+sum: 15
+amountOfTiles: 4
+tileSum: i1
+tiles: i1, i2, i3, i4
+squares: 3, 3, 3, 6
+
+#Subarea:
+sum: 25
+amountOfTiles: 4
+tileSum: a2
+tiles: a2, b2, a3, b3
+squares: 1, 1, 1, 1
+
+#Subarea:
+sum: 17
+amountOfTiles: 2
+tileSum: c2
+tiles: c2, d2
+squares: 1, 2
+
+#Subarea:
+sum: 9
+amountOfTiles: 3
+tileSum: c3
+tiles: c3, d3, d4
+squares: 1, 2, 5
+
+#Subarea:
+sum: 8
+amountOfTiles: 3
+tileSum: f3
+tiles: f3, f4, f5
+squares: 2, 5, 5
+
+#Subarea:
+sum: 20
+amountOfTiles: 3
+tileSum: g3
+tiles: g3, h3, g4
+squares: 3, 3, 6
+
+#Subarea:
+sum: 6
+amountOfTiles: 2
+tileSum: a4
+tiles: a4, a5
+squares: 4, 4
+
+#Subarea:
+sum: 14
+amountOfTiles: 2
+tileSum: b4
+tiles: b4, c4
+squares: 4, 4
+
+#Subarea:
+sum: 17
+amountOfTiles: 3
+tileSum: e4
+tiles: e4, e5, e6
+squares: 5, 5, 5
+
+#Subarea:
+sum: 17
+amountOfTiles: 3
+tileSum: h4
+tiles: h4, h5, g5
+squares: 6, 6, 6
+
+#Subarea:
+sum: 13
+amountOfTiles: 3
+tileSum: b5
+tiles: b5, c5, b6
+squares: 4, 4, 4
+
+#Subarea:
+sum: 20
+amountOfTiles: 3
+tileSum: d5
+tiles: d5, d6, d7
+squares: 5, 5, 8
+
+#Subarea:
+sum: 12
+amountOfTiles: 2
+tileSum: i5
+tiles: i5, i6
+squares: 6, 6
+
+#Subarea:
+sum: 27
+amountOfTiles: 4
+tileSum: a6
+tiles: a6, a7, a8, a9
+squares: 4, 7, 7, 7
+
+#Subarea:
+sum: 6
+amountOfTiles: 3
+tileSum: c6
+tiles: c6, c7, b7
+squares: 4, 7, 7
+
+#Subarea:
+sum: 20
+amountOfTiles: 3
+tileSum: f6
+tiles: f6, f7, g7
+squares: 5, 8, 9
+
+#Subarea:
+sum: 6
+amountOfTiles: 2
+tileSum: g6
+tiles: g6, h6
+squares: 6, 6
+
+#Subarea:
+sum: 10
+amountOfTiles: 4
+tileSum: e7
+tiles: e7, e8, d8, d9
+squares: 8, 8, 8, 8
+
+#Subarea:
+sum: 14
+amountOfTiles: 4
+tileSum: h7
+tiles: h7, i7, h8, i8
+squares: 9, 9, 9, 9
+
+#Subarea:
+sum: 8
+amountOfTiles: 2
+tileSum: b8
+tiles: b8, b9
+squares: 7, 7
+
+#Subarea:
+sum: 16
+amountOfTiles: 2
+tileSum: c8
+tiles: c8, c9
+squares: 7, 7
+
+# Subarea:
+sum: 15
+amountOfTiles: 2
+tileSum: f8
+tiles: f8, g8
+squares: 8, 9
+
+#Subarea:
+sum: 13
+amountOfTiles: 3
+tileSum: e9
+tiles: e9, f9, g9
+squares: 8, 8, 9
+
+#Subarea:
+sum: 17
+amountOfTiles: 2
+tileSum: h9
+tiles: h9, i9
+squares: 9, 9
+
+# placedNums:
+a1: 1, b1: 2
+
+
