@@ -164,7 +164,6 @@ object Main extends JFXApp3:
           val borderLeftOf9x9Square: Double = gridWith3x3Squares.getBorder.getInsets.getLeft
           val borderLeftOf3x3Square: Double = gridWith9TilesInsets.getLeft
           val tileBorder: Double = tiles.head.getStrokeWidth // Border of rectangle object
-          // println(gridWith3x3Squares.getChildren.get(2).localToScene(i, j))
           // X-coordinate is layoutX of 9x9 Square + tilesWidth * amountOfTiles before this one +
           // the border of 9x9 square + borders of 3x3 squares + single tile border.
           boardTiles((i * colNSize.get) + j).xCoord = gridWith3x3Squares.getLayoutX + j * tiles.head.getWidth +
@@ -298,7 +297,6 @@ object Main extends JFXApp3:
       if candidates.isEmpty && (amountOfFreeTiles != 0) && (texts(j).getText == "") then
         val alertMessage: String = "There are no candidates left! Please, consider removing some numbers from other squares or click 'Start again' button."
         throwAlert(AlertType.ERROR, "Error", alertMessage)
-        println("Candidates is empty")
       else
         listView.getItems.add("")
         for k <- candidates.indices do
@@ -458,10 +456,12 @@ object Main extends JFXApp3:
           val parentDir: File = selectedFile.getParentFile
           updateUnsavedChanges(false)
           updateTitle()
-          println(parentDir)
 
           if puzzleboard.isDefined then
             FWriter.writeFile(fileName, parentDir, puzzleboard.get, rowNSize.get, colNSize.get)
+            // Add new title to stage.
+            stage.title = "Killer-Sudoku"
+            stage.title = stage.getTitle + " - " + fileName
             fileNameOfSavedFile = Some(fileName)
             parentOfSavedFile = Some(parentDir)
           else
@@ -472,12 +472,12 @@ object Main extends JFXApp3:
     val saveItem = new MenuItem("Save")
       saveItem.disable = true // In the beginning should be disabled
       saveItem.onAction = (event) =>
-        println("Save-button in the menubar is clicked")
         if puzzleboardIsUpdated then
           saveItem.disable = false
           if fileNameOfSavedFile.isDefined && parentOfSavedFile.isDefined then
             FWriter.writeFile(fileNameOfSavedFile.get, parentOfSavedFile.get, puzzleboard.get, rowNSize.get, colNSize.get)
-            updateUnsavedChanges(false) // Delete asterisk
+            // Delete asterisk
+            updateUnsavedChanges(false)
             updateTitle()
           else
             openFileChooserToSaveFile
@@ -490,7 +490,6 @@ object Main extends JFXApp3:
       saveAsItem.onAction = (event) =>
         if puzzleboardIsUpdated then
           saveAsItem.disable = false
-          println("Save as -button in the menubar is clicked")
           openFileChooserToSaveFile // Opens a fileChooser, where the user can select, where she/he wants to save the file.
         else
           saveAsItem.disable = true
@@ -500,7 +499,6 @@ object Main extends JFXApp3:
     newFileItem.onAction = (event) =>
 
       try
-        println("New file -button in the menubar is clicked")
         val fileChooser = new FileChooser
         fileChooser.setTitle("Open new file")
         fileChooser.getExtensionFilters.addAll(new FileChooser.ExtensionFilter("TEXT", "*.txt"))
@@ -595,9 +593,7 @@ object Main extends JFXApp3:
             removeCombinations()
             updateUnsavedChanges(true)
             updateTitle()
-            println("Yes button is clicked")
-          else
-            println("No button clicked or dialog closed") )
+          )
 
 
     // Start Again -button
