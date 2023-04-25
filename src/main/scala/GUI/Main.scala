@@ -297,6 +297,7 @@ object Main extends JFXApp3:
 
       // Display a listView object
       val listView = candidateLists(j)
+      listView.setOnMouseEntered( e => showPossibleCombs(board, j) ) // Show combinations also, when the cursor is in ListView.
       listView.toFront()
       listView.getItems.remove(0, listView.getItems.length)
       val candidates = board.getCandidatesAfterSbaFilter(convertIndex(j))
