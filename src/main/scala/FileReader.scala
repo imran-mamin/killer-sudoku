@@ -66,6 +66,7 @@ object FileReader:
     bufferedSource.close()
     allLines
 
+
   // This is a helper method, which updates tiles and returns Buffer[Tile].
   private def updateTiles(tileInStr: Buffer[String], allTiles: Buffer[Tile]): Buffer[Tile] =
     val tiles: Buffer[Tile] = Buffer()
@@ -79,11 +80,38 @@ object FileReader:
     end for
     tiles
 
-  // Finds a row and a column of the given tile string
+
+  // Finds row and column of the given tile string
   private def findRowAndColumn(strTile: String): (Int, Int) =
     val (column, row) = (strTile(0) - 'a', strTile(1).asDigit - 1)
     (row, column)
 
+
+  private def checkForDuplicatesInSubareaInfo(linesWithoutSpace: Buffer[String]): Unit =
+    var sumCount: Int = 0
+    var amountoftilesCount: Int = 0
+    var tilesumCount: Int = 0
+    var tilesCount: Int = 0
+    var squaresCount: Int = 0
+
+    for i <- linesWithoutSpace.indices do
+      val currentLine: String = linesWithoutSpace(i)
+      if currentLine.startsWith("sum:") then
+        sumCount += 1
+      else if currentLine.contains("amountoftiles:") then
+        amountoftilesCount += 1
+      else if currentLine.contains("tilesum:") then
+        tilesumCount += 1
+      else if currentLine.contains("tiles:") then
+        tilesCount += 1
+      else if currentLine.contains("squares:") then
+        squaresCount +=1
+    end for
+    assert(sumCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("sum") ).getOrElse(None)}'")
+    assert(amountoftilesCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("amountoftiles") ).getOrElse(None)}'")
+    assert(tilesumCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("tilesum") ).getOrElse(None)}'")
+    assert(tilesCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("tiles") ).getOrElse(None)}'")
+    assert(squaresCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("squares") ).getOrElse(None)}'")
 
 
   /** Takes as a parameter Buffer[String], which contains information about subarea.
@@ -95,10 +123,13 @@ object FileReader:
     var tilesInStr: Buffer[String] = Buffer()
     var squares: Buffer[Int] = Buffer()
     var tiles: Buffer[Tile] = Buffer()
+    // These are used for corrupted file, when duplicate info occur.
+    val linesWithoutSpace: Buffer[String] = data.map( line => line.trim.toLowerCase.replaceAll(" ", "") )
+    checkForDuplicatesInSubareaInfo(linesWithoutSpace)
 
     // TODO: Add NumberFormatException handling, when user doesn't provide digits after ':'.
-    for i <- data.indices do
-      var currentLine = data(i).trim.toLowerCase.replaceAll(" ", "")
+    for i <- linesWithoutSpace.indices do
+      var currentLine = linesWithoutSpace(i)
 
       if currentLine.startsWith("sum:") then
           sum = currentLine.drop(4).toIntOption
