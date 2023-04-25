@@ -134,23 +134,23 @@ object Main extends JFXApp3:
     def showNumAndCharCoordinates() =
       val boardTiles: Vector[Tile] = puzzleboard.get.getTiles
       for i <- tiles.indices do
-        if i / 9 == 0 then
-           val row = new Label:
+        if i / colNSize.get == 0 then
+           val col = new Label:
               text = characters(i).toString
-           row.layoutX = boardTiles(i).xCoord + tiles.head.getWidth / 2.0
-           row.layoutY = gridWith3x3Squares.getLayoutY - 0.25 * gridWith3x3Squares.getLayoutY
-           root.children += row
+           col.layoutX = boardTiles(i).xCoord + tiles.head.getWidth / 2.0
+           col.layoutY = gridWith3x3Squares.getLayoutY - 0.25 * gridWith3x3Squares.getLayoutY
+           root.children += col
         end if
 
-        if i % 9 == 0 then
+        if i % rowNSize.get == 0 then
           // Displaying the y-coordinates in the GUI window
-          val colText = new Label:
-            text = "" + (i / 9 + 1) // Tells row of tiles
+          val rowText = new Label:
+            text = "" + (i / rowNSize.get + 1) // Tells row of tiles
           // - 1/4 is to display text on top of tiles at the center.
-          colText.layoutX = gridWith3x3Squares.getLayoutX - 0.25 * gridWith3x3Squares.getLayoutX
+          rowText.layoutX = gridWith3x3Squares.getLayoutX - 0.25 * gridWith3x3Squares.getLayoutX
           // Starting point plus amount of tiles multiplied by their height
-          colText.layoutY = boardTiles(i).yCoord + tiles.head.getHeight / 3.0
-          root.children += colText
+          rowText.layoutY = boardTiles(i).yCoord + tiles.head.getHeight / 3.0
+          root.children += rowText
         end if
       end for
 
