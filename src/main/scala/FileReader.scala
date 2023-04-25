@@ -182,7 +182,7 @@ object FileReader:
     end for
 
     checkForInformationAfterColon(sum, amountOfTiles, tileSum, tilesInStr, squares)
-
+    assert(tilesInStr.forall( str => str.length == 2 ), s"Sub-area from top: ${createdSubareaCount}, in key tiles some tiles are not comma separated or contain extra characters.")
     // Index of tile, which contains information about subarea sum
     val indexOfSumTile = tilesInStr.indexOf(tileSum.get)
     // Set up all tiles in the given subarea.
@@ -293,7 +293,7 @@ object FileReader:
    * creates a Puzzleboard-object according to the information given in
    * the text file. */
   def readFilePuzzleBoardCfg(cfg: Seq[String]): (Puzzleboard, Int, Int, String) =
-
+    createdSubareaCount = 0 // When new file is provided, subareaCount should start from zero.
     // Will contain the stripped data after handling some of it.
     var stripped: Buffer[String] = cfg.toBuffer.filter( element => element != "" ).map( element => element.trim.toLowerCase)
 
