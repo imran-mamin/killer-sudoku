@@ -70,12 +70,13 @@ object FileReader:
   // This is a helper method, which updates tiles and returns Buffer[Tile].
   private def updateTiles(tileInStr: Buffer[String], allTiles: Buffer[Tile]): Buffer[Tile] =
     val tiles: Buffer[Tile] = Buffer()
+    val chars: Vector[Char] = ('a' to 'z').toVector
 
     for i <- tileInStr.indices do
       val tileCode: String = tileInStr(i)
       val (row, col) = this.findRowAndColumn(tileCode)
       tiles += allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get
-      assert(!tiles.last.inUse, s"Tile row: ${row}, column: ${col} duplicate found.")
+      assert(!tiles.last.inUse, s"Tile column: ${chars(col)}, row: ${row}, duplicate found.")
       tiles.last.inUse = true
     end for
     tiles
@@ -87,7 +88,7 @@ object FileReader:
     (row, column)
 
 
-  private def checkForDuplicatesInSubareaInfo(linesWithoutSpace: Buffer[String]): Unit =
+  private def checkForKeyDuplicatesInSubareaInfo(linesWithoutSpace: Buffer[String]): Unit =
     var sumCount: Int = 0
     var amountoftilesCount: Int = 0
     var tilesumCount: Int = 0
@@ -125,7 +126,7 @@ object FileReader:
     var tiles: Buffer[Tile] = Buffer()
     // These are used for corrupted file, when duplicate info occur.
     val linesWithoutSpace: Buffer[String] = data.map( line => line.trim.toLowerCase.replaceAll(" ", "") )
-    checkForDuplicatesInSubareaInfo(linesWithoutSpace)
+    checkForKeyDuplicatesInSubareaInfo(linesWithoutSpace)
 
     // TODO: Add NumberFormatException handling, when user doesn't provide digits after ':'.
     for i <- linesWithoutSpace.indices do
