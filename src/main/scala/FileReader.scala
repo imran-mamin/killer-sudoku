@@ -56,6 +56,10 @@ def convertHSBtoRGB(hsbColor: Color): (Int, Int, Int) =
 
 object FileReader:
 
+
+  // This variable tells, how many sub-areas are created and is used for more descriptive error
+  // messages.
+  private var createdSubareaCount = 0
   /**
    * Reads file content and returns all the lines respectively.
    * @return Seq[String], which contains all the lines in the given file.
@@ -76,7 +80,7 @@ object FileReader:
       val tileCode: String = tileInStr(i)
       val (row, col) = this.findRowAndColumn(tileCode)
       tiles += allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get
-      assert(!tiles.last.inUse, s"Tile column: ${chars(col)}, row: ${row + 1}, duplicate found.")
+      assert(!tiles.last.inUse, s"Sub-area from top: ${createdSubareaCount}, Tile column: ${chars(col)}, row: ${row + 1}, duplicate found.")
       tiles.last.inUse = true
     end for
     tiles
@@ -112,11 +116,35 @@ object FileReader:
       else if currentLine.contains("squares:") then
         squaresCount +=1
     end for
-    assert(sumCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("sum") ).getOrElse(None)}'")
-    assert(amountoftilesCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("amountoftiles") ).getOrElse(None)}'")
-    assert(tilesumCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("tilesum") ).getOrElse(None)}'")
-    assert(tilesCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("tiles") ).getOrElse(None)}'")
-    assert(squaresCount <= 1, s"Duplicate found: '${linesWithoutSpace.find( line => line.startsWith("squares") ).getOrElse(None)}'")
+    assert(sumCount <= 1, s"Duplicate found: Sub-area from top: ${createdSubareaCount}, '${linesWithoutSpace.find( line => line.startsWith("sum") ).getOrElse(None)}'")
+    assert(amountoftilesCount <= 1, s"Duplicate found: Sub-area from top: ${createdSubareaCount}, '${linesWithoutSpace.find( line => line.startsWith("amountoftiles") ).getOrElse(None)}'")
+    assert(tilesumCount <= 1, s"Duplicate found: Sub-area from top: ${createdSubareaCount}, '${linesWithoutSpace.find( line => line.startsWith("tilesum") ).getOrElse(None)}'")
+    assert(tilesCount <= 1, s"Duplicate found: Sub-area from top: ${createdSubareaCount}, '${linesWithoutSpace.find( line => line.startsWith("tiles") ).getOrElse(None)}'")
+    assert(squaresCount <= 1, s"Duplicate found: Sub-area from top: ${createdSubareaCount}, '${linesWithoutSpace.find( line => line.startsWith("squares") ).getOrElse(None)}'")
+
+
+  /**
+   * Checks, if the information is provided after colon in Subarea section in the file. If not
+   * assertion will fail.
+   * @param sum Option[Int], which should contain sum of the sub-area
+   * @param amountOfTiles Option[Int], which should contains amount of tiles in the sub-area.
+   * @param tileSum Option[String], which tells which tile contains the sum of the sub-area.
+   * @param tilesInStr Buffer[String], all tiles that are in the given sub-area.
+   * @param squares Buffer[Int], tells in which square every tile is placed respectively.
+   */
+  private def checkForInformationAfterColon(sum: Option[Int], amountOfTiles: Option[Int], tileSum: Option[String], tilesInStr: Buffer[String], squares: Buffer[Int]): Unit =
+    if sum.isEmpty then
+      assert(false, s"Sub-area from top: ${createdSubareaCount}, Sum of the sub-area is not given.")
+    else if amountOfTiles.isEmpty then
+      assert(false, s"Sub-area from top: ${createdSubareaCount}, AmountOfTiles is not given.")
+    else if tileSum.isEmpty then
+      assert(false, s"Sub-area from top: ${createdSubareaCount}, tileSum is not given.")
+    else if tilesInStr.isEmpty then
+      assert(false, s"Sub-area from top: ${createdSubareaCount}, tiles are not provided.")
+    else if squares.isEmpty then
+      assert(false, s"Sub-area from top: ${createdSubareaCount}, squares are not provided.")
+    else if squares.length != tilesInStr.length then
+      assert(false, s"Sub-area from top: ${createdSubareaCount}, amount of squares and tiles should be same.")
 
 
   /** Takes as a parameter Buffer[String], which contains information about subarea.
@@ -128,6 +156,7 @@ object FileReader:
     var tilesInStr: Buffer[String] = Buffer()
     var squares: Buffer[Int] = Buffer()
     var tiles: Buffer[Tile] = Buffer()
+    createdSubareaCount += 1
     // These are used for corrupted file, when duplicate info occur.
     val linesWithoutSpace: Buffer[String] = data.map( line => line.trim.toLowerCase.replaceAll(" ", "") )
     checkForKeyDuplicatesInSubareaInfo(linesWithoutSpace)
@@ -147,17 +176,12 @@ object FileReader:
       else if currentLine.contains("squares:") then
           squares ++= currentLine.drop(8).split(",").map( str => str.toInt ).toBuffer
       else if !currentLine.contains(":") then
-        assert(false, s"The line doesn't contain colon: '${currentLine}'")
+        assert(false, s"Sub-area from top: ${createdSubareaCount}, The line doesn't contain colon: '${currentLine}'")
       else
-        assert(false, s"The line violates with the file format rules: '${currentLine}'")
-
+        assert(false, s"Sub-area from top: ${createdSubareaCount}, The line violates with the file format rules: '${currentLine}'")
     end for
 
-    if sum.isEmpty || amountOfTiles.isEmpty || tileSum.isEmpty
-      || tilesInStr.isEmpty || squares.isEmpty || squares.length != tilesInStr.length then
-      // println("")
-      assert(false, "Not all information is provided!")
-    end if
+    checkForInformationAfterColon(sum, amountOfTiles, tileSum, tilesInStr, squares)
 
     // Index of tile, which contains information about subarea sum
     val indexOfSumTile = tilesInStr.indexOf(tileSum.get)
@@ -321,9 +345,10 @@ object FileReader:
 
     end for
 
+    val chars: Vector[Char] = ('a' to 'z').toVector
     var i = -1
     tiles.foreach( tile => if !tile.inUse then i = tiles.indexOf(tile) )
-    assert(i == -1, s"Tile row: ${tiles(i).getRow} and column: ${tiles(i).getColumn} info is missing in config file.")
+    assert(i == -1, s"Sub-area from top: ${createdSubareaCount}, Tile column: ${chars(tiles(i).getColumn)} and row: ${tiles(i).getRow + 1} info is missing in config file.")
 
     // Place numbers in the tiles that are specified in the provided file.
     if stripped.exists( str => str.contains("#placednums") ) then
