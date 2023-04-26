@@ -5,6 +5,7 @@ import sudoku.{FileReader, Puzzleboard, Subarea, Tile}
 import sudoku._
 import java.awt.Color
 
+
 class TestGame extends AnyFlatSpec with Matchers:
 
   "FileReader initializeTiles-method" should "create the right amount of Tile-objects" in {
@@ -100,18 +101,7 @@ class TestGame extends AnyFlatSpec with Matchers:
   assert(board.getTiles(0).currentNumber.isDefined)
   assert(board.getTiles(1).currentNumber.isDefined)
   }
-/*
-  "FileReader readFilePuzzleBoardCfg-method" should "read a Puzzleboard object properly" in {
-  val file = "C:\\Users\\imran\\IdeaProjects\\Killer_Sudoku\\src\\testingData\\myfile_1.txt"
-  val lines = FileReader.readFile(file)
 
-  val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
-  // When the given size is not divisible by three, then program should create a board 9 x 9
-  assert(board.getTiles(0).currentNumber.isDefined)
-  assert(board.getTiles(1).currentNumber.isDefined)
-  assert(board.getTiles(32).currentNumber.isDefined)
-  }
-*/
 
   "addNeighborsToSubareas-method" should "add neighbors properly to sub-areas" in {
     val file = "src/testingData/9x9_example_board.txt"
@@ -149,6 +139,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     }.getMessage shouldEqual message
   }
 
+
   "Assertion in FileReader" should "fail, when it reads a file, which doesn't contain all information " +
     "about puzzleboard" in {
     // There is only one sub-area in this file, but rowsize and colsize are given as 9 tiles.
@@ -162,6 +153,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     }.getMessage shouldEqual message
   }
 
+
   "Assertion in FileReader" should "fail, when it reads a file, which has a string instead of num " +
     "at some place in the file." in {
     // One tile code is 'bl' and should have num instead of 'l' character.
@@ -174,6 +166,7 @@ class TestGame extends AnyFlatSpec with Matchers:
       FileReader.readFilePuzzleBoardCfg(lines)
     }.getMessage shouldEqual message
   }
+
 
   "Assertion in FileReader" should "fail, when it reads a file, which has a duplicate in sub-areas " +
     "sum property" in {
@@ -198,6 +191,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     }.getMessage shouldEqual message
   }
 
+
   "Assertion in FileReader" should "fail, when it reads a file, which doesn't contain any " +
     "information after keyword and colon" in {
     val message = "assertion failed: Sub-area from top: 1, Sum of the sub-area is not given."
@@ -208,6 +202,7 @@ class TestGame extends AnyFlatSpec with Matchers:
       FileReader.readFilePuzzleBoardCfg(lines)
     }.getMessage shouldEqual message
   }
+
 
   "Assertion in FileReader" should "fail, when it reads a file, where tiles are not separated by" +
     "comma." in {
@@ -221,6 +216,7 @@ class TestGame extends AnyFlatSpec with Matchers:
     }.getMessage shouldEqual message
   }
 
+
   "Assertion in FileReader" should "fail, when it reads a file, when there is no colon " +
     "after keyword." in {
     val message = "assertion failed: Sub-area from top: 2, The line doesn't contain colon: 'sum15'"
@@ -233,6 +229,70 @@ class TestGame extends AnyFlatSpec with Matchers:
   }
 
   // Test Puzzleboard methods
+
+  "getCandidatesAfterSbaFilter-method" should "return the proper candidates that can be placed " +
+    "into the given tile, when board's size is 3x3 tiles" in {
+    val file = "src/testingData/test3_readfilepuzzleboard.txt"
+    val lines = FileReader.readFile(file)
+    val board = FileReader.readFilePuzzleBoardCfg(lines)._1
+    val tiles = board.getTiles
+
+    // Tiles are calculated using method from top to down and from left to right.
+    assert(board.getCandidatesAfterSbaFilter(0).isEmpty, "First tile doesn't have any candidates.")
+    assert(board.getCandidatesAfterSbaFilter(1).isEmpty, "Second tile doesn't have any candidates.")
+    assert(board.getCandidatesAfterSbaFilter(2).containsSlice(Seq[Int](1, 3)), "Third tile has two candidates.")
+    assert(board.getCandidatesAfterSbaFilter(3).isEmpty, "Fourth tile doesn't have any candidates.")
+    assert(board.getCandidatesAfterSbaFilter(4).isEmpty, "Fifth tile doesn't have any candidates.")
+    assert(board.getCandidatesAfterSbaFilter(5).containsSlice(Seq[Int](1, 3)), "Fifth tile has same candidates as third one.")
+    assert(board.getCandidatesAfterSbaFilter(6).containsSlice((1 to 8).toSeq), "Sixth tile has 8 candidates.")
+  }
+
+
+  "getCandidatesAfterSbaFilter-method" should "return the proper candidates that can be placed " +
+    "into the given tile, when board's size is 3x3 tiles and some of the numbers are placed" in {
+    val file = "src/testingData/test3_readfilepuzzleboard.txt"
+    val lines = FileReader.readFile(file)
+    val board = FileReader.readFilePuzzleBoardCfg(lines)._1
+    val tiles = board.getTiles
+
+    // Place one in the third tile.
+    tiles(2).currentNumber = Some(1)
+
+    // Tiles are calculated using method from top to down and from left to right.
+    assert(board.getCandidatesAfterSbaFilter(5).contains(3), "Third tile has one candidate.")
+    assert(board.getCandidatesAfterSbaFilter(5).size == 1, "Should contains only one candidate 3")
+  }
+
+
+  "getCombinationsInStr-method" should "return combinations that can be applied to the given " +
+    "sub-area and index of the tile." in {
+    val file = "src/testingData/9x9_example_board.txt"
+    val lines = FileReader.readFile(file)
+    val board = FileReader.readFilePuzzleBoardCfg(lines)._1
+    val tiles = board.getTiles
+
+    // Tiles are calculated using from top to down and from left to right technic.
+    assert(board.getCombinationsInStr(2).containsSlice(Seq[String]("3 + 4 + 8", "3 + 5 + 7", "4 + 5 + 6")),
+      "sum of the sub-area is 15 and it contains three tiles.")
+
+    // Place 4 in the third tile.
+    tiles(2).currentNumber = Some(4)
+
+    assert(board.getCombinationsInStr(3).containsSlice(Seq[String]("3 + 8", "5 + 6")), "the remaining" +
+      "sum is 11 and there are two free tiles left.")
+
+    // Place 1 in the seventh tile.
+    tiles(6).currentNumber = Some(1)
+    // Sub-area sum is 4 and it contains tiles with indexes 6 and 15. When one is placed in first
+    // tile, then there is only one candidate 3 to place in tile with index 15.
+    assert(board.getCombinationsInStr(15).contains("3"), "the sum of the subarea is 4 and the only one " +
+      "candidate that the user can place is 3.")
+    assert(board.getCombinationsInStr(15).length == 1, "The length should be one.")
+  }
+
+
+  // These tests were created to make sure that the Puzzleboard's private methods work properly.
+
   "getRowCandidates()-method" should "return all possible candidates so that" +
     "there will be no two same digits in the same row" in {
     val row0 = Vector(new Tile(0, 0, 1), new Tile(1, 0, 1), new Tile(2, 0, 1))
