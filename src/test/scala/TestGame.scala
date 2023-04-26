@@ -7,28 +7,6 @@ import java.awt.Color
 
 class TestGame extends AnyFlatSpec with Matchers:
 
-  // Test FileReader methods
-  "FileReader readFile-method" should "return all the lines in the given file" in {
-    val file = "src/testingData/test1.txt"
-    val lines = FileReader.readFile(file)
-
-    assert(lines == Seq("#Start", "#Date", "#Subarea:", "sum: 6", "amountOfTiles: 4", "tileSum: a1",
-      "tiles: a1, a2, b1, b2", "squares: 1, 1, 1, 1"))
-  }
-/*
-  "FileReader readFilePuzzleBoardCfg-method" should "create a new Puzzleboard object of correct length, when the given size is" +
-    "not divisible by three" in {
-    val file = "src/testingData/test2_readfilepuzzleboard.txt"
-    val lines = FileReader.readFile(file)
-
-    val board = FileReader.readFilePuzzleBoardCfg(lines.toSeq)._1
-    // When the given size is not divisible by three, then program should create a board 9 x 9
-    assert(board.getTiles.length == 81)
-    assert(board.getSubareas.length == 1)
-  }
-*/
-
-
   "FileReader initializeTiles-method" should "create the right amount of Tile-objects" in {
     val tiles = initializeTiles(9, 9)
     assert(tiles.length == 81)
@@ -112,7 +90,7 @@ class TestGame extends AnyFlatSpec with Matchers:
   }
 
 
-  "FileReader readFilePuzzleBoardCfg-method" should "create a new Puzzleboard object with correctly placed" +
+  "FileReader readFilePuzzleBoardCfg-method" should "create a new Puzzleboard object with correctly placed " +
   "nums in some tiles" in {
   val file = "src/testingData/9x9_example_board.txt"
   val lines = FileReader.readFile(file)
@@ -159,8 +137,100 @@ class TestGame extends AnyFlatSpec with Matchers:
   }
 
 
+  // Test corrupted files and error handling
+  "Assertion in FileReader" should "fail, when it reads a file without a title" in {
+    val message = "assertion failed: File does not have a title." // Message that should be thrown
+    val file = "src/testingData/file_without_title.txt"
+    val lines = FileReader.readFile(file)
+
+    // Should throw an assertion
+    intercept[AssertionError]{
+      FileReader.readFilePuzzleBoardCfg(lines)
+    }.getMessage shouldEqual message
+  }
+
+  "Assertion in FileReader" should "fail, when it reads a file, which doesn't contain all information " +
+    "about puzzleboard" in {
+    // There is only one sub-area in this file, but rowsize and colsize are given as 9 tiles.
+    val message = "assertion failed: Sub-area from top: 1, Tile column: i and row: 9 info is missing in " +
+      "config file."
+    val file = "src/testingData/corrupted_file_without_all_info.txt"
+    val lines = FileReader.readFile(file)
+    // Should throw an assertion
+    intercept[AssertionError]{
+      FileReader.readFilePuzzleBoardCfg(lines)
+    }.getMessage shouldEqual message
+  }
+
+  "Assertion in FileReader" should "fail, when it reads a file, which has a string instead of num " +
+    "at some place in the file." in {
+    // One tile code is 'bl' and should have num instead of 'l' character.
+    val message = "assertion failed: Sub-area from top: 25, error in the code of the tile in " +
+      "tiles-keyword: 'bl'."
+    val file = "src/testingData/corrupted_file_with_string_instead_of_num.txt"
+    val lines = FileReader.readFile(file)
+    // Should throw an assertion
+    intercept[AssertionError]{
+      FileReader.readFilePuzzleBoardCfg(lines)
+    }.getMessage shouldEqual message
+  }
+
+  "Assertion in FileReader" should "fail, when it reads a file, which has a duplicate in sub-areas " +
+    "sum property" in {
+    val message = "assertion failed: Duplicate found: Sub-area from top: 29," +
+      " 'sum:17'"
+    val file = "src/testingData/corrupted_file_with_duplicate_sum_property.txt"
+    val lines = FileReader.readFile(file)
+    // Should throw an assertion
+    intercept[AssertionError]{
+      FileReader.readFilePuzzleBoardCfg(lines)
+    }.getMessage shouldEqual message
+  }
 
 
+  "Assertion in FileReader" should "fail, when it reads a file, which has a duplicate in sub-areas" in {
+    val message = "assertion failed: Sub-area from top: 30, Tile column: h, row: 9, duplicate found."
+    val file = "src/testingData/corrupted_file_with_duplicate_subarea.txt"
+    val lines = FileReader.readFile(file)
+    // Should throw an assertion
+    intercept[AssertionError]{
+      FileReader.readFilePuzzleBoardCfg(lines)
+    }.getMessage shouldEqual message
+  }
+
+  "Assertion in FileReader" should "fail, when it reads a file, which doesn't contain any " +
+    "information after keyword and colon" in {
+    val message = "assertion failed: Sub-area from top: 1, Sum of the sub-area is not given."
+    val file = "src/testingData/corrupted_file_where_info_no_given_after_colon.txt"
+    val lines = FileReader.readFile(file)
+    // Should throw an assertion
+    intercept[AssertionError]{
+      FileReader.readFilePuzzleBoardCfg(lines)
+    }.getMessage shouldEqual message
+  }
+
+  "Assertion in FileReader" should "fail, when it reads a file, where tiles are not separated by" +
+    "comma." in {
+    val message = "assertion failed: Sub-area from top: 29, in key tiles some tiles are not " +
+      "comma separated or contain extra characters."
+    val file = "src/testingData/corrupted_file_where_elements_are_not_separated_with_comma.txt"
+    val lines = FileReader.readFile(file)
+    // Should throw an assertion
+    intercept[AssertionError]{
+      FileReader.readFilePuzzleBoardCfg(lines)
+    }.getMessage shouldEqual message
+  }
+
+  "Assertion in FileReader" should "fail, when it reads a file, when there is no colon " +
+    "after keyword." in {
+    val message = "assertion failed: Sub-area from top: 2, The line doesn't contain colon: 'sum15'"
+    val file = "src/testingData/corrupted_file_where_colon_not_given.txt"
+    val lines = FileReader.readFile(file)
+    // Should throw an assertion
+    intercept[AssertionError]{
+      FileReader.readFilePuzzleBoardCfg(lines)
+    }.getMessage shouldEqual message
+  }
 
   // Test Puzzleboard methods
   "getRowCandidates()-method" should "return all possible candidates so that" +
@@ -264,6 +334,8 @@ class TestGame extends AnyFlatSpec with Matchers:
     end for
     assert(differentColorInNeighbors, "Neighboring sub-areas should have different color.")
   }
+
+
 
 end TestGame
 
