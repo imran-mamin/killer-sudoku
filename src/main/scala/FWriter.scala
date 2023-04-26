@@ -55,12 +55,13 @@ object FWriter:
       end for
       val tilesWithNums: Vector[Tile] = board.getTiles.filter( tile => tile.currentNumber.isDefined )
 
-      bw.write("#placedNums: \n")
+      if tilesWithNums.nonEmpty then
+        bw.write("#placedNums: \n")
 
-      for j <- tilesWithNums.indices do
-        bw.write(s"${this.rowColConverter(tilesWithNums(j).getRow, tilesWithNums(j).getColumn)}: ${tilesWithNums(j).currentNumber.get}\n")
-      end for
-
+        for j <- tilesWithNums.indices do
+          bw.write(s"${this.rowColConverter(tilesWithNums(j).getRow, tilesWithNums(j).getColumn)}: ${tilesWithNums(j).currentNumber.get}\n")
+        end for
+      end if
 
       bw.close()
     catch
