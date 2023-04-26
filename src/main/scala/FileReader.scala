@@ -207,7 +207,7 @@ object FileReader:
 
   def addSubareaIndexToTiles(puzzleboard: Puzzleboard): Unit =
     val subareas = puzzleboard.getSubareas
-    val allTilesSet: Set[Tile] = puzzleboard.getTiles.toSet
+    val allTilesSet: Set[Tile] = puzzleboard.getTiles.toSet // TODO: Remove this if not in use.
 
     for i <- subareas.indices do
       val tilesInSubarea: Vector[Tile] = subareas(i).getTiles
@@ -226,14 +226,18 @@ object FileReader:
     val str: String = withoutTagAndSpaces.mkString(",") //.reduceLeft( (first, second) => first + second ).replaceAll(" ", "")
     val pairTileAndNumInStr: Array[Array[String]] = str.split(',').map( str => str.split(':') )
     pairTileAndNumInStr.foreach( n => n.foreach( m => println(m) ) )
-    assert(pairTileAndNumInStr.forall( arr => arr.length == 2 ))
+    // Check if tileCode consists of two characters.
+    assert(pairTileAndNumInStr.forall( arr => arr.length == 2 ), s"Error occured in 'placedNums'.")
 
     for i <- pairTileAndNumInStr.indices do
       val tileIndexStr: String = pairTileAndNumInStr(i)(0)
-      val num: Int = pairTileAndNumInStr(i)(1).toInt
+      val num: Option[Int] = pairTileAndNumInStr(i)(1).toIntOption
+      // Check if there is integer after colon.
+      assert(num.isDefined, s"The tile '${tileIndexStr}' should contain a number after colon. Result was character: '${pairTileAndNumInStr(i)(1)}'.")
       val (row, col): (Int, Int) = this.findRowAndColumn(tileIndexStr)
-
-      allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get.currentNumber = Some(num)
+      // Check if there is tile with given coordinates.
+      assert(allTiles.exists( tile => tile.getRow == row && tile.getColumn == col ), s"In 'placedNums'-section, error in the code of the tile in tiles-keyword: '${tileIndexStr}'.")
+      allTiles.find( tile => tile.getRow == row && tile.getColumn == col ).get.currentNumber = Some(num.get)
 
     end for
 
@@ -294,7 +298,6 @@ object FileReader:
     end for
 
 
-  // TODO: Add more descriptive error messages
   /** This method takes all the lines of the text file as an input and
    * creates a Puzzleboard-object according to the information given in
    * the text file. */
