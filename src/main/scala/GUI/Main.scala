@@ -505,6 +505,13 @@ object Main extends JFXApp3:
         val file = fileChooser.showOpenDialog(stage)
 
         if file != null then
+          // Changing the directory to None and file name to None after the new file is opened.
+          fileNameOfSavedFile = None
+          parentOfSavedFile = None
+
+          // Delete name of previous file.
+          stage.title = "Killer-Sudoku"
+
           // Remove previous board from the gui window.
           removeTextObjects()
           removeCombinations()
@@ -517,9 +524,10 @@ object Main extends JFXApp3:
           puzzleboard = Some(board)
           rowNSize = Some(boardWithSize._2)
           colNSize = Some(boardWithSize._3)
-          // Delete name of previous file.
-          stage.title = "Killer-Sudoku"
+
+          // Modify title according to title of provided file
           stage.title = stage.getTitle + " - " + boardWithSize._4
+
           // Create sudoku board
           create3x3Squares()
           // Create listView object for every tile.
@@ -528,6 +536,7 @@ object Main extends JFXApp3:
           showSubareas()
           showPuzzleboardUserNums()
           previousFiles += file.toString
+
 
           // Remove disabling of save items
           puzzleboardIsUpdated = true
