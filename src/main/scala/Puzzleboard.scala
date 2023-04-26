@@ -29,9 +29,9 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     possibleNums
 
 
-
+  // This method should be private, but is public for unit testing.
   // When the subarea consists of two tiles
-  private def getLastTwoTilesCombinations(index: Int, subareaIndex: Int, targetSum: Int): Buffer[Vector[Int]] =
+  def getLastTwoTilesCombinations(index: Int, subareaIndex: Int, targetSum: Int): Buffer[Vector[Int]] =
     val possibleNums: Buffer[Vector[Int]] = Buffer()
     val tilesInSub: Vector[Tile] = subareas(subareaIndex).getTiles.filter( tile => tile.currentNumber.isEmpty )
     val tile1Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(0)))
@@ -51,7 +51,8 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     possibleNums
 
 
-  private def getLastThreeTilesCombinations(index: Int, subareaIndex: Int, targetSum: Int): Buffer[Vector[Int]] =
+  // This method should be private, but is public for unit testing.
+  def getLastThreeTilesCombinations(index: Int, subareaIndex: Int, targetSum: Int): Buffer[Vector[Int]] =
     val possibleNums: Buffer[Vector[Int]] = Buffer()
     val tilesInSub: Vector[Tile] = subareas(subareaIndex).getTiles.filter( tile => tile.currentNumber.isEmpty )
     val tile1Candidates: Buffer[Int] = this.getCandidates(allTiles.indexOf(tilesInSub(0)))
@@ -224,13 +225,14 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     intersection
 
 
+  // This method should be private, but is public for unit testing.
   /**
    * Take index of the tile instance in allTiles vector and filter possible candidates
    * according to already placed numbers in the tiles that are in the same row with this one.
    * @param index of the Tile in allTiles Vector
    * @return Buffer[Int] of possible candidates.
    */
-  private def getRowCandidates(index: Int): Buffer[Int] =
+  def getRowCandidates(index: Int): Buffer[Int] =
     val candidates = (1 to 9).toBuffer
     val row: Int = allTiles(index).getRow
 
@@ -243,6 +245,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     candidates
 
 
+  // This method should be private, but is public for unit testing.
   /**
    * Take index of the tile instance in allTiles vector and filters possible candidates
    * according to already placed numbers in the Tiles that are in the same column with this one.
@@ -281,6 +284,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
     candidates
 
 
+  // This method should be private, but is public for unit testing.
   /**
    * Take index of the tile (indexation should be same as here in back-end of
    * the program) and gives all the possible candidate numbers that can be placed in this tile instance.
@@ -290,7 +294,7 @@ class Puzzleboard(allTiles: Vector[Tile], subareas: Vector[Subarea]):
    * @return Buffer[Int] returns a Buffer of integers that are the possible candidates according to
    *         the standard sudoku rules.
    */
-  private def getCandidates(index: Int): Buffer[Int] =
+  def getCandidates(index: Int): Buffer[Int] =
     val candidatesRow = this.getRowCandidates(index) // Remaining candidates after row filtering.
     val candidatesCol = this.getColCandidates(index) // Remaining candidates after column filtering.
     val candidatesSqr = this.getSquareCandidates(index) // Remaining candidates after square filtering.
