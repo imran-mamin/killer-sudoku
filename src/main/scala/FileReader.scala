@@ -233,6 +233,8 @@ object FileReader:
       val num: Option[Int] = pairTileAndNumInStr(i)(1).toIntOption
       // Check if there is integer after colon.
       assert(num.isDefined, s"The tile '${tileIndexStr}' should contain a number after colon. Result was character: '${pairTileAndNumInStr(i)(1)}'.")
+      // Check that the number is between 0 and 9.
+      assert(0 <= num.get && num.get <= 9, s"The placed number should be from 0 to 9. The tile ${tileIndexStr} contains '${num.get}' as placed number.")
       val (row, col): (Int, Int) = this.findRowAndColumn(tileIndexStr)
       // Check if there is tile with given coordinates.
       assert(allTiles.exists( tile => tile.getRow == row && tile.getColumn == col ), s"In 'placedNums'-section, error in the code of the tile in tiles-keyword: '${tileIndexStr}'.")
