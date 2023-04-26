@@ -225,7 +225,6 @@ object FileReader:
     val withoutTagAndSpaces: Buffer[String] = placedNums.map( str => str.replaceAll(" ", "") ).dropWhile( str => !str.contains(":") ).drop(1) // Last is the sign ':' itself.
     val str: String = withoutTagAndSpaces.mkString(",") //.reduceLeft( (first, second) => first + second ).replaceAll(" ", "")
     val pairTileAndNumInStr: Array[Array[String]] = str.split(',').map( str => str.split(':') )
-    pairTileAndNumInStr.foreach( n => n.foreach( m => println(m) ) )
     // Check if tileCode consists of two characters.
     assert(pairTileAndNumInStr.forall( arr => arr.length == 2 ), s"Error occured in 'placedNums'.")
 
@@ -335,7 +334,6 @@ object FileReader:
 
     val titleOpt: Option[String] = stripped.dropWhile( str => !str.contains("#title") ).headOption
     if titleOpt.isEmpty then
-      // println("File does not have a title.")
       assert(false, "File does not have a title.")
 
     val title: String = titleOpt.get.trim.drop(6).trim
